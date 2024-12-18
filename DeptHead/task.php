@@ -2109,7 +2109,7 @@ function removeFile(fileItem) {
                     Swal.fire({
                         icon: 'success',
                         title: 'Task Created',
-                        text: 'Your task has been created successfully!',
+                        text: 'Your task has been created successfully! Waiting to be approved.',
                         confirmButtonText: 'OK'
                     }).then((result) => {
                         if (result.isConfirmed) {
@@ -2157,7 +2157,7 @@ function removeFile(fileItem) {
                     Swal.fire({
                         icon: 'success',
                         title: 'Task Scheduled',
-                        text: 'Your task has been scheduled successfully!',
+                        text: 'Your task has been scheduled successfully! Waiting to be approved',
                         confirmButtonText: 'OK'
                     }).then((result) => {
                         if (result.isConfirmed) {
@@ -2206,7 +2206,7 @@ function removeFile(fileItem) {
                     Swal.fire({
                         icon: 'success',
                         title: 'Task Draft',
-                        text: 'Your task has been drafted successfully!',
+                        text: 'Your task has been drafted.',
                         confirmButtonText: 'OK'
                     }).then((result) => {
                         if (result.isConfirmed) {
