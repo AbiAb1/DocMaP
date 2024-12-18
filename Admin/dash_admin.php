@@ -30,7 +30,7 @@ if ($stmt_user = $conn->prepare($sql_user)) {
 
 
 // Fetch distinct School Years and Grades
-$schoolYears = $conn->query("SELECT DISTINCT Year_Range FROM schoolYear");
+$schoolYears = $conn->query("SELECT DISTINCT Year_Range FROM schoolyear");
 $grades = $conn->query("SELECT DISTINCT Grade_Level FROM grade");
 
 // Default filter values
