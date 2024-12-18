@@ -5,7 +5,20 @@ session_start();
 // Ensure that the dept_id is sent in the GET request
 if (isset($_GET['dept_id'])) {
     $dept_id = $_GET['dept_id'];
+    $user_dept_id = $_SESSION['user_dept_id']; // Get the dept_ID of the logged-in user
 
+    // Query to get department details for the logged-in user's department ID
+    $departmentsQuery = "SELECT dept_ID, dept_name 
+                         FROM department 
+                         WHERE dept_ID = ?"; // Use the logged-in user's dept_ID to filter departments
+    
+    $stmt_dept = $conn->prepare($departmentsQuery);
+    $stmt_dept->bind_param('i', $user_dept_id); // Bind the dept_ID from session to the query
+    $stmt_dept->execute();
+    $departmentsResult = $stmt_dept->get_result();
+    
+    $departments = [];
+    
     // Fetch department-level statistics for total submit and assigned counts
     // Total submitted or approved tasks
      $submittedQuery = "SELECT COUNT(UserID) AS totalSubmit 
