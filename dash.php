@@ -637,8 +637,8 @@ $conn->close();
                                                         <img src="img/icons/list.png">
                                                     </div>
                                                 </div>
-                                                <span class="count"><?php echo htmlspecialchars($contentCount); ?></span>
-                                                <h6 class="todo-text" style="color:#9b2035">Subjects</h6>
+                                                <span class="count" style="background-color:transparent;"><?php echo htmlspecialchars($contentCount); ?></span>
+                                                <h6 class="todo-text" style="color:#9b2035;">Subjects</h6>
                                             </div>
                                         </div>
                                     </div>
