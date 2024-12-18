@@ -1704,7 +1704,45 @@ function removeFile(fileItem) {
                 });
             });
 
-            
+            function handleBatchAction(action) {
+                const selectedTasks = Array.from(document.querySelectorAll('.task-checkbox:checked')).map(checkbox => checkbox.dataset.taskId);
+
+                if (selectedTasks.length === 0) {
+                    showNotification('No tasks selected.', 'error');
+                    return;
+                }
+
+                fetch('taskApproval.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        taskIDs: JSON.stringify(selectedTasks),
+                        action: action
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Show SweetAlert for success message
+                    Swal.fire({
+                        title: action === 'approve' ? 'Approved!' : 'Rejected!',
+                        text: `The selected task(s) have been successfully ${action}d.`,
+                        icon: data.status === 'success' ? 'success' : 'error',
+                        timer: 2000, // Show for 2 seconds
+                        showConfirmButton: false,
+                    });
+
+                    // Refresh tasks after the alert
+                    setTimeout(() => {
+                        fetchTasks(); // Refresh task list after action
+                    }, 2000); // Refresh after 2.5 seconds to allow alert to show
+                })
+                .catch(error => {
+                    console.error('Error during batch action:', error);
+                    showNotification('An error occurred while processing your request.', 'error');
+                });
+            }
         });
     </script>
 
