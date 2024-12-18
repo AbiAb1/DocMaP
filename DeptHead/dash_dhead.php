@@ -640,7 +640,9 @@ if (!$result) {
     width: 120px;                /* Set the width to make it more compact */
     height: 30px;                /* Adjust height */
 }
-
+body {
+  background-color: #f0f0f0; /* Light gray */
+}
     </style>
     
 </head>
