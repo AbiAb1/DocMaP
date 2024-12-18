@@ -136,9 +136,7 @@ if (isset($_POST['task_id'])) {
 
 
     <style>
-        body {
-  background-color: #F1F0F6; /* Light gray */
-}
+        
 body {
             font-family: Arial, sans-serif;
             background-color: ;
@@ -1108,7 +1106,7 @@ body {
         <!-- NAVBAR -->
 
         <!-- MAIN -->
-        <main>
+        <main style="background-color:#F1F0F6;">
             <div class="header">
                 <h1>Announcements</h1>
                 
