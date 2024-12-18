@@ -211,7 +211,7 @@ $conn->close();
     </style>
     <title>To-Do's</title>
 </head>
-<body style="background-color#ffff;">
+<body style="background-color#f0f0f0;">
     <!-- SIDEBAR -->
     <section id="sidebar">
         <?php include 'navbar.php'; ?>
