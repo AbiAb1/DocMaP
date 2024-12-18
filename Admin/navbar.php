@@ -1,11 +1,11 @@
-<div href="dash.php" class="brand" style="text-align:center; font-size:38px; margin-top: 15px;">
+<div href="dash.php" class="brand" style="text-align:center; font-size:38px; margin-top: 15px; background-color:#ffff;">
     <i class="icon">
         <img src="../img/Logo/docmap-logo-1.png" alt="Icon" style="max-width: 40px; height: auto;">
     </i>
     <img src="../img/Logo/docmap.png" alt="Logo" style="max-width: 150px; height: auto;">
 </div>
 
-<ul class="side-menu">
+<ul class="side-menu" style ="background-color:#ffff;">
 			<li style="color:#ffff; " ><a href="dash_admin.php" class="active"style="background-color:#9b2035;"><i class='bx bxs-dashboard icon' ></i> Dashboard</a></li>
 			<li class="divider" data-text="main">Main</li>
 			<li style="color:#ffff;"><a href="departments.php" class="active"style="background-color:#9b2035;"><i class='bx bxs-building icon' ></i>Departments</a></li>
