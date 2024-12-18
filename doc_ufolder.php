@@ -110,7 +110,7 @@ if ($result && $result->num_rows > 0) {
         }
     </style>
 </head>
-<body>
+<body style="background-color#f0f0f0;">
     <!-- SIDEBAR -->
     <section id="sidebar">
         <?php include 'navbar.php'; ?>
