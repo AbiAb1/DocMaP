@@ -36,7 +36,6 @@ if ($_POST['taskAction'] === 'Schedule') {
 $uploadOk = 1;
 $target_dir = realpath(__DIR__ . '/Attachments') . '/'; // Absolute path to the directory
 $allFilesUploaded = true;
-echo $target_dir;
 
 if (!is_dir($target_dir)) {
     mkdir($target_dir, 0777, true); // Create directory if not exists
