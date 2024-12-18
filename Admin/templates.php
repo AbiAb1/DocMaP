@@ -118,7 +118,7 @@ $rowCount = mysqli_num_rows($result); // Get the number of rows returned
         
     </style>
 </head>
-<body>
+<body style ="background-color:#f0f0f0;">
     <section id="sidebar">
         <?php include 'navbar.php'; ?>
     </section>
