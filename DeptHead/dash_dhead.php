@@ -641,7 +641,7 @@ if (!$result) {
     height: 30px;                /* Adjust height */
 }
 body {
-  background-color: #212529; /* Light gray */
+  background-color: #F1F0F6; /* Light gray */
 }
     </style>
     
