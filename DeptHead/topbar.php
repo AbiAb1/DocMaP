@@ -128,8 +128,9 @@
 </nav>
 
 <style>
-    /* ... Your existing styles ... */
-
+ body {
+  background-color: #F1F0F6; /* Light gray */
+}
     .profile {
         display: flex;
         align-items: center;

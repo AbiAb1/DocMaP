@@ -1159,7 +1159,7 @@ if (!$stmt_auto_reject->execute()) {
     <!-- SIDEBAR -->
 
     <!-- CONTENT -->
-    <section id="content" style ="background-color:#ffff;">
+    <section id="content">
         <!-- NAVBAR -->
         <?php include 'topbar.php'; ?>
         <!-- NAVBAR -->
