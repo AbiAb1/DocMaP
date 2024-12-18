@@ -29,7 +29,7 @@ if ($result->num_rows > 0) {
 $schoolYearsQuery = "
     SELECT DISTINCT sy.School_Year_ID, sy.Year_Range
     FROM schoolyear sy
-    JOIN ierformance_indicator pi ON sy.School_Year_ID = pi.School_Year_ID
+    JOIN performance_indicator pi ON sy.School_Year_ID = pi.School_Year_ID
     ORDER BY sy.Year_Range DESC";
 $schoolYearsResult = $conn->query($schoolYearsQuery);
 $schoolYears = [];
