@@ -434,7 +434,7 @@ mysqli_close($conn);
 
     </style>
 </head>
-<body style ="background-color:F1F0F6;">
+<body style ="background-color:#F1F0F6;">
     <!-- SIDEBAR -->
     <section id="sidebar">
         <?php include 'navbar.php'; ?>
