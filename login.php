@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } elseif ($role === 'Admin') {
                 header("Location: Admin/dash_admin.php"); // Redirect to admin's dashboard
             } elseif ($role === 'Department Head') {
-                $_SESSION['user_dept_id'] = $deptID; // Store the department ID for Department Head
+                $_SESSION['dept_ID'] = $deptID; // Store dept_ID in session
                 header("Location: DeptHead/dash_dhead.php"); // Redirect to department head's dashboard
             }
             exit();
