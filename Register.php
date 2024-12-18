@@ -316,7 +316,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Check if the file exists locally
     if (!file_exists($localFile)) {
-        die("Error: The file LNHS-Teachers.xlsx does not exist.");
+        die("Error: The file LNHS-Teachers.xlsx does not exist locally.");
     }
 
     // Load the Excel file
@@ -400,3 +400,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conn->close();
 }
 ?>
+
