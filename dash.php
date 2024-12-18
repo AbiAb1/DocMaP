@@ -558,7 +558,7 @@ $conn->close();
     <!-- SIDEBAR -->
 
     <!-- NAVBAR -->
-    <section id="content">
+    <section id="content" style ="color:#ffff;">
         <!-- NAVBAR -->
         <?php include 'topbar.php'; ?>
         <!-- NAVBAR -->
