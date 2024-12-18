@@ -579,18 +579,18 @@ mysqli_close($conn);
                          <?php
 if (!empty($attachments)) {
     echo '<div class="Attachment-container row">';
-    foreach ($documents as $document) {
+    foreach ($attachments as $attachment) {
         // Remove leading numbers and underscore
-        $displayName = preg_replace('/^\d+_/', '', $attachments['name']);
+        $displayName = preg_replace('/^\d+_/', '', $attachment['name']);
         // Local file path (replace with your actual path if stored locally)
-        $filePath = "Attachments/" . $attachments['name'];
+        $filePath = "Attachments/" . $attachment['name'];
 
         // Check if the file exists locally
         if (file_exists($filePath)) {
             $fileUrl = $filePath; // Serve from the local server
         } else {
             // GitHub raw URL fallback
-            $fileUrl = "https://raw.githubusercontent.com/AbiAb1/DocMaP2/extra/Attachments/" . urlencode($attachments['name']);
+            $fileUrl = "https://raw.githubusercontent.com/AbiAb1/DocMaP2/extra/Attachments/" . urlencode($attachment['name']);
         }
 
         echo '<div class="col-md-3">';
