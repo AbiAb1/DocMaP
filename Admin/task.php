@@ -108,7 +108,8 @@ $result = $conn->query($query);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Task</title>
+    <title>Task</title>
+    <link rel="icon" type="image/png" href="../img/Logo/docmap-logo-1.png">
     <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
     <link href="https://unpkg.com/ionicons@5.5.2/dist/ionicons.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/styles.css">
@@ -116,16 +117,11 @@ $result = $conn->query($query);
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: ;
-            overflow: hidden;
-        }
-
         .container {
-            max-width: 1200px;
+            
             margin: 0 auto;
             padding: 20px;
         }
@@ -138,25 +134,22 @@ $result = $conn->query($query);
             position: sticky;
         }
 
-        .header h1 {
-            color: #333;
-            margin: 0;
-            font-size: 1.5rem;
-        }
-
+        
         .buttonTask {
-            background-color: #28a745;
+            background-color: #9b2035;
             color: white;
+            padding: 10px 20px;
             border: none;
+            border-radius: 25px; /* Adjust for desired roundness */
             cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-            font-size: 1rem;
-            padding: 10px;
+            transition: background-color 0.3s; /* Add a smooth transition effect */
+            float: right;
+           font-size:18px;
+            font-weight:bold;
         }
 
         .buttonTask:hover {
-            background-color: #218838;
+            background-color: #7a182a;
         }
 
         .form-section {
@@ -491,7 +484,7 @@ $result = $conn->query($query);
        
         .button-group {
             display: flex; /* Align buttons in a row */
-
+            
             float:right;
             margin-bottom: 10px;
             
@@ -910,15 +903,72 @@ $result = $conn->query($query);
         .editor-container {
             width: 500px; /* Set custom width */
             margin: 0 auto; /* Center align */
+            
         }
         /* CKEditor content area */
         .ck-editor__editable {
-            min-height: 200px; /* Set desired height */
+            min-height: 250px; /* Set desired height */
+            overflow-y: auto; 
         }
         /* Hidden textarea */
         #instructions {
             display: none;
         }
+        .attachment {
+            border: 2px dashed #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            display: inline-block;
+            width: fit-content;
+            position: relative; /* To position the remove button */
+            min-width:100%;
+            max-height:100%;
+        }
+
+        .file-container {
+            display: flex;
+            flex-wrap: wrap; /* Allows items to wrap onto new lines */
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+       .file-item {
+            flex: 1 1 calc(25% - 10px); /* Divide space equally for up to 4 columns */
+            max-width: calc(25% - 10px);
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            padding: 5px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative; /* To position the remove button */
+            
+
+        }
+
+        .file-name {
+            flex-grow: 1;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .remove-file {
+            background-color: #ff4d4d;
+            border: none;
+            color: white;
+            padding: 0 5px;
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            right: 5px;
+            transform: translateY(-50%);
+            border-radius: 3px;
+            font-size: 14px;
+            line-height: 1;
+        }
+
+
         /*------------------Approval Task------------------*/
         button {
             padding: 5px 10px;
@@ -951,22 +1001,28 @@ $result = $conn->query($query);
        /* Style for Approve and Reject buttons */
         #approveSelected {
             background-color: #28a745; /* Green */
+             color: white;
+            padding: 10px 20px;
             border: none;
-            color: white;
+            border-radius: 25px; /* Adjust for desired roundness */
             cursor: pointer;
-            border-radius: 5px;
-            font-size: 1rem;
-            padding: 10px;
+            transition: background-color 0.3s; /* Add a smooth transition effect */
+            font-size:18px;
+            font-weight:bold;
+
         }          
 
         #rejectSelected {
             background-color: #dc3545; /* Red */
+             color: white;
+            padding: 10px 20px;
             border: none;
-            color: white;
+            border-radius: 25px; /* Adjust for desired roundness */
             cursor: pointer;
-            border-radius: 5px;
-            font-size: 1rem;
-            padding: 10px;
+            transition: background-color 0.3s; /* Add a smooth transition effect */
+           font-size:18px;
+            font-weight:bold;
+
         }
 
         /* Style when hovering over the buttons */
@@ -1010,7 +1066,28 @@ $result = $conn->query($query);
         .hidden {
             display: none;
         }
+         .tag {
+        display: inline-block;
+        background-color:  #f0ad4e; /* Light gray background */
+        color: #333; /* Dark text */
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 16px;
+        font-weight: bold;
+        text-align: center;
+        color:#fff;
+    }
+    .info-message {
+ 
+    margin-top: 5px; /* Space between title and message */
+   
+}
 
+.info-message p {
+    font-size: 16px; /* Font size for the message */
+    color: #555; /* Color for the message text */
+    margin: 0; /* Remove default margin */
+}
 
     </style>
 </head>
@@ -1052,52 +1129,59 @@ $result = $conn->query($query);
                         </div>
                         <button type="button" class="buttonTask" onclick="openModal()">Create Task</button>                     
                     </div>
-                    <table>
+                   <table class="table table-bordered table-hover table-responsive">
                         <thead>
                             <tr>
-                                <th>Title</th>
-                                <th>Content</th>
-                                <th>Department</th>
-                                <th>Grade</th>
-                                <th>Due Date</th>
-                                <th>Due Time</th> 
-                                <th>Status</th> 
-                                <th>Actions</th>
+                                <th scope="col">Title</th>
+                                <th scope="col">Content</th>
+                                <th scope="col">Department</th>
+                                <th scope="col">Grade/Section</th>
+                                <th scope="col">Due Date</th>
+                                <th scope="col">Due Time</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="taskTableBody">
-                        <?php foreach ($tasks as $task): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($task['TaskTitle']); ?></td>
-                                <td><p><?php echo $task['taskContent']; // Direct output to render HTML content ?></p></td>
-                                <td><?php echo htmlspecialchars($task['dept_name']); ?></td>
-                                <td><?php echo htmlspecialchars($task['ContentTitle'] . ' - ' . $task['Captions']); ?></td>
-                                <td><?php echo htmlspecialchars(date('M d, Y', strtotime($task['DueDate']))); ?></td>
-                                <td><?php echo htmlspecialchars(date('h:i A', strtotime($task['DueTime']))); ?></td>
-                                <td style="font-weight:bold; color: <?php echo $task['Status'] == 'Assign' ? 'green' : ($task['Status'] == 'Schedule' ? 'blue' : 'grey'); ?>;">
-                                    <?php echo htmlspecialchars($task['Status']); ?>
-                                </td>
+                            <?php if (empty($tasks)): ?>
+                                <tr>
+                                    <td colspan="8" class="text-center py-3">No tasks available</td>
+                                </tr>
+                            <?php else: ?>
+                                <?php foreach ($tasks as $task): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($task['TaskTitle']); ?></td>
+                                        <td><p><?php echo $task['taskContent']; // Direct output to render HTML content ?></p></td>
+                                        <td><?php echo htmlspecialchars($task['dept_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($task['ContentTitle'] . ' - ' . $task['Captions']); ?></td>
+                                        <td><?php echo htmlspecialchars(date('M d, Y', strtotime($task['DueDate']))); ?></td>
+                                        <td><?php echo htmlspecialchars(date('h:i A', strtotime($task['DueTime']))); ?></td>
+                                        <td style="font-weight:bold; color: <?php echo $task['Status'] == 'Assign' ? 'green' : ($task['Status'] == 'Schedule' ? 'blue' : 'grey'); ?>;">
+                                            <?php echo htmlspecialchars($task['Status']); ?>
+                                        </td>
 
-                                <td>
-                                    <div class="button-group">
-                                        <button class="buttonEdit" 
-                                            onclick="editTask(
-                                                '<?php echo $task['TaskID']; ?>', 
-                                                '<?php echo htmlspecialchars(addslashes($task['TaskTitle']), ENT_QUOTES); ?>', 
-                                                '<?php echo addslashes($task['taskContent']);  ?>', 
-                                                '<?php echo htmlspecialchars(addslashes($task['dept_name']), ENT_QUOTES); ?>',
-                                                '<?php echo htmlspecialchars(addslashes($task['ContentTitle'] . ' - ' . $task['Captions']), ENT_QUOTES); ?>',
-                                                '<?php echo $task['DueDate']; ?>',
-                                                '<?php echo $task['DueTime']; ?>' 
-                                            )" ><i class="fas fa-edit"></i></button>
-                                        <button class="buttonDelete" onclick="deleteTask('<?php echo $task['TaskID']; ?>')"><i class="fas fa-trash-alt"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <?php endforeach; ?>
+                                        <td>
+                                            <div class="button-group">
+                                                <button class="buttonEdit" 
+                                                    onclick="editTask(
+                                                        '<?php echo $task['TaskID']; ?>', 
+                                                        '<?php echo htmlspecialchars(addslashes($task['TaskTitle']), ENT_QUOTES); ?>', 
+                                                        '<?php echo addslashes($task['taskContent']);  ?>', 
+                                                        '<?php echo htmlspecialchars(addslashes($task['dept_name']), ENT_QUOTES); ?>',
+                                                        '<?php echo htmlspecialchars(addslashes($task['ContentTitle'] . ' - ' . $task['Captions']), ENT_QUOTES); ?>',
+                                                        '<?php echo $task['DueDate']; ?>',
+                                                        '<?php echo $task['DueTime']; ?>' 
+                                                    )" ><i class="fas fa-edit"></i></button>
+                                                <button class="buttonDelete" onclick="deleteTask('<?php echo $task['TaskID']; ?>')"><i class="fas fa-trash-alt"></i></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </tbody>
                     </table>
+
+
                 </div>
             
 
@@ -1138,24 +1222,39 @@ $result = $conn->query($query);
 
 
             </div>
-            <div id="pendingTab" class="tab-content <?php echo $activeTab === 'pending' ? '' : 'hidden'; ?>">
+             <div id="pendingTab" class="tab-content <?php echo $activeTab === 'pending' ? '' : 'hidden'; ?>">
                 <div class="header">
                     <h1 class ="title">Pending Task</h1>
                 </div>
+                
                 <div class="container">
-                    <div class="action-buttons">
-                        <button id="approveSelected">Approve</button>
-                        <button id="rejectSelected">Reject</button>
+                    
+                    <div class="action-buttons" style="display: flex; align-items: center; justify-content: space-between; gap: 20px;">
+                        <!-- Information Icon and Message -->
+                        <div class="info-message" style="display: flex; align-items: center;">
+                            <i class='bx bx-info-circle' style="font-size: 24px; margin-right: 10px; color:#9B2035;"></i>
+                            <p style="font-size: 14px; color: #555; margin: 0;">
+                                Task that have a yellow tag are Scheduled tasks, it's prioritized.
+                            </p>
+                        </div>
+                        <div class="buttons-group" style="display: flex; gap: 10px;">
+                            <button id="approveSelected">Approve</button>
+                            <button id="rejectSelected">Reject</button>
+                        </div>
+                        
                     </div>
+
+                    
                     <table id="taskTable">
                         <thead>
                             <tr>
-                                <th></th>
+                                <th><input type="checkbox" id="selectAll"></th>
                                 <th>Title</th>
                                 <th>Content</th>
                                 <th>Type</th>
                                 <th>User</th>
                                 <th>Due Date</th>
+                                <th>Due Time</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1212,14 +1311,10 @@ $result = $conn->query($query);
                                         </div>
                                     </div>
 
-                                    <!-- Attachment -->
-                                    <div class="form-section">
-                                        <label for="file">Attach Files:</label>
-                                        <div class="form-group">
-                                            <input type="file" id="file" name="file[]" multiple>
-                                        </div>
-                                    </div>
+
+                                    
                                 </div>
+                                
                                 <div class="form-right">
                                     <!-- Department with checkboxes -->
                                     <div class="form-section">
@@ -1272,7 +1367,17 @@ $result = $conn->query($query);
                                         </div>
                                     </div>
                                 </div>
+                                
                             </div>
+                            <!-- Attachment -->
+                            <label for="file">Attachment: <span style ="font-size:12px; color: grey;">(optional)</span></label>
+                            <div class="form-section attachment">
+                                <div class="form-group ">
+                                    <input type="file" id="file" name="file[]" multiple onchange="displaySelectedFiles(event)"style="background-color:transparent;">                                   
+                                </div>
+                                <div id="fileContainer" class="file-container row" ></div>
+                            </div>
+
 
                             <!-- Hidden input to track the action -->
                             <input type="hidden" id="taskAction" name="taskAction" value="assign">
@@ -1419,6 +1524,53 @@ $result = $conn->query($query);
         <!-- MAIN -->
     </section>
     <!-- CONTENT -->
+     <script>
+ function displaySelectedFiles(event) {
+    const fileContainer = document.getElementById('fileContainer');
+    fileContainer.innerHTML = ''; // Clear existing file containers
+
+    for (const file of event.target.files) {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'file-item col-md-3'; // Bootstrap column class
+
+        const fileName = document.createElement('span');
+        fileName.className = 'file-name';
+        fileName.textContent = file.name;
+
+        const removeButton = document.createElement('button');
+        removeButton.className = 'remove-file btn btn-danger btn-sm';
+        removeButton.textContent = 'x';
+        removeButton.onclick = () => removeFile(fileItem);
+
+        fileItem.appendChild(fileName);
+        fileItem.appendChild(removeButton);
+
+        fileContainer.appendChild(fileItem);
+    }
+}
+
+function removeFile(fileItem) {
+    const fileInput = document.getElementById('file');
+    const files = Array.from(fileInput.files);
+    const fileName = fileItem.querySelector('.file-name').textContent;
+
+    // Find index of the file to be removed
+    const index = files.findIndex(file => file.name === fileName);
+    if (index > -1) {
+        // Remove the file from the FileList
+        const dt = new DataTransfer();
+        files.splice(index, 1);
+        files.forEach(file => dt.items.add(file));
+        fileInput.files = dt.files;
+
+        // Remove the file item from the DOM
+        fileItem.remove();
+    }
+}
+
+
+
+     </script>
     <script>
   document.addEventListener('DOMContentLoaded', function () {
     // Get the current date in the required format
@@ -1459,8 +1611,17 @@ $result = $conn->query($query);
             window.location.search = urlParams.toString();
         }
     </script>
-    <script>
+   <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const selectAllCheckbox = document.getElementById('selectAll');
+
+            selectAllCheckbox.addEventListener('change', () => {
+                const taskCheckboxes = document.querySelectorAll('.task-checkbox');
+                taskCheckboxes.forEach(checkbox => {
+                    checkbox.checked = selectAllCheckbox.checked;
+                });
+            });
+
             fetchTasks();
 
             function fetchTasks() {
@@ -1477,15 +1638,35 @@ $result = $conn->query($query);
                         } else {
                             tasks.forEach(task => {
                                 const row = document.createElement('tr');
+
+                                // Add an icon or tag for scheduled tasks
+                                const scheduleTag = task.Status === 'Schedule' ? `<span class="tag"><i class='bx bxs-stopwatch bx-tada bx-rotate-90' ></i></span>` : '';
+
                                 row.innerHTML = `
                                     <td><input type="checkbox" class="task-checkbox" data-task-id="${task.TaskID}"></td>
-                                    <td>${task.Title}</td>
+                                    <td>${scheduleTag} ${task.Title}</td>
                                     <td>${task.taskContent}</td>
                                     <td>${task.Type}</td>
                                     <td>${task.fname} ${task.lname}</td>
                                     <td>${task.DueDate}</td>
+                                    <td>${task.DueTime}</td>
                                 `;
+
                                 taskTableBody.appendChild(row);
+                            });
+
+                            // Re-bind "select all" functionality to new rows
+                            const taskCheckboxes = document.querySelectorAll('.task-checkbox');
+                            taskCheckboxes.forEach(checkbox => {
+                                checkbox.addEventListener('change', () => {
+                                    if (!checkbox.checked) {
+                                        selectAllCheckbox.checked = false;
+                                    } else if (
+                                        Array.from(taskCheckboxes).every(cb => cb.checked)
+                                    ) {
+                                        selectAllCheckbox.checked = true;
+                                    }
+                                });
                             });
                         }
                     })
@@ -1564,6 +1745,7 @@ $result = $conn->query($query);
             }
         });
     </script>
+
     <script>
         ClassicEditor
             .create(document.querySelector('#editor'), {
@@ -2269,44 +2451,32 @@ $result = $conn->query($query);
                 text: "You won't be able to revert this!",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
                 confirmButtonText: 'Yes, delete it!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Perform AJAX request to delete task
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('POST', '', true);
-                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                    xhr.onload = function() {
-                        if (xhr.status === 200) {
-                            var response = JSON.parse(xhr.responseText);
-                            if (response.success) {
-                                Swal.fire(
-                                    'Deleted!',
-                                    'Your task has been deleted.',
-                                    'success'
-                                ).then(() => {
-                                    location.reload(); // Reload page to reflect changes
-                                });
-                            } else {
-                                Swal.fire(
-                                    'Error!',
-                                    response.message,
-                                    'error'
-                                );
-                            }
+                    fetch('delete_task.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ task_id: taskId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire('Deleted!', 'Your task has been deleted.', 'success');
+                            // Reload or update the task table
+                            document.querySelector(`button[onclick="deleteTask('${taskId}')"]`).closest('tr').remove();
                         } else {
-                            Swal.fire(
-                                'Error!',
-                                'An error occurred while deleting the task.',
-                                'error'
-                            );
+                            Swal.fire('Error!', data.message || 'Failed to delete the task.', 'error');
                         }
-                    };
-                    xhr.send('task_id=' + encodeURIComponent(taskId));
+                    })
+                    .catch(error => {
+                        Swal.fire('Error!', 'Something went wrong. Please try again later.', 'error');
+                        console.error(error);
+                    });
                 }
-            })
+            });
         }
 
         // JavaScript for search functionality
@@ -2384,17 +2554,26 @@ $result = $conn->query($query);
         document.getElementById(dropdownId).classList.toggle("show");
     }
 
-    function setTitle(title) {
+    
+    function setTitle(title, taskID) {
         document.getElementById('title').value = title;
+        // Store the TaskID in a hidden input if needed
+        var taskIDInput = document.createElement('input');
+        taskIDInput.type = 'hidden';
+        taskIDInput.name = 'taskID';
+        taskIDInput.value = taskID;
+        document.getElementById('titleDropdown').appendChild(taskIDInput);
+
         // Close the dropdown after setting the title
         var dropdowns = document.getElementsByClassName("title-dropdown-menu");
         for (var i = 0; i < dropdowns.length; i++) {
             var openDropdown = dropdowns[i];
             if (openDropdown.classList.contains('show')) {
-            openDropdown.classList.remove('show');
+                openDropdown.classList.remove('show');
             }
         }
     }
+
 
     window.onclick = function(event) {
         if (!event.target.closest('.title-dropdown-container')) {
