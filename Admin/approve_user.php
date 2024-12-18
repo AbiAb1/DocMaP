@@ -5,8 +5,6 @@ require '../vendor/autoload.php';  // Path to Composer autoload file
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-
-
 header('Content-Type: application/json');
 
 $response = array('status' => 'error');
