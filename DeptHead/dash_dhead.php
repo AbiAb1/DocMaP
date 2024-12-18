@@ -1012,49 +1012,59 @@ $(document).ready(function() {
 $(document).ready(function() {
     // Fetch initial department data
     $.ajax({
-        url: 'fetch_tasks.php',  // Points to your PHP script
-        type: 'GET',
-        dataType: 'json',        // Expecting a JSON response
-        success: function(data) {
-            if (data.error) {
-                alert(data.error);
-            } else {
-                var tbody = $('#department-table-body');
-                tbody.empty(); // Clear existing rows
+    url: 'fetch_tasks.php',  // PHP endpoint
+    type: 'GET',
+    dataType: 'json',        // Expect JSON response
+    success: function(data) {
+        console.log(data); // Debug the response
 
-                // Loop through departments and create rows dynamically
-                data.forEach(function(department) {
-                    var row = '<tr>';
-                    row += '<td>' + department.dept_name + '</td>';
-                    row += `
-                        <td class="expand-row" data-department-id="${department.dept_ID}">
-                             ${department.totalSubmit}/${department.totalAssigned}<br> <!-- Line break -->
-                            <span class="expand-text"> (Click to breakdown)</span>
-                            <span id="toggle-arrow-${department.dept_ID}" class="toggle-arrow" >
-                                <i class="fas fa-chevron-down"></i> <!-- Down arrow icon -->
-                            </span>
-                        </td>
-                    `;
-                    row += '</tr>';
+        // Ensure data is valid and is an array
+        if (Array.isArray(data)) {
+            var tbody = $('#department-table-body');
+            tbody.empty(); // Clear existing rows
 
-                    // Add an empty row for task breakdown (hidden initially)
-                    row += '<tr class="task-details-row" id="details-row-' + department.dept_ID + '" style="display: none;">' +
-                        '<td colspan="3">' +
-                        '<table class="table table-bordered">' +
-                        '<thead>' +
-                        '<tr>' +
-                        '<th style="font-size: 12px;">Task Title</th>' +
-                        '<th style="font-size: 12px;">Task Progress</th>' +
-                        '</tr>' +
-                        '</thead>' +
-                        '<tbody id="tasks-for-department-' + department.dept_ID + '">' +
-                        '</tbody>' +
-                        '</table>' +
-                        '</td>' +
-                        '</tr>';
+            data.forEach(function(department) {
+                var row = '<tr>';
+                row += '<td>' + department.dept_name + '</td>';
+                row += `
+                    <td class="expand-row" data-department-id="${department.dept_ID}">
+                         ${department.totalSubmit}/${department.totalAssigned}<br>
+                        <span class="expand-text"> (Click to breakdown)</span>
+                        <span id="toggle-arrow-${department.dept_ID}" class="toggle-arrow" >
+                            <i class="fas fa-chevron-down"></i>
+                        </span>
+                    </td>
+                `;
+                row += '</tr>';
 
-                    tbody.append(row); // Append the new row
-                });
+                // Add an empty row for task breakdown (hidden initially)
+                row += '<tr class="task-details-row" id="details-row-' + department.dept_ID + '" style="display: none;">' +
+                    '<td colspan="3">' +
+                    '<table class="table table-bordered">' +
+                    '<thead>' +
+                    '<tr>' +
+                    '<th style="font-size: 12px;">Task Title</th>' +
+                    '<th style="font-size: 12px;">Task Progress</th>' +
+                    '</tr>' +
+                    '</thead>' +
+                    '<tbody id="tasks-for-department-' + department.dept_ID + '">' +
+                    '</tbody>' +
+                    '</table>' +
+                    '</td>' +
+                    '</tr>';
+
+                tbody.append(row); // Append the new row
+            });
+        } else {
+            alert("Unexpected response format!");
+        }
+    },
+    error: function(xhr, status, error) {
+        console.error("AJAX error:", status, error);
+        alert("Failed to fetch data from the server.");
+    }
+});
+
 
                 // Use event delegation for dynamically added "expand-row"
                 $(document).on('click', '.expand-row', function() {
