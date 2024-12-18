@@ -666,118 +666,80 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
             });
         });
     </script>
-   <script>
-    $(document).ready(function () {
-        $.ajax({
-            url: "fetchTopTeachers.php", // Backend script to fetch data
-            method: "GET",
-            dataType: "json",
-            success: function (response) {
-                const container = $("#userList");
-                container.empty();
+  <script>
+        $(document).ready(function() {
+            $.ajax({
+                url: 'fetch_tasks.php',
+                method: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    console.log(response); // Check the response structure
+                    let tableBody = '';
+                    
+                    $.each(response, function(index, dept) {
+                        let tasks = dept.totalSubmit + " / " + dept.totalAssigned;
 
-                let rank = 1;
-
-                response.forEach(user => {
-                    const chartId = `chart-${rank}`; // Unique ID for each chart
-
-                    // Determine the rank style
-                    let rankStyle;
-                    if (rank === 1) {
-                        rankStyle = '<i class="fas fa-star" style="color: gold; font-size: 40px;" ></i>';
-                    } else if (rank === 2) {
-                        rankStyle = '<i class="fas fa-star" style="color: silver; font-size: 30px;"></i>';
-                    } else if (rank === 3) {
-                        rankStyle = '<i class="fas fa-star" style="color: #cd7f32; font-size: 42px;"></i>';
-                    } else {
-                        rankStyle = rank;
-                    }
-
-                    // User container with doughnut chart
-                    const userContainer = `
-                        <div class="user-container">
-                            <!-- Leftmost: Rank -->
-                            <div style="flex: 1; text-align: center; font-weight: bold; font-size: 18px;">
-                                ${rankStyle}
+                        let userRows = dept.users.map(user => `
+                            <div class="user-row">
+                                <img src="../img/UserProfile/${user.profile}" alt="${user.fullname}" class="profile-image" />
+                                ${user.fullname}
                             </div>
-                            
-                            <!-- Middle: Profile and Full Name -->
-                            <div style="flex: 6; display: flex; align-items: center;">
-                                <img src="../img/UserProfile/${user.profile}" alt="Profile Picture" 
-                                    style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%; margin-right: 15px;">
-                                <div>
-                                    <h5 style="margin: 0;">${user.full_name}</h5>
-                                </div>
-                            </div>
-                            
-                            <!-- Rightmost: Doughnut Chart -->
-                            <div class="doughnut-container">
-                                <canvas id="${chartId}"></canvas>
-                            </div>
-                        </div>
-                    `;
+                        `).join('');
 
-                    container.append(userContainer);
-
-                    // Create the doughnut chart
-                    const ctx = document.getElementById(chartId).getContext("2d");
-                    new Chart(ctx, {
-                        type: "doughnut",
-                        data: {
-                            labels: ["Precision", "Remaining"],
-                            datasets: [{
-                                data: [user.precision, 100 - user.precision],
-                                backgroundColor: ["#4CAF50", "#E0E0E0"],
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            responsive: false, // Disable responsiveness for fixed size
-                            maintainAspectRatio: false, // Disable aspect ratio to control size
-                            cutout: "75%", // Adjust inner hole size
-                            plugins: {
-                                tooltip: { enabled: false },
-                                legend: { display: false }
-                            }
-                        },
-                        plugins: [createCenterTextPlugin(user.precision)]
+                        tableBody += `
+                            <tr>
+                                <td>${dept.dept_name}</td>
+                                <td>${userRows}</td>
+                                <td>${tasks}</td>
+                                <td>
+                                    <div class="chart-container">
+                                        <canvas id="trendChart${index}" width="40" height="40"></canvas>
+                                    </div>
+                                </td>
+                            </tr>`;
                     });
 
-                    rank++;
-                });
-            },
-            error: function (xhr, status, error) {
-                console.error("Error fetching data:", error);
-            }
+                    $('#department-table-body').html(tableBody);
+
+                    // Initialize charts after the table body is populated
+                    $.each(response, function(index, dept) {
+                        let ctx = document.getElementById(`trendChart${index}`).getContext('2d');
+                        new Chart(ctx, {
+                            type: 'pie',
+                            data: {
+                                labels: ['Submitted', 'Assigned'],
+                                datasets: [{
+                                    data: [dept.totalSubmit, dept.totalAssigned],
+                                    backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)'],
+                                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        display: false // Hide the legend
+                                    },
+                                    tooltip: {
+                                        enabled: false // Disable tooltip if desired
+                                    }
+                                },
+                                elements: {
+                                    arc: {
+                                        borderWidth: 1 // Adjust border width if needed
+                                    }
+                                }
+                            }
+                        });
+                    });
+                },
+                error: function(error) {
+                    console.log("Error fetching data", error);
+                }
+            });
         });
-    });
-
-    // Plugin to add percentage in the middle of the doughnut
-    function createCenterTextPlugin(precision) {
-        return {
-            id: "centerText",
-            beforeDraw(chart) {
-                const { width } = chart;
-                const { height } = chart;
-                const ctx = chart.ctx;
-
-                ctx.restore();
-                const fontSize = (height / 5).toFixed(2); // Dynamic font size based on height
-                ctx.font = `${fontSize}px Arial`;
-                ctx.textBaseline = "middle";
-
-                const text = `${precision}%`;
-                const textX = Math.round((width - ctx.measureText(text).width) / 2);
-                const textY = height / 2;
-
-                ctx.fillStyle = "#333"; // Text color
-                ctx.fillText(text, textX, textY);
-                ctx.save();
-            }
-        };
-    }
-</script>
-
+    </script>
 
     <script>
         $(document).ready(function () {
@@ -890,6 +852,8 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
             };
         }
     </script>
+
+
 
 
    <script>
