@@ -47,7 +47,7 @@ if (isset($_POST['task_id']) && isset($_POST['content_id'])) {
             }
 
             // Upload file to GitHub
-            $githubRepo = "AbiAb1/DocMaP2"; // Your GitHub username/repo
+            $githubRepo = "AbiAb1/DocMaP"; // Your GitHub username/repo
             $branch = "extra"; // Branch where you want to upload
             $uploadUrl = "https://api.github.com/repos/$githubRepo/contents/Documents/$fileName";
 
