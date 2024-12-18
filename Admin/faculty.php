@@ -482,10 +482,6 @@ $conn->close();
             margin-left: auto;
             margin-right: auto;
         }
-
-
-
-
     </style>
 </head>
 <body>
@@ -505,7 +501,7 @@ $conn->close();
         <main>
             <h1 class="faculty-list-title">Faculty Members</h1>
             <div class="faculty-list-container">
-                
+
                 <!-- Action Buttons -->
                 <div class="faculty-actions">
                     <div class="action-buttons">
@@ -516,12 +512,7 @@ $conn->close();
                             <i class="fas fa-trash-alt"></i> Resign
                         </button>
                     </div>
-                    <input
-                        type="text"
-                        id="searchInput"
-                        class="search-input"
-                        placeholder="Search Faculty..."
-                    />
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search Faculty..."/>
                 </div>
 
                 <!-- Faculty Table -->
@@ -537,8 +528,7 @@ $conn->close();
                         </tr>
                     </thead>
                     <tbody>
-                        
-                    </tbody>
+                        </tbody>
                 </table>
                 <!-- Pagination controls -->
                 <div class="pagination-container">
@@ -552,26 +542,25 @@ $conn->close();
             <!------------------------------------ Chairperson Container ------------------------------->
             <div class="chairperson-container">
                 <h2>Chairpersons</h2>
-                
+
                 <!-- Buttons for Deletion and Assign -->
                 <div class="button-container">
                     <button id="assignChairpersonBtn" class="btn-Assign">Assign Chairperson</button>
                     <button id="deleteChairpersonBtn" class="btn-delete">Delete Chairperson</button>
                 </div>
-                
+
                 <table class="chairperson-table">
                     <thead>
                         <tr>
                             <th><input type="checkbox" id="selectAll-chairperson"></th>
                             <th>Full Name</th>
                             <th>Grade Level</th>
-                        </tr>   
+                        </tr>
                     </thead>
                     <tbody>
                         <?php if (!empty($chairpersonData)) : ?>
                             <?php foreach ($chairpersonData as $chairperson) : ?>
                                 <tr>
-                                    <!-- Checkbox for selecting chairpersons -->
                                     <td><input type="checkbox" name="chairpersonID[]" value="<?= $chairperson['Chairperson_ID']; ?>"></td>
                                     <td><?= htmlspecialchars($chairperson['FullName']); ?></td>
                                     <td><?= htmlspecialchars($chairperson['Grade_Level']); ?></td>
@@ -736,7 +725,7 @@ $conn->close();
                 }
             });
 
-            // Function to get selected user data
+            // Function to get selected user data (remains the same)
             function getSelectedUsers() {
                 const selectedCheckboxes = document.querySelectorAll('.select-user:checked');
                 return Array.from(selectedCheckboxes).map(checkbox => ({
@@ -748,6 +737,7 @@ $conn->close();
                     email: checkbox.getAttribute('data-email'),
                 }));
             }
+
             // Function to send updated users to the server
             function updateUsersOnServer(updatedUsers) {
                 // Filter out unchanged users
@@ -904,6 +894,37 @@ $conn->close();
                 }
             });
 
+            // Initial load of faculty members for the first page
+            loadFacultyMembers(1); 
+
+            // Filter faculty members by search input (remains the same)
+            document.getElementById('searchInput').addEventListener('input', function() {
+                const filter = this.value.toLowerCase();
+                const rows = document.querySelectorAll('.faculty-table tbody tr');
+
+                rows.forEach(row => {
+                    const fullName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                    const position = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+                    const address = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
+                    const mobile = row.querySelector('td:nth-child(5)').textContent.toLowerCase();
+                    const email = row.querySelector('td:nth-child(6)').textContent.toLowerCase();
+
+                    // Check if the row matches the search term in any column
+                    if (
+                        fullName.includes(filter) ||
+                        position.includes(filter) ||
+                        address.includes(filter) ||
+                        mobile.includes(filter) ||
+                        email.includes(filter)
+                    ) {
+                        row.style.display = ''; // Show row
+                    } else {
+                        row.style.display = 'none'; // Hide row
+                    }
+                });
+            });
+
+
             // Function to delete selected users from the server
             function deleteUsersFromServer(selectedUsers) {
                 const userIDs = selectedUsers.map(user => user.UserID);
@@ -942,37 +963,68 @@ $conn->close();
                 });
             }
 
-
-            // Filter faculty members by search input
-            document.getElementById('searchInput').addEventListener('input', function () {
-                const filter = this.value.toLowerCase();
-                const rows = document.querySelectorAll('.faculty-table tbody tr');
-
-                rows.forEach(row => {
-                    const fullName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-                    const position = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
-                    const address = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
-                    const mobile = row.querySelector('td:nth-child(5)').textContent.toLowerCase();
-                    const email = row.querySelector('td:nth-child(6)').textContent.toLowerCase();
-
-                    // Check if the row matches the search term in any column
-                    if (
-                        fullName.includes(filter) ||
-                        position.includes(filter) ||
-                        address.includes(filter) ||
-                        mobile.includes(filter) ||
-                        email.includes(filter)
-                    ) {
-                        row.style.display = ''; // Show row
-                    } else {
-                        row.style.display = 'none'; // Hide row
-                    }
+            // Function to send updated users to the server
+            function updateUsersOnServer(updatedUsers) {
+                // Filter out unchanged users
+                const changedUsers = updatedUsers.filter(user => {
+                    const original = document.querySelector(`.select-user[value="${user.UserID}"]`);
+                    return (
+                        user.firstName !== original.getAttribute('data-fullname').split(' ')[0] ||
+                        user.middleName !== (original.getAttribute('data-fullname').split(' ')[1] || '') ||
+                        user.lastName !== (original.getAttribute('data-fullname').split(' ')[2] || '') ||
+                        user.rank !== original.getAttribute('data-rank') ||
+                        user.address !== original.getAttribute('data-address') ||
+                        user.mobile !== original.getAttribute('data-mobile') ||
+                        user.email !== original.getAttribute('data-email')
+                    );
                 });
-            });
-        </script>
+
+                if (changedUsers.length === 0) {
+                    Swal.fire('No Changes', 'No data was changed. Update not required.', 'info');
+                    return;
+                }
+
+                // Send changes to the server
+                fetch('update_users.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ users: changedUsers })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Success alert
+                            Swal.fire({
+                                title: 'Success!',
+                                text: 'Users have been successfully updated.',
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            }).then(() => location.reload()); // Optionally reload to reflect changes
+                        } else {
+                            // Error alert with a specific message from the server
+                            let errorMessage = data.error || 'There was an error updating the users. Please try again.';
+                            Swal.fire({
+                                title: 'Error!',
+                                text: errorMessage,
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        // Unexpected error alert
+                        console.error('Error updating users:', error);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'An unexpected error occurred. Please try again later.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    });
+            }
+
 
         
-        <script>
             document.getElementById('assignChairpersonBtn').addEventListener('click', function() {
                 document.getElementById('assignChairpersonModal').style.display = 'flex';
             });
@@ -1095,7 +1147,7 @@ $conn->close();
 
 
             // JavaScript to select/deselect all checkboxes
-            document.getElementById("selectAll-chairperson").addEventListener("click", function() {
+             document.getElementById("selectAll-chairperson").addEventListener("click", function() {
                 const checkboxes = document.querySelectorAll("input[name='chairpersonID[]']");
                 checkboxes.forEach(function(checkbox) {
                     checkbox.checked = document.getElementById("selectAll-chairperson").checked;
