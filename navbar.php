@@ -5,8 +5,8 @@
     <img src="img/Logo/docmap.png" alt="Logo" style="max-width: 150px; height: auto;">
 </div>
 
-<ul class="side-menu">
-    <li><a href="dash.php" class="active"><i class='bx bxs-dashboard icon'></i> Dashboard</a></li>
+<ul class="side-menu" style="background-color:#ffff;">
+    <li><a href="dash.php" class="active" style ="color:#9b2035;"><i class='bx bxs-dashboard icon'></i> Dashboard</a></li>
     <li class="divider" data-text="main">Main</li>
     <li><a href="subjects.php"><i class='bx bxs-bookmarks icon'></i>All Grades</a></li>
     <li>
