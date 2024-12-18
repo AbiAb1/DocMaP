@@ -64,6 +64,7 @@ $sql = "SELECT
     LEFT JOIN 
         feedcontent fc ON t.ContentID = fc.ContentID
     WHERE 
+         t.Type = 'Task'
         ua.role = 'Teacher'
         AND fc.dept_ID = ?  -- dept_ID placeholder
         AND (
