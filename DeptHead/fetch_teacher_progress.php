@@ -49,34 +49,35 @@ if ($resultDeptName->num_rows > 0) {
 
 // Prepare SQL query for teachers' tasks data
 $sql = "SELECT 
-        ua.UserID,
-        CONCAT(ua.fname, ' ', ua.lname) AS name,
-        COUNT(tu.Task_User_ID) AS totalTasks,
-        SUM(CASE WHEN tu.Status = 'Assigned' THEN 1 ELSE 0 END) AS assignedTasks,
-        SUM(CASE WHEN tu.Status = 'Missing' THEN 1 ELSE 0 END) AS missingTasks,
-        SUM(CASE WHEN tu.Status IN ('Submitted', 'Approved', 'Rejected') THEN 1 ELSE 0 END) AS submittedTasks
-    FROM 
-        useracc ua
-    LEFT JOIN 
-        task_user tu ON ua.UserID = tu.UserID
-    LEFT JOIN 
-        tasks t ON tu.TaskID = t.TaskID
-    LEFT JOIN 
-        feedcontent fc ON t.ContentID = fc.ContentID
-    WHERE 
-         t.Type = 'Task'
-        ua.role = 'Teacher'
-        AND fc.dept_ID = ?  -- dept_ID placeholder
-        AND (
-            YEAR(t.TimeStamp) = ? OR  -- Year placeholder for task timestamp
-            YEAR(tu.SubmitDate) = ? OR  -- Year placeholder for task dates
-            YEAR(tu.RejectDate) = ? OR 
-            YEAR(tu.ApproveDate) = ? 
-        )
-    GROUP BY 
-        ua.UserID
-    ORDER BY 
-        submittedTasks DESC;
+    ua.UserID,
+    CONCAT(ua.fname, ' ', ua.lname) AS name,
+    COUNT(tu.Task_User_ID) AS totalTasks,
+    SUM(CASE WHEN tu.Status = 'Assigned' THEN 1 ELSE 0 END) AS assignedTasks,
+    SUM(CASE WHEN tu.Status = 'Missing' THEN 1 ELSE 0 END) AS missingTasks,
+    SUM(CASE WHEN tu.Status IN ('Submitted', 'Approved', 'Rejected') THEN 1 ELSE 0 END) AS submittedTasks
+FROM 
+    useracc ua
+LEFT JOIN 
+    task_user tu ON ua.UserID = tu.UserID
+LEFT JOIN 
+    tasks t ON tu.TaskID = t.TaskID
+LEFT JOIN 
+    feedcontent fc ON t.ContentID = fc.ContentID
+WHERE 
+    t.Type = 'Task'
+    AND ua.role = 'Teacher'  -- Added AND here
+    AND fc.dept_ID = ?  -- dept_ID placeholder
+    AND (
+        YEAR(t.TimeStamp) = ?  -- Year placeholder for task timestamp
+        OR YEAR(tu.SubmitDate) = ?  -- Year placeholder for task dates
+        OR YEAR(tu.RejectDate) = ? 
+        OR YEAR(tu.ApproveDate) = ? 
+    )
+GROUP BY 
+    ua.UserID
+ORDER BY 
+    submittedTasks DESC;
+
 
 ";
 
