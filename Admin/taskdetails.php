@@ -590,7 +590,7 @@ if (!empty($attachments)) {
             $fileUrl = $filePath; // Serve from the local server
         } else {
             // GitHub raw URL fallback
-            $fileUrl = "https://raw.githubusercontent.com/AbiAb1/DocMaP2/extra/Attachments/" . urlencode($attachment['name']);
+            $fileUrl = "https://raw.githubusercontent.com/AbiAb1/DocMaP/extra/Attachments/" . urlencode($attachment['name']);
         }
 
         echo '<div class="col-md-3">';
