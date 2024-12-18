@@ -51,13 +51,20 @@ mysqli_close($conn);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
-   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+<!-- Bootstrap 5 Bundle JS (includes Popper.js) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <link rel="stylesheet" href="assets/css/styles.css">
-    <title>Profile</title>
-    <link rel="icon" type="image/png" href="../img/Logo/docmap-logo-1.png">
+     <link rel="icon" type="image/png" href="img/Logo/docmap-logo-1.png">
+    <title>DocMaP | Profile</title>
     <style>
 
-
+body {
+  background-color: #F1F0F6; /* Light gray */
+}
         .container-content {
             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
             padding: 50px;
@@ -302,7 +309,7 @@ mysqli_close($conn);
     </style>
 </head>
 
-<body style="background-color:#F1F0F6;">
+<body>
     <!-- SIDEBAR -->
     <section id="sidebar">
         <?php include 'navbar.php'; ?>
@@ -359,12 +366,11 @@ mysqli_close($conn);
                             </div>
                         </div>
 
-                        <!-- Right Column -->
                         <div class="col-md-7 mt-5">
                             <div class="container-content position-relative">
                                 <h4 class="d-flex justify-content-between align-items-center">
-                                    User Information
-                                <button id="editButton" class="btn btn-primary" data-toggle="modal" data-target="#editModal">Edit User</button>
+                                    User Details
+                                <button class="btn-custom" id="editButton" data-toggle="modal" data-target="#editModal" style="width:60px;">Edit</button>
                                 </h4>
                                 <form>
                                     <div class="row">
@@ -426,7 +432,7 @@ mysqli_close($conn);
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title">Edit User Details</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
                                     <form id="editForm">
@@ -477,13 +483,13 @@ mysqli_close($conn);
                                     </form>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">Close</button>
+
                                     <button type="button" id="saveChanges" class="btn btn-primary">Save Changes</button>
                                 </div>
                             </div>
                         </div>
                     </div>
-
 
                     <!-- Modals -->
                     <!-- Upload Modal -->
@@ -531,7 +537,7 @@ mysqli_close($conn);
                                         <!-- Form Section -->
                                         <div class="col-md-6 d-flex justify-content-center align-items-center">
                                             <div class="modal-form text-center">
-                                                <img src="../img/Logo/docmap-logo-2.png" alt="Logo" class="img-fluid mb-3">
+                                                <img src="img/Logo/docmap.png" alt="Logo" class="img-fluid mb-3">
                                                 <h2>Change Credentials</h2>
                                                 <div class="progress-bar mb-3">
                                                     <div class="progress-container">
@@ -563,100 +569,91 @@ mysqli_close($conn);
         <!-- MAIN -->
     </section>
     <!-- NAVBAR -->
-       <script src="assets/js/script.js"></script>
+    <script src="assets/js/script.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
-    
     <script>
-   document.addEventListener('DOMContentLoaded', () => {
-    const editButton = document.getElementById('editButton');
-    if (editButton) {
-        editButton.addEventListener('click', () => {
-            // Populate modal fields
-            const fname = "<?php echo isset($ufname) ? htmlspecialchars($ufname, ENT_QUOTES, 'UTF-8') : ''; ?>";
-            const mname = "<?php echo isset($umname) ? htmlspecialchars($umname, ENT_QUOTES, 'UTF-8') : ''; ?>";
-            const lname = "<?php echo isset($ulname) ? htmlspecialchars($ulname, ENT_QUOTES, 'UTF-8') : ''; ?>";
-            const email = "<?php echo isset($email) ? htmlspecialchars($email, ENT_QUOTES, 'UTF-8') : ''; ?>";
-            const mobile = "<?php echo isset($mobile) ? htmlspecialchars($mobile, ENT_QUOTES, 'UTF-8') : ''; ?>";
-            const bday = "<?php echo isset($bday) ? htmlspecialchars($bday, ENT_QUOTES, 'UTF-8') : ''; ?>";
-            const sex = "<?php echo isset($sex) ? htmlspecialchars($sex, ENT_QUOTES, 'UTF-8') : ''; ?>";
-            const address = "<?php echo isset($address) ? htmlspecialchars($address, ENT_QUOTES, 'UTF-8') : ''; ?>";
+document.getElementById('editButton').addEventListener('click', function () {
+    // Populate the modal fields with existing data
+    const fname = "<?php echo isset($ufname) ? htmlspecialchars($ufname, ENT_QUOTES, 'UTF-8') : ''; ?>";
+    const mname = "<?php echo isset($umname) ? htmlspecialchars($umname, ENT_QUOTES, 'UTF-8') : ''; ?>";
+    const lname = "<?php echo isset($ulname) ? htmlspecialchars($ulname, ENT_QUOTES, 'UTF-8') : ''; ?>";
+    const email = "<?php echo isset($email) ? htmlspecialchars($email, ENT_QUOTES, 'UTF-8') : ''; ?>";
+    const mobile = "<?php echo isset($mobile) ? htmlspecialchars($mobile, ENT_QUOTES, 'UTF-8') : ''; ?>";
+    const bday = "<?php echo isset($bday) ? htmlspecialchars($bday, ENT_QUOTES, 'UTF-8') : ''; ?>";
+    const sex = "<?php echo isset($sex) ? htmlspecialchars($sex, ENT_QUOTES, 'UTF-8') : ''; ?>";
+    const address = "<?php echo isset($address) ? htmlspecialchars($address, ENT_QUOTES, 'UTF-8') : ''; ?>";
 
-            document.getElementById('editFname').value = fname;
-            document.getElementById('editMname').value = mname;
-            document.getElementById('editLname').value = lname;
-            document.getElementById('editEmail').value = email;
-            document.getElementById('editMobile').value = mobile;
-            document.getElementById('editBday').value = bday;
-            document.getElementById('editSex').value = sex;
-            document.getElementById('editAddress').value = address;
+    document.getElementById('editFname').value = fname;
+    document.getElementById('editMname').value = mname;
+    document.getElementById('editLname').value = lname;
+    document.getElementById('editEmail').value = email;
+    document.getElementById('editMobile').value = mobile;
+    document.getElementById('editBday').value = bday;
+    document.getElementById('editSex').value = sex;
+    document.getElementById('editAddress').value = address;
 
-            // Show modal
-            const modal = new bootstrap.Modal(document.getElementById('editModal'));
-            modal.show();
-        });
-    }
+    // Show the modal
+    const modal = new bootstrap.Modal(document.getElementById('editModal'));
+    modal.show();
 });
 
+document.addEventListener('DOMContentLoaded', (event) => {
+    // Your JavaScript code here
+    document.getElementById('saveChanges').addEventListener('click', function () {
+        // Gather data from the modal fields
+        const formData = {
+            action: 'update',
+            fname: document.getElementById('editFname').value,
+            mname: document.getElementById('editMname').value,
+            lname: document.getElementById('editLname').value,
+            email: document.getElementById('editEmail').value,
+            mobile: document.getElementById('editMobile').value,
+            bday: document.getElementById('editBday').value,
+            sex: document.getElementById('editSex').value,
+            address: document.getElementById('editAddress').value
+        };
 
-    document.addEventListener('DOMContentLoaded', (event) => {
-        // Your JavaScript code here
-        document.getElementById('saveChanges').addEventListener('click', function () {
-            // Gather data from the modal fields
-            const formData = {
-                action: 'update',
-                fname: document.getElementById('editFname').value,
-                mname: document.getElementById('editMname').value,
-                lname: document.getElementById('editLname').value,
-                email: document.getElementById('editEmail').value,
-                mobile: document.getElementById('editMobile').value,
-                bday: document.getElementById('editBday').value,
-                sex: document.getElementById('editSex').value,
-                address: document.getElementById('editAddress').value
-            };
-
-            // Send data to the backend using AJAX
-            fetch('edit_user.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: data.message
-                    }).then(() => { // After SweetAlert is closed
-                        // Refresh the page
-                        location.reload(); 
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: data.message
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
+        // Send data to the backend using AJAX
+        fetch('edit_user.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: data.message
+                }).then(() => { // After SweetAlert is closed
+                    // Refresh the page
+                    location.reload(); 
+                });
+            } else {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'An error occurred while updating user details.'
+                    text: data.message
                 });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An error occurred while updating user details.'
             });
         });
     });
+});
 
-    </script>
+</script>
+
     <script>
 $(document).ready(function () {
     $('#uploadBtn').click(function (e) {
@@ -664,7 +661,7 @@ $(document).ready(function () {
         var formData = new FormData($('#uploadForm')[0]);
 
         $.ajax({
-            url: '../picupload.php',
+            url: 'picupload.php',
             type: 'POST',
             data: formData,
             contentType: false,
@@ -672,7 +669,7 @@ $(document).ready(function () {
             success: function (response) {
                 var data = JSON.parse(response);
                 if (data.status === 'success') {
-                    $('#profile-picture').attr('src', '../img/UserProfile/' + data.filename);
+                    $('#profile-picture').attr('src', 'img/UserProfile/' + data.filename);
                     $('#uploadModal').modal('hide');
                     Swal.fire({
                         icon: 'success',
@@ -714,7 +711,7 @@ $(document).ready(function () {
                     icon: 'success'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = '../verify_otp2.php?email=' + response.email + '&userId=' + userId;
+                        window.location.href = 'verify_otp2.php?email=' + response.email + '&userId=' + userId;
                     }
                 });
             } else {
@@ -742,4 +739,3 @@ $(document).ready(function () {
 </body>
 
 </html>
-
