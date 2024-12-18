@@ -27,10 +27,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES["file"])) {
         mkdir($targetDir, 0777, true); // Create directory if it doesn't exist
     }
 
-    if (!move_uploaded_file($fileTmpName, $targetFile)) {
-        echo json_encode(['status' => 'error', 'message' => 'Failed to save file locally.']);
-        exit;
-    }
+   if (!move_uploaded_file($fileTmpName, $targetFile)) {
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Failed to save file locally.',
+        'debug' => [
+            'tmp_name' => $fileTmpName,
+            'targetFile' => $targetFile,
+            'is_dir' => is_dir($targetDir),
+            'is_writable' => is_writable($targetDir)
+        ]
+    ]);
+    exit;
+}
+
+if (!file_exists($targetFile)) {
+    echo json_encode(['status' => 'error', 'message' => 'File does not exist locally after upload.']);
+    exit;
+}
+
 
     // Prepare GitHub API URL
     $uploadUrl = "https://api.github.com/repos/$githubRepo/contents/Admin/TeacherData/$originalFileName";
