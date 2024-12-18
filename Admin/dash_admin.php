@@ -376,7 +376,7 @@ $conn->close();
 
     </style>
 </head>
-<body>
+<body style="background-color:#f0f0f0;">
 
 <?php
 // Check if login was successful
