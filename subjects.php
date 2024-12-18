@@ -148,7 +148,7 @@ $contents = mysqli_fetch_all($result, MYSQLI_ASSOC);
     </style>
 </head>
 
-<body style ="background-color:#f1fof6;">
+<body style ="background-color:#F1F0F6;">
     <!-- SIDEBAR -->
     <section id="sidebar">
         <?php include 'navbar.php'; ?>
