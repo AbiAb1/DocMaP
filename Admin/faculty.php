@@ -9,13 +9,13 @@ $sql = "
     SELECT 
         Chairperson_ID,
         CONCAT(useracc.fname, ' ', useracc.mname, ' ', useracc.lname) AS FullName,
-        grade.Grade_Level
+        Grade.Grade_Level
     FROM 
-        chairperson
+        Chairperson
     INNER JOIN 
-        useracc ON chairperson.UserID = useracc.UserID
+        useracc ON Chairperson.UserID = useracc.UserID
     INNER JOIN 
-        grade ON chairperson.Grade_ID = grade.Grade_ID
+        Grade ON Chairperson.Grade_ID = Grade.Grade_ID
 ";
 $result = $conn->query($sql);
 
@@ -48,8 +48,7 @@ $conn->close();
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         /* CSS for the faculty members list */
-        
-
+    
         .faculty-list-container {
             margin: 20px;
             padding: 20px;
@@ -84,12 +83,12 @@ $conn->close();
         }
 
         .btn-update {
-            background-color:blue;
+            background-color:rgb(32, 126, 233);
             color: white;   
         }
 
         .btn-resign {
-            background-color: red;
+            background-color:rgb(156, 23, 45);
             color: white;
         }
 
@@ -102,9 +101,9 @@ $conn->close();
             transition: border-color 0.3s ease;
 
         }
-
+        
         .search-input:focus {
-            border-color: #3498db;
+            border-color:#3498db;
             outline: none;
             box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
         }
@@ -270,7 +269,7 @@ $conn->close();
         /* Style for the Assign Chairperson Button */
         #assignChairpersonBtn {
             padding: 10px 20px;
-            background-color: #3498db;
+            background-color: rgb(32, 126, 233);
             color: white;
             border: none;
             border-radius: 5px;
@@ -285,7 +284,7 @@ $conn->close();
         /* Style for the Delete Chairperson Button */
         #deleteChairpersonBtn {
             padding: 10px 20px;
-            background-color: #f44336; /* Red */
+            background-color:rgb(156, 23, 45); 
             color: white;
             border: none;
             border-radius: 5px;
@@ -511,7 +510,7 @@ $conn->close();
             margin-top: 5px; /* Space between title and message */
             
         }
-        
+
         .info-message p {
             font-size: 16px; /* Font size for the message */
             color: #555; /* Color for the message text */
@@ -521,7 +520,7 @@ $conn->close();
 
     </style>
 </head>
-<body style="background-color:#F1F0F6;">
+<body>
     <!-- SIDEBAR -->
     <section id="sidebar">
         <?php include 'navbar.php'; ?>
@@ -854,13 +853,12 @@ $conn->close();
                     .then(response => response.json())
                     .then(data => {
                         const { users, total_pages, current_page } = data;
-            
+
                         // Update the table with the fetched users
                         const tableBody = document.querySelector('.faculty-table tbody');
                         tableBody.innerHTML = '';
-            
+
                         users.forEach(user => {
-                            console.log('Rendering user:', user); // Debugging
                             const row = document.createElement('tr');
                             row.innerHTML = `
                                 <td><input type="checkbox" class="select-user" 
@@ -879,7 +877,6 @@ $conn->close();
                             tableBody.appendChild(row);
                         });
 
-            
                         // Update pagination controls
                         updatePagination(total_pages, current_page);
                     })
@@ -890,7 +887,7 @@ $conn->close();
             function updatePagination(total_pages, current_page) {
                 const paginationContainer = document.querySelector('.pagination');
                 paginationContainer.innerHTML = '';
-            
+
                 // First button
                 if (current_page > 1) {
                     const firstButton = document.createElement('a');
@@ -900,7 +897,7 @@ $conn->close();
                     firstButton.innerHTML = '<i class="bx bx-chevrons-left"></i>';
                     paginationContainer.appendChild(firstButton);
                 }
-            
+
                 // Previous button
                 if (current_page > 1) {
                     const prevButton = document.createElement('a');
@@ -909,11 +906,11 @@ $conn->close();
                     prevButton.innerHTML = '<i class="bx bx-chevron-left"></i>';
                     paginationContainer.appendChild(prevButton);
                 }
-            
+
                 // Page numbers
                 const start_page = Math.max(1, current_page - 2); // Ensure we don't go below 1
                 const end_page = Math.min(total_pages, current_page + 2); // Ensure we don't go above the last page
-            
+
                 for (let i = start_page; i <= end_page; i++) {
                     const pageButton = document.createElement('a');
                     pageButton.href = `?page=${i}`;
@@ -921,7 +918,7 @@ $conn->close();
                     pageButton.innerText = i;
                     paginationContainer.appendChild(pageButton);
                 }
-            
+
                 // Next button
                 if (current_page < total_pages) {
                     const nextButton = document.createElement('a');
@@ -930,7 +927,7 @@ $conn->close();
                     nextButton.innerHTML = '<i class="bx bx-chevron-right"></i>';
                     paginationContainer.appendChild(nextButton);
                 }
-            
+
                 // Last button
                 if (current_page < total_pages) {
                     const lastButton = document.createElement('a');
@@ -1169,7 +1166,6 @@ $conn->close();
 
 
         </script>
-     <script src="assets/js/script.js"></script>
 
         
 </body>
