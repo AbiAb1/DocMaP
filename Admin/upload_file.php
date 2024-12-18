@@ -5,7 +5,7 @@ $githubRepo = "AbiAb1/DocMaP"; // Your GitHub username/repo
 $branch = "extra"; // Branch where you want to upload
 
 // Define the target directory for the uploaded file
-$targetDir = "TeacherData/";
+$targetDir = realpath(__DIR__ . '/Attachments') . '/'; // Absolute path to the director
 $targetFile = $targetDir . "LNHS-Teachers.xlsx";
 
 // Check if the file was uploaded via AJAX
