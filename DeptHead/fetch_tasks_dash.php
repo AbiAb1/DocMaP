@@ -49,6 +49,8 @@ WHERE
     AND (t.ApprovalStatus = 'Approved' OR t.ApprovalStatus IS NULL)
 GROUP BY 
     t.TimeStamp
+HAVING 
+    totalAssigned > 0
 ORDER BY 
     t.TimeStamp DESC
   "; // Limit to 5 groups
@@ -77,6 +79,6 @@ ORDER BY
     echo json_encode($response);
 } else {
     // If dept_id is not set, return an error
-    echo json_encode(['error' => 'Department ID is missing.']);
+    echo json_encode(['error' => 'Login Again.']);
 }
 ?>
