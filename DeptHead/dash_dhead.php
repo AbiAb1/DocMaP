@@ -795,7 +795,27 @@ if (!$result) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.41/moment-timezone-with-data.min.js"></script>
-   
+    <script>
+    // Function to load the latest tasks from the server
+    function loadRecentTasks() {
+        // Fetch the recent tasks from the server
+        fetch('fetch_recent_docs.php')
+            .then(response => response.text())
+            .then(data => {
+                // Replace the content inside the container with the new data
+                document.getElementById('recent-tasks-container').innerHTML = data;
+            })
+            .catch(error => {
+                console.error('Error fetching recent tasks:', error);
+            });
+    }
+
+    // Initial load
+    loadRecentTasks();
+
+    // Reload the tasks every 5 seconds (5000 milliseconds)
+    setInterval(loadRecentTasks, 5000);
+</script>
     <script>
  $(document).ready(function () {
     let teacherData = []; // Store the fetched teacher data for filtering
