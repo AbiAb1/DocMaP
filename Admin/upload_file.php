@@ -13,11 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES["file"])) {
     // Get the uploaded file details
     $fileTmpName = $_FILES["file"]["tmp_name"];
     $originalFileName = $_FILES["file"]["name"];
-
-    // Sanitize the original file name
-    $sanitizedFileName = preg_replace('/[^a-zA-Z0-9_.]/', '', str_replace([' ', '-'], '_', $originalFileName));
     
-    $fileType = strtolower(pathinfo($sanitizedFileName, PATHINFO_EXTENSION));
+    $fileType = strtolower(pathinfo($originalFileName, PATHINFO_EXTENSION));
 
     // Validate file type
     if ($fileType != "xls" && $fileType != "xlsx") {
@@ -36,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES["file"])) {
     }
 
     // Prepare GitHub API URL
-    $uploadUrl = "https://api.github.com/repos/$githubRepo/contents/Admin/TeacherData/$sanitizedFileName";
+    $uploadUrl = "https://api.github.com/repos/$githubRepo/contents/Admin/TeacherData/$originalFileName";
 
     // Read the file content
     $content = base64_encode(file_get_contents($targetFile));
