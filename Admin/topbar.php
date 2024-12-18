@@ -1,4 +1,4 @@
-<nav>
+<nav style ="background-color:#ffff;">
     <i class='bx bx-menu toggle-sidebar'></i>
     <form action="#">
         <!-- Your form content here if needed -->
