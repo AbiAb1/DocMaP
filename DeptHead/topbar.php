@@ -29,18 +29,18 @@
                     <?php
                     // Query to get the notifications where the user is the recipient (NotifUserID = session user_id)
                     $sql = "SELECT ts.NotifID, ts.TaskID, ts.ContentID, ts.UserID, ts.Title, ts.Content, nu.Status, ts.TimeStamp, ua.fname, ua.lname
-FROM notifications ts
-INNER JOIN notif_user nu ON ts.NotifID = nu.NotifID
-INNER JOIN useracc ua ON ts.UserID = ua.UserID
-WHERE nu.UserID = ?
-GROUP BY ts.NotifID, ts.TaskID, ts.ContentID, ts.UserID, ts.Title, ts.Content, nu.Status, ts.TimeStamp, ua.fname, ua.lname
-ORDER BY 
-    CASE 
-        WHEN nu.Status = 1 THEN 1 
-        ELSE 2 
-    END, 
-    ts.TimeStamp DESC;
-";
+                        FROM notifications ts
+                        INNER JOIN notif_user nu ON ts.NotifID = nu.NotifID
+                        INNER JOIN useracc ua ON ts.UserID = ua.UserID
+                        WHERE nu.UserID = ?
+                        GROUP BY ts.NotifID, ts.TaskID, ts.ContentID, ts.UserID, ts.Title, ts.Content, nu.Status, ts.TimeStamp, ua.fname, ua.lname
+                        ORDER BY 
+                            CASE 
+                                WHEN nu.Status = 1 THEN 1 
+                                ELSE 2 
+                            END, 
+                            ts.TimeStamp DESC;
+                        ";
 
 
                     // Prepare and execute the SQL statement

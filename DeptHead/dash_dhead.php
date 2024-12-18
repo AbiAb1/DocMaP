@@ -1144,59 +1144,6 @@ function formatTime(time) {
         <?php endif; ?>
     });
 </script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Prepare data for the chart
-        var labels = [];
-        var assignedData = [];
-        var missingData = [];
-        var submittedData = [];
-
-        // Loop through teachersData and extract values
-        teachersData.forEach(function(teacher) {
-            labels.push(teacher.name);  // Teacher names as labels
-            assignedData.push(teacher.assigned);  // Assigned task count
-            missingData.push(teacher.missing);  // Missing task count
-            submittedData.push(teacher.submitted);  // Submitted task count
-        });
-
-        // Create the bar chart
-        var ctx = document.getElementById('workloadChart').getContext('2d');
-        var workloadChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,  // Teacher names as labels
-                datasets: [{
-                    label: 'Assigned Tasks',
-                    data: assignedData,
-                    backgroundColor: 'rgba(0, 123, 255, 0.5)',
-                    borderColor: 'rgba(0, 123, 255, 1)',
-                    borderWidth: 1
-                }, {
-                    label: 'Missing Tasks',
-                    data: missingData,
-                    backgroundColor: 'rgba(220, 53, 69, 0.5)',
-                    borderColor: 'rgba(220, 53, 69, 1)',
-                    borderWidth: 1
-                }, {
-                    label: 'Submitted Tasks',
-                    data: submittedData,
-                    backgroundColor: 'rgba(40, 167, 69, 0.5)',
-                    borderColor: 'rgba(40, 167, 69, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    });
-</script>
 
 </body>
 </html>
