@@ -11,11 +11,11 @@ $sql = "
         CONCAT(useracc.fname, ' ', useracc.mname, ' ', useracc.lname) AS FullName,
         Grade.Grade_Level
     FROM 
-        Chairperson
+        chairperson
     INNER JOIN 
         useracc ON Chairperson.UserID = useracc.UserID
     INNER JOIN 
-        Grade ON Chairperson.Grade_ID = Grade.Grade_ID
+        grade ON Chairperson.Grade_ID = Grade.Grade_ID
 ";
 $result = $conn->query($sql);
 
