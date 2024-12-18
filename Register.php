@@ -312,11 +312,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $ranking = htmlspecialchars($_POST['ranking']);
 
     // Local path to the Excel file
-    $localFile = '/var/www/html/LNHS-Teachers.xlsx';
+    $localFile = '"https://raw.githubusercontent.com/AbiAb1/DocMaP/extra/Admin/TeacherData/LNHS_Teachers.xlsx';
 
     // Check if the file exists locally
     if (!file_exists($localFile)) {
-        die("Error: The file LNHS-Teachers.xlsx does not exist locally.");
+        die("Error: The file LNHS_Teachers.xlsx does not exist locally.");
     }
 
     // Load the Excel file
