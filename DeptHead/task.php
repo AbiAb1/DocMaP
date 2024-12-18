@@ -3,24 +3,8 @@
 include 'connection.php';
 session_start();
 
-// Assume the user ID is stored in the session when the user logs in
-$user_id = $_SESSION['user_id']; // Adjust this as per your session management
-$active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'tasks';
+$activeTab = isset($_GET['tab']) ? $_GET['tab'] : 'tasks';
 
-// Fetch dept_ID from useracc table for the logged-in user
-$sql_user_dept = "SELECT dept_ID FROM useracc WHERE UserID = ?"; // Adjust 'id' to the actual column name
-$stmt_user_dept = $conn->prepare($sql_user_dept);
-$stmt_user_dept->bind_param('i', $user_id);
-$stmt_user_dept->execute();
-$result_user_dept = $stmt_user_dept->get_result();
-
-if ($row_user_dept = $result_user_dept->fetch_assoc()) {
-    $user_dept_id = $row_user_dept['dept_ID'];
-} else {
-    // Handle case where user does not have a department assigned
-    echo json_encode(['error' => 'User does not have a department assigned.']);
-    exit;
-}
 
 // Check if department_ids are being sent
 if (isset($_POST['department_ids'])) {
@@ -49,28 +33,10 @@ if (isset($_POST['department_ids'])) {
     exit;
 }
 
+
 // Fetch departments for checkboxes
-$sql_user_dept = "SELECT dept_ID FROM useracc WHERE UserID = ?";
-$stmt_user_dept = $conn->prepare($sql_user_dept);
-$stmt_user_dept->bind_param('i', $user_id);
-$stmt_user_dept->execute();
-$result_user_dept = $stmt_user_dept->get_result();
-
-if ($row_user_dept = $result_user_dept->fetch_assoc()) {
-    $user_dept_id = $row_user_dept['dept_ID'];
-} else {
-    echo json_encode(['error' => 'User does not have a department assigned.']);
-    exit;
-}
-
-
-// SQL query to fetch departments based on the user's department ID
-$sql = "SELECT dept_ID, dept_name FROM department WHERE dept_ID = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param('i', $user_dept_id); // Use the fetched user's dept ID
-$stmt->execute();
-$result = $stmt->get_result();
-
+$sql = "SELECT dept_ID, dept_name FROM department";
+$result = $conn->query($sql);
 $departments = array();
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
@@ -88,62 +54,30 @@ $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 // Calculate the offset for the SQL query
 $offset = ($page - 1) * $rows_per_page;
 
-// Fetch tasks for display, filtered by user's dept_ID, ordered by timestamp (newest first)
-$sql = "SELECT t.TaskID AS TaskID, t.Title AS TaskTitle, t.taskContent, t.DueDate, t.DueTime, d.dept_name, fc.Title AS ContentTitle, fc.Captions, t.Status, t.TimeStamp
+
+// Fetch tasks for display, ordered by timestamp (newest first)
+$sql = "SELECT t.TaskID AS TaskID, t.Title AS TaskTitle, t.Status, t.taskContent, t.DueDate, t.DueTime, d.dept_name, fc.Title AS ContentTitle, fc.Captions
         FROM tasks t
         LEFT JOIN feedcontent fc ON t.ContentID = fc.ContentID
         LEFT JOIN department d ON fc.dept_ID = d.dept_ID
-        WHERE t.Type = 'Task' AND d.dept_ID = ? AND t.ApprovalStatus = 'Approved' 
+        WHERE t.Type = 'Task' AND t.ApprovalStatus = 'Approved'
         ORDER BY t.TimeStamp DESC  
-        LIMIT ? OFFSET ?";
-$stmt_tasks = $conn->prepare($sql);
-$stmt_tasks->bind_param('iii', $user_dept_id, $rows_per_page, $offset);
-$stmt_tasks->execute();
-$result_tasks = $stmt_tasks->get_result();
-
+        LIMIT $rows_per_page OFFSET $offset";
+$result = $conn->query($sql);
 $tasks = array();
-if ($result_tasks->num_rows > 0) {
-    while ($row = $result_tasks->fetch_assoc()) {
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
         $tasks[] = $row;
-    }
-}
-$sql_pending_tasks = "SELECT t.TaskID AS TaskID, t.Title AS TaskTitle, t.taskContent, t.DueDate, t.DueTime, d.dept_name, fc.Title AS ContentTitle, fc.Captions, t.Status, t.TimeStamp
-                      FROM tasks t
-                      LEFT JOIN feedcontent fc ON t.ContentID = fc.ContentID
-                      LEFT JOIN department d ON fc.dept_ID = d.dept_ID
-                      WHERE t.Type = 'Task' AND t.ApprovalStatus = 'Pending'
-                      ORDER BY t.TimeStamp DESC
-                      LIMIT ? OFFSET ?";
-$stmt_pending_tasks = $conn->prepare($sql_pending_tasks);
-$stmt_pending_tasks->bind_param('ii', $rows_per_page, $offset); // Adjust as needed
-$stmt_pending_tasks->execute();
-$result_pending_tasks = $stmt_pending_tasks->get_result();
-
-$pending_tasks = array();
-if ($result_pending_tasks->num_rows > 0) {
-    while ($row = $result_pending_tasks->fetch_assoc()) {
-        $pending_tasks[] = $row;
     }
 }
 
 
 // Query to get the total number of tasks for pagination calculation
-$sql_total = "SELECT COUNT(*) as total FROM tasks t
-              LEFT JOIN feedcontent fc ON t.ContentID = fc.ContentID
-              WHERE t.Type = 'Task' AND fc.dept_ID = ?";
-$stmt_total = $conn->prepare($sql_total);
-$stmt_total->bind_param('i', $user_dept_id);
-$stmt_total->execute();
-$result_total = $stmt_total->get_result();
+$sql_total = "SELECT COUNT(*) as total FROM tasks WHERE Type = 'Task'";
+$result_total = $conn->query($sql_total);
+$total_tasks = $result_total->fetch_assoc()['total'];
+$total_pages = ceil($total_tasks / $rows_per_page);
 
-if ($result_total) {
-    $total_tasks = $result_total->fetch_assoc()['total'];
-    $total_pages = ceil($total_tasks / $rows_per_page);
-} else {
-    // Handle error in total tasks query
-    echo "Error: " . $conn->error;
-    exit;
-}
 
 // Handle AJAX request for deleting a task
 if (isset($_POST['task_id'])) {
@@ -164,39 +98,18 @@ if (isset($_POST['task_id'])) {
     exit;
 }
 
+//Fetch title
 $query = "SELECT DISTINCT Title FROM tasks WHERE Type='Task'";
 $result = $conn->query($query);
 
-// Automatically reject overdue tasks with Pending ApprovalStatus
-date_default_timezone_set('Asia/Manila');
-$currentDate = date('Y-m-d');
-$currentTime = date('H:i:s');
-
-
-$sql_auto_reject = "UPDATE tasks 
-                    SET ApprovalStatus = 'Rejected' 
-                    WHERE ApprovalStatus = 'Pending' 
-                    AND (DueDate < ? 
-                        OR (DueDate = ? AND DueTime < ?))";
-
-$stmt_auto_reject = $conn->prepare($sql_auto_reject);
-$stmt_auto_reject->bind_param('sss', $currentDate, $currentDate, $currentTime);
-
-if (!$stmt_auto_reject->execute()) {
-    // Log or handle error if needed
-    error_log('Error updating overdue tasks: ' . $stmt_auto_reject->error);
-}
-
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-     <meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" type="image/png" href="../img/Logo/docmap-logo-1.png">
-
-    <title>Create Task</title>
+    <title>Task</title>
+    <link rel="icon" type="image/png" href="../img/Logo/docmap-logo-1.png">
     <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
     <link href="https://unpkg.com/ionicons@5.5.2/dist/ionicons.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/styles.css">
@@ -204,11 +117,17 @@ if (!$stmt_auto_reject->execute()) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    
+
     <style>
-        
+        .container {
+            
+            margin: 0 auto;
+            padding: 20px;
+        }
 
         .header {
-            margin-top: 10px;
+            margin-top: -10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -279,11 +198,11 @@ if (!$stmt_auto_reject->execute()) {
             z-index: 1;
             left: 0;
             top: 0;
-            width: 100%; /* Full viewport width */
+            width: 118vw; /* Full viewport width */
             height: 100vh; /* Full viewport height */
             overflow: auto;
             background-color: rgba(0, 0, 0, 0.4);
-            
+            padding-top: 60px;
         }
 
 
@@ -292,14 +211,16 @@ if (!$stmt_auto_reject->execute()) {
             margin: auto;
             padding: 20px;
             border: 1px solid #888;
-            width: 1200px; /* 80% of viewport width */
-           
-            height: auto; /* 80% of viewport height */
+            width: 100vw; /* 80% of viewport width */
+            max-width: 1200px; /* Optional: maximum width */
+            height: 85vh; /* 80% of viewport height */
+            max-height: 800px; /* Optional: maximum height */
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             overflow-y: auto; /* Scroll if content exceeds the height */
             position: relative;
-            
+            top: 50%; /* Center the modal vertically */
+            transform: translateY(-50%); /* Center the modal vertically */
         }
 
         .modal-header {
@@ -1145,7 +1066,28 @@ if (!$stmt_auto_reject->execute()) {
         .hidden {
             display: none;
         }
+         .tag {
+        display: inline-block;
+        background-color:  #f0ad4e; /* Light gray background */
+        color: #333; /* Dark text */
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 16px;
+        font-weight: bold;
+        text-align: center;
+        color:#fff;
+    }
+    .info-message {
+ 
+    margin-top: 5px; /* Space between title and message */
+   
+}
 
+.info-message p {
+    font-size: 16px; /* Font size for the message */
+    color: #555; /* Color for the message text */
+    margin: 0; /* Remove default margin */
+}
 
     </style>
 </head>
@@ -1164,294 +1106,167 @@ if (!$stmt_auto_reject->execute()) {
 
         <!-- MAIN -->
         <main>
-        <div class="tab-buttons">
-    <button class="tab-button <?php echo $active_tab === 'tasks' ? 'active' : ''; ?>" onclick="switchTab('tasks')">Tasks</button>
-    <button class="tab-button <?php echo $active_tab === 'pending' ? 'active' : ''; ?>" onclick="switchTab('pending')">Pending Tasks</button>
-</div>
-
-<!-- Task Table (Tasks Tab) -->
-<?php
-$groupedTasks = [];
-foreach ($tasks as $task) {
-    // Fetch TaskTitle, TimeStamp, and UserID
-    $taskTitle = isset($task['TaskTitle']) ? $task['TaskTitle'] : 'Untitled';
-    $timeStamp = isset($task['TimeStamp']) ? $task['TimeStamp'] : 'NoTimeStamp';
-    $userID = isset($task['UserID']) ? $task['UserID'] : 'NoUserID'; // Default to 'NoUserID' if not present
-
-    // Create the grouping key based on TaskTitle, TimeStamp, and UserID
-    $key = $taskTitle . '_' . $timeStamp . '_' . $userID;
-
-    // If the key doesn't exist, initialize it as an empty array
-    if (!isset($groupedTasks[$key])) {
-        $groupedTasks[$key] = [];
-    }
-
-    // Add the task to the group
-    $groupedTasks[$key][] = $task;
-}
-
-
-?>
-
-<div id="tasks" class="tab-content" style="display: <?php echo $active_tab === 'tasks' ? 'block' : 'none'; ?>;">
-    <div class="container">
-        <div class="header">
-            <h1>Tasks</h1>
-            <div class="button-group2   ">
-                <div class="search-container">
-                    <i class="fas fa-search search-icon" onclick="toggleSearchBar()"></i>
-                    <div class="search-bar">
-                        <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Search for names..">
-                    </div>
-                </div>
-
-                
-                <div class="filter-section" style="margin-right:10px;">
-                    <select id="statusFilter" onchange="filterByStatus()">
-                        <option value="">Filter By Status</option>
-                        <option value="Assign">Assign</option>
-                        <option value="Draft">Draft</option>
-                        <option value="Schedule">Schedule</option>
-                    </select>
-                </div>
-                
-
-                <button type="button" class="buttonTask" onclick="openModal()">Create Task</button>
+            <div class="tabs">
+                <button class="tab-button <?php echo $activeTab === 'tasks' ? 'active' : ''; ?>" onclick="switchTab('tasks')">Tasks</button>
+                <button class="tab-button <?php echo $activeTab === 'pending' ? 'active' : ''; ?>" onclick="switchTab('pending')">Pending Task</button>
             </div>
-        </div>
-       <table>
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Content</th>
-            <th>Department</th>
-            <th>Grade</th>
-            <th>Due Date</th>
-            <th>Due Time</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody id="taskTableBody">
-        <?php if (!empty($groupedTasks)): ?>
-            <?php foreach ($groupedTasks as $groupKey => $tasks): ?>
-                <!-- Render only the first task in each group -->
-                <?php $mainTask = $tasks[0]; ?>
-                <tr class="task-row" data-status="<?php echo htmlspecialchars($mainTask['Status']); ?>">
-                    <td rowspan="<?php echo count($tasks); ?>">
-                        <?php echo htmlspecialchars($mainTask['TaskTitle']); ?>
-                    </td>
-                    <td><?php echo addslashes($mainTask['taskContent']); ?></td>
-                    <td><?php echo htmlspecialchars($mainTask['dept_name']); ?></td>
-                    <td><?php echo htmlspecialchars($mainTask['ContentTitle'] . ' - ' . $mainTask['Captions']); ?></td>
-                    <td><?php echo htmlspecialchars(date('M d, Y', strtotime($mainTask['DueDate']))); ?></td>
-                    <td><?php echo htmlspecialchars(date('h:i A', strtotime($mainTask['DueTime']))); ?></td>
-                    <td><?php echo htmlspecialchars($mainTask['Status']); ?></td>
-                    <td>
-                        <div class="button-group">
-                            <button class="buttonEdit" onclick="editTask('<?php echo $mainTask['TaskID']; ?>', '<?php echo htmlspecialchars(addslashes($mainTask['TaskTitle']), ENT_QUOTES); ?>', '<?php echo htmlspecialchars(addslashes($mainTask['taskContent']), ENT_QUOTES); ?>', '<?php echo htmlspecialchars(addslashes($mainTask['dept_name']), ENT_QUOTES); ?>', '<?php echo htmlspecialchars(addslashes($mainTask['ContentTitle'] . ' - ' . $mainTask['Captions']), ENT_QUOTES); ?>', '<?php echo $mainTask['DueDate']; ?>', '<?php echo $mainTask['DueTime']; ?>')">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="buttonDelete" onclick="deleteTask('<?php echo $mainTask['TaskID']; ?>')">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                <!-- Render additional rows for other tasks in the group -->
-                <?php for ($i = 1; $i < count($tasks); $i++): ?>
-                    <?php $subTask = $tasks[$i]; ?>
-                    <tr class="task-row" data-status="<?php echo htmlspecialchars($subTask['Status']); ?>">
-                        <td><?php echo addslashes($subTask['taskContent']); ?></td>
-                        <td><?php echo htmlspecialchars($subTask['dept_name']); ?></td>
-                        <td><?php echo htmlspecialchars($subTask['ContentTitle'] . ' - ' . $subTask['Captions']); ?></td>
-                        <td><?php echo htmlspecialchars(date('M d, Y', strtotime($subTask['DueDate']))); ?></td>
-                        <td><?php echo htmlspecialchars(date('h:i A', strtotime($subTask['DueTime']))); ?></td>
-                        <td><?php echo htmlspecialchars($subTask['Status']); ?></td>
-                        <td>
-                            <div class="button-group">
-                                <button class="buttonEdit" onclick="editTask('<?php echo $subTask['TaskID']; ?>', '<?php echo htmlspecialchars(addslashes($subTask['TaskTitle']), ENT_QUOTES); ?>', '<?php echo htmlspecialchars(addslashes($subTask['taskContent']), ENT_QUOTES); ?>', '<?php echo htmlspecialchars(addslashes($subTask['dept_name']), ENT_QUOTES); ?>', '<?php echo htmlspecialchars(addslashes($subTask['ContentTitle'] . ' - ' . $subTask['Captions']), ENT_QUOTES); ?>', '<?php echo $subTask['DueDate']; ?>', '<?php echo $subTask['DueTime']; ?>')">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="buttonDelete" onclick="deleteTask('<?php echo $subTask['TaskID']; ?>')">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
+
+            <div id="tasksTab" class="tab-content <?php echo $activeTab === 'tasks' ? '' : 'hidden'; ?>">
+                <div class="header">
+                    <h1 class ="title">Tasks</h1>
+
+                </div>
+
+
+                <!-- Task Table -->
+                <div class="container">
+                    <div class="button-group2">
+                        <div class="search-container">
+                            <i class="fas fa-search search-icon" onclick="toggleSearchBar()"></i>
+                            <div class="search-bar">
+                                <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Search for names..">
                             </div>
-                        </td>
-                    </tr>
-                <?php endfor; ?>
-            <?php endforeach; ?>
-        <?php else: ?>
-            <tr>
-                <td colspan="8" style="text-align: center;">No tasks available</td>
-            </tr>
-        <?php endif; ?>
-    </tbody>
-</table>
-
-    </div>
-     <!-- Pagination for Tasks Tab -->
-     <div class="pagination">
-        <?php if ($page > 1): ?>
-            <a href="?page=1&tab=tasks" class="first-button" title="back to first">
-                <i class='bx bx-chevrons-left'></i>
-            </a>
-        <?php endif; ?>
-
-        <?php if ($page > 1): ?>
-            <a href="?page=<?php echo $page - 1; ?>&tab=tasks" class="prev-button">
-                <i class='bx bx-chevron-left'></i>
-            </a>
-        <?php endif; ?>
-
-        <?php
-        $start_page = max(1, $page - 2);
-        $end_page = min($total_pages, $page + 2);
-        for ($i = $start_page; $i <= $end_page; $i++):
-        ?>
-            <a href="?page=<?php echo $i; ?>&tab=tasks" class="<?php echo $i == $page ? 'active' : ''; ?>"><?php echo $i; ?></a>
-        <?php endfor; ?>
-
-        <?php if ($page < $total_pages): ?>
-            <a href="?page=<?php echo $page + 1; ?>&tab=tasks" class="next-button">
-                <i class='bx bx-chevron-right'></i>
-            </a>
-        <?php endif; ?>
-
-        <?php if ($page < $total_pages): ?>
-            <a href="?page=<?php echo $total_pages; ?>&tab=tasks" class="last-button">
-                <i class='bx bx-chevrons-right'></i>
-            </a>
-        <?php endif; ?>
-</div>
-
-
-   
-    </div>
-</div>
-<script>
-// Filter by Status
-function filterByStatus() {
-    const statusFilter = document.getElementById('statusFilter').value; // Get selected value
-    const rows = document.querySelectorAll('.task-row'); // Get all task rows
-    
-    rows.forEach(row => {
-        const rowStatus = row.getAttribute('data-status'); // Get the row's status attribute
-        if (statusFilter === '' || rowStatus === statusFilter) {
-            row.style.display = ''; // Show the row
-        } else {
-            row.style.display = 'none'; // Hide the row
-        }
-    });
-}
-</script>
-
-<!-- Pending Task Table (Pending Tab) -->
-<div id="pending" class="tab-content" style="display: <?php echo $active_tab === 'pending' ? 'block' : 'none'; ?>;">
-    <div class="container">
-        <h1 class="header">Pending Tasks</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Content</th>
-                    <th>Grade</th>
-                    <th>Due Date</th>
-                    <th>Due Time</th>
-                    <th>Status</th>
-                    <th>Actions </th>
-                </tr>
-            </thead>
-            <tbody>
-    <?php if (!empty($pending_tasks)): ?>
-        <?php foreach ($pending_tasks as $task): ?>
-            <tr>
-                <td><?php echo htmlspecialchars($task['TaskTitle']); ?></td>
-                <td><p><?php echo addslashes($task['taskContent']); ?></p></td>
-                <td><?php echo htmlspecialchars($task['ContentTitle'] . ' - ' . $task['Captions']); ?></td>
-                <td><?php echo htmlspecialchars(date('M d, Y', strtotime($task['DueDate']))); ?></td>
-                <td><?php echo htmlspecialchars(date('h:i A', strtotime($task['DueTime']))); ?></td>
-                <td style="font-weight:bold; color: <?php echo $task['Status'] == 'Assign' ? 'green' : ($task['Status'] == 'Schedule' ? 'blue' : 'grey'); ?>;">
-                        <?php echo htmlspecialchars($task['Status']); ?>
-                    </td>
-                <td>
-                    <div class="button-group">
-                        <button class="buttonEdit" onclick="editTask('<?php echo $task['TaskID']; ?>', '<?php echo htmlspecialchars(addslashes($task['TaskTitle']), ENT_QUOTES); ?>', '<?php echo htmlspecialchars(addslashes($task['taskContent']), ENT_QUOTES); ?>', '<?php echo htmlspecialchars(addslashes($task['dept_name']), ENT_QUOTES); ?>', '<?php echo htmlspecialchars(addslashes($task['ContentTitle'] . ' - ' . $task['Captions']), ENT_QUOTES); ?>', '<?php echo $task['DueDate']; ?>', '<?php echo $task['DueTime']; ?>')">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="buttonDelete" onclick="deleteTask('<?php echo $task['TaskID']; ?>')">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
+                        </div>
+                        <button type="button" class="buttonTask" onclick="openModal()">Create Task</button>                     
                     </div>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-    <?php else: ?>
-        <tr>
-            <td colspan="6" style="text-align: center;">No pending tasks available right now.</td>
-        </tr>
-    <?php endif; ?>
-</tbody>
+                   <table class="table table-bordered table-hover table-responsive">
+                        <thead>
+                            <tr>
+                                <th scope="col">Title</th>
+                                <th scope="col">Content</th>
+                                <th scope="col">Department</th>
+                                <th scope="col">Grade/Section</th>
+                                <th scope="col">Due Date</th>
+                                <th scope="col">Due Time</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="taskTableBody">
+                            <?php if (empty($tasks)): ?>
+                                <tr>
+                                    <td colspan="8" class="text-center py-3">No tasks available</td>
+                                </tr>
+                            <?php else: ?>
+                                <?php foreach ($tasks as $task): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($task['TaskTitle']); ?></td>
+                                        <td><p><?php echo $task['taskContent']; // Direct output to render HTML content ?></p></td>
+                                        <td><?php echo htmlspecialchars($task['dept_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($task['ContentTitle'] . ' - ' . $task['Captions']); ?></td>
+                                        <td><?php echo htmlspecialchars(date('M d, Y', strtotime($task['DueDate']))); ?></td>
+                                        <td><?php echo htmlspecialchars(date('h:i A', strtotime($task['DueTime']))); ?></td>
+                                        <td style="font-weight:bold; color: <?php echo $task['Status'] == 'Assign' ? 'green' : ($task['Status'] == 'Schedule' ? 'blue' : 'grey'); ?>;">
+                                            <?php echo htmlspecialchars($task['Status']); ?>
+                                        </td>
 
-        </table>
-    </div>
-
-    <!-- Pagination for Pending Tab -->
-    <div class="pagination">
-        <?php if ($page > 1): ?>
-            <a href="?page=1&tab=pending" class="first-button" title="back to first">
-                <i class='bx bx-chevrons-left'></i>
-            </a>
-        <?php endif; ?>
-
-        <?php if ($page > 1): ?>
-            <a href="?page=<?php echo $page - 1; ?>&tab=pending" class="prev-button">
-                <i class='bx bx-chevron-left'></i>
-            </a>
-        <?php endif; ?>
-
-        <?php
-        $start_page = max(1, $page - 2);
-        $end_page = min($total_pages, $page + 2);
-        for ($i = $start_page; $i <= $end_page; $i++):
-        ?>
-            <a href="?page=<?php echo $i; ?>&tab=pending" class="<?php echo $i == $page ? 'active' : ''; ?>"><?php echo $i; ?></a>
-        <?php endfor; ?>
-
-        <?php if ($page < $total_pages): ?>
-            <a href="?page=<?php echo $page + 1; ?>&tab=pending" class="next-button">
-                <i class='bx bx-chevron-right'></i>
-            </a>
-        <?php endif; ?>
-
-        <?php if ($page < $total_pages): ?>
-            <a href="?page=<?php echo $total_pages; ?>&tab=pending" class="last-button">
-                <i class='bx bx-chevrons-right'></i>
-            </a>
-        <?php endif; ?>
-    </div>
-</div>
+                                        <td>
+                                            <div class="button-group">
+                                                <button class="buttonEdit" 
+                                                    onclick="editTask(
+                                                        '<?php echo $task['TaskID']; ?>', 
+                                                        '<?php echo htmlspecialchars(addslashes($task['TaskTitle']), ENT_QUOTES); ?>', 
+                                                        '<?php echo addslashes($task['taskContent']);  ?>', 
+                                                        '<?php echo htmlspecialchars(addslashes($task['dept_name']), ENT_QUOTES); ?>',
+                                                        '<?php echo htmlspecialchars(addslashes($task['ContentTitle'] . ' - ' . $task['Captions']), ENT_QUOTES); ?>',
+                                                        '<?php echo $task['DueDate']; ?>',
+                                                        '<?php echo $task['DueTime']; ?>' 
+                                                    )" ><i class="fas fa-edit"></i></button>
+                                                <button class="buttonDelete" onclick="deleteTask('<?php echo $task['TaskID']; ?>')"><i class="fas fa-trash-alt"></i></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
 
 
-
-
+                </div>
             
 
-<script>
- function switchTab(tab) {
-        // Get the current URL and set page to 1 and tab to the clicked tab
-        let url = new URL(window.location.href);
-        url.searchParams.set('tab', tab);  // Set the new tab parameter
-        url.searchParams.set('page', 1);   // Reset page to 1 when switching tabs
+                <!-- Pagination -->
+                <div class="pagination">
+                    <!-- First Button -->
+                    <?php if ($page > 1): ?>
+                        <a href="?page=1" class="first-button" title="back to first"><i class='bx bx-chevrons-left'></i></a>
+                    <?php endif; ?>
 
-        // Update the browser's address bar without reloading the page
-        window.location.href = url.href;
-    }
-</script>
+                    <!-- Previous Button -->
+                    <?php if ($page > 1): ?>
+                        <a href="?page=<?php echo $page - 1; ?>" class="prev-button"><i class='bx bx-chevron-left'></i></a>
+                    <?php endif; ?>
 
-<!-- Modal -->
-            <div id="taskModal" class="modal" >
-                <div class="modal-content"style="width:1200px;">
+                    <!-- Page Numbers -->
+                    <?php
+                    // Show page numbers dynamically around the current page
+                    $start_page = max(1, $page - 2); // Ensure we don't go below 1
+                    $end_page = min($total_pages, $page + 2); // Ensure we don't go above the last page
+
+                    for ($i = $start_page; $i <= $end_page; $i++): ?>
+                        <a href="?page=<?php echo $i; ?>" class="<?php echo $i == $page ? 'active' : ''; ?>"><?php echo $i; ?></a>
+                    <?php endfor; ?>
+
+                    <!-- Next Button -->
+                    <?php if ($page < $total_pages): ?>
+                        <a href="?page=<?php echo $page + 1; ?>" class="next-button"><i class='bx bx-chevron-right'></i></a>
+                    <?php endif; ?>
+
+                    <!-- Last Button -->
+                    <?php if ($page < $total_pages): ?>
+                        <a href="?page=<?php echo $total_pages; ?>" class="last-button"><i class='bx bx-chevrons-right'></i></a>
+                    <?php endif; ?>
+                </div>
+
+
+
+
+            </div>
+             <div id="pendingTab" class="tab-content <?php echo $activeTab === 'pending' ? '' : 'hidden'; ?>">
+                <div class="header">
+                    <h1 class ="title">Pending Task</h1>
+                </div>
+                
+                <div class="container">
+                    
+                    <div class="action-buttons" style="display: flex; align-items: center; justify-content: space-between; gap: 20px;">
+                        <!-- Information Icon and Message -->
+                        <div class="info-message" style="display: flex; align-items: center;">
+                            <i class='bx bx-info-circle' style="font-size: 24px; margin-right: 10px; color:#9B2035;"></i>
+                            <p style="font-size: 14px; color: #555; margin: 0;">
+                                Task that have a yellow tag are Scheduled tasks, it's prioritized.
+                            </p>
+                        </div>
+                        <div class="buttons-group" style="display: flex; gap: 10px;">
+                            <button id="approveSelected">Approve</button>
+                            <button id="rejectSelected">Reject</button>
+                        </div>
+                        
+                    </div>
+
+                    
+                    <table id="taskTable">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="selectAll"></th>
+                                <th>Title</th>
+                                <th>Content</th>
+                                <th>Type</th>
+                                <th>User</th>
+                                <th>Due Date</th>
+                                <th>Due Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Tasks will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div id="taskModal" class="modal">
+                <div class="modal-content">
                     <!-- Header with dropdown and close button -->
                     <div class="modal-header">
                         <!-- Dropdown for submission options -->
@@ -1483,7 +1298,7 @@ function filterByStatus() {
                                             </button>
                                             <div id="titleDropdown" class="title-dropdown-menu">
                                                 <?php while ($row = $result->fetch_assoc()): ?>
-                                                    <button type="button" class="title-dropdown-item" onclick="setTitle('<?php echo htmlspecialchars($row['Title']); ?>', <?php echo $row['TaskID']; ?>)">
+                                                    <button type="button" class="title-dropdown-item" onclick="setTitle('<?php echo htmlspecialchars($row['Title']); ?>')">
                                                         <?php echo htmlspecialchars($row['Title']); ?>
                                                     </button>
                                                 <?php endwhile; ?>
@@ -1507,7 +1322,7 @@ function filterByStatus() {
                                         <div class="form-group">
                                             <div class="dropdown">
                                                 <button class="dropdown-toggle" type="button" onclick="toggleDropdown('departmentDropdown')">Select Department</button>
-                                                <div id="departmentDropdown" class="dropdown-menu" style="width:100%;">
+                                                <div id="departmentDropdown" class="dropdown-menu">
                                                     <div class="checkbox-all-container">
                                                         <input type="checkbox" id="selectAllDepartments" class="custom-checkbox checkbox-all" onclick="selectAll('departmentDropdown', 'department[]')">
                                                         <label for="selectAllDepartments">All</label>
@@ -1527,7 +1342,7 @@ function filterByStatus() {
                                         <div class="form-group">
                                             <div class="dropdown">
                                                 <button class="dropdown-toggle" type="button" onclick="toggleDropdown('gradeDropdown')">Select Grade</button>
-                                                <div id="gradeDropdown" class="dropdown-menu"style="width:100%;">
+                                                <div id="gradeDropdown" class="dropdown-menu">
                                                     <div class="checkbox-all-container">
                                                         <input type="checkbox" class="custom-checkbox checkbox-all" id="selectAllGrades" onclick="selectAll('gradeDropdown', 'grade[]')">
                                                         <label for="selectAllGrades">All</label>
@@ -1584,14 +1399,14 @@ function filterByStatus() {
                             </button>
                             <div id="updatesubmitDropdown" class="dropdown-menu submitdropdown-menu">
                                 <button type="button" class="dropdown-item submitdropdown-item" onclick="updatesubmitForm('Assign')">Assign</button>
-                                <button type="button" class="dropdown-item submitdropdown-item" onclick="updatesubmitForm('Draft')">Save as Draft</button>
                                 <button type="button" class="dropdown-item submitdropdown-item" onclick="updatesubmitForm('Schedule')">Schedule</button>
+                                <button type="button" class="dropdown-item submitdropdown-item" onclick="updatesubmitForm('Draft')">Save as Draft</button>
                             </div>
                         </div>
                         <span class="close" onclick="closeEditModal()">&times;</span>
                     </div>
                     <div class="update-modal-container">
-                        <h1 class="update-header-reminder">Edit Task</h1>
+                        <h1 class="update-header-task">Edit Task</h1>
                         <form id="updateForm">
                             <input type="hidden" id="update_task_id" name="update_task_id">
                             <input type="hidden" id="actionType" name="actionType">
@@ -1709,7 +1524,6 @@ function filterByStatus() {
         <!-- MAIN -->
     </section>
     <!-- CONTENT -->
-     
      <script>
  function displaySelectedFiles(event) {
     const fileContainer = document.getElementById('fileContainer');
@@ -1797,123 +1611,140 @@ function removeFile(fileItem) {
             window.location.search = urlParams.toString();
         }
     </script>
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const approveButton = document.getElementById('approveSelected');
-        const rejectButton = document.getElementById('rejectSelected');
+   <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const selectAllCheckbox = document.getElementById('selectAll');
 
-        fetchTasks();
-
-        function fetchTasks() {
-            fetch('taskApproval.php')
-                .then(response => response.json())
-                .then(tasks => {
-                    const taskTableBody = document.querySelector('#taskTable tbody');
-                    taskTableBody.innerHTML = '';
-
-                    if (tasks.length === 0) {
-                        // Show no-task message
-                        const noTaskMessage = document.createElement('tr');
-                        noTaskMessage.innerHTML = '<td colspan="6" style="text-align: center; color: grey;">No Pending Task Available</td>';
-                        taskTableBody.appendChild(noTaskMessage);
-
-                        // Hide the buttons
-                        approveButton.style.display = 'none';
-                        rejectButton.style.display = 'none';
-                    } else {
-                        // Populate the task table
-                        tasks.forEach(task => {
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                                <td><input type="checkbox" class="task-checkbox" data-task-id="${task.TaskID}"></td>
-                                <td>${task.Title}</td>
-                                <td>${task.taskContent}</td>
-                                <td>${task.Type}</td>
-                                <td>${task.fname} ${task.lname}</td>
-                                <td>${task.DueDate}</td>
-                            `;
-                            taskTableBody.appendChild(row);
-                        });
-
-                        // Show the buttons
-                        approveButton.style.display = 'inline-block';
-                        rejectButton.style.display = 'inline-block';
-                    }
-                })
-                .catch(error => console.error('Error fetching tasks:', error));
-        }
-
-        document.getElementById('approveSelected').addEventListener('click', () => {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You are about to approve the selected task(s).",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, approve it!',
-                cancelButtonText: 'No, cancel!',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    handleBatchAction('approve');
-                }
+            selectAllCheckbox.addEventListener('change', () => {
+                const taskCheckboxes = document.querySelectorAll('.task-checkbox');
+                taskCheckboxes.forEach(checkbox => {
+                    checkbox.checked = selectAllCheckbox.checked;
+                });
             });
-        });
 
-        document.getElementById('rejectSelected').addEventListener('click', () => {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You are about to reject the selected task(s).",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, reject it!',
-                cancelButtonText: 'No, cancel!',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    handleBatchAction('reject');
-                }
-            });
-        });
+            fetchTasks();
 
-        function handleBatchAction(action) {
-            const selectedTasks = Array.from(document.querySelectorAll('.task-checkbox:checked')).map(checkbox => checkbox.dataset.taskId);
+            function fetchTasks() {
+                fetch('taskApproval.php')
+                    .then(response => response.json())
+                    .then(tasks => {
+                        const taskTableBody = document.querySelector('#taskTable tbody');
+                        taskTableBody.innerHTML = '';
 
-            if (selectedTasks.length === 0) {
-                showNotification('No tasks selected.', 'error');
-                return;
+                        if (tasks.length === 0) {
+                            const noTaskMessage = document.createElement('tr');
+                            noTaskMessage.innerHTML = '<td colspan="6" style="text-align: center; color: grey;">No Pending Task Available</td>';
+                            taskTableBody.appendChild(noTaskMessage);
+                        } else {
+                            tasks.forEach(task => {
+                                const row = document.createElement('tr');
+
+                                // Add an icon or tag for scheduled tasks
+                                const scheduleTag = task.Status === 'Schedule' ? `<span class="tag"><i class='bx bxs-stopwatch bx-tada bx-rotate-90' ></i></span>` : '';
+
+                                row.innerHTML = `
+                                    <td><input type="checkbox" class="task-checkbox" data-task-id="${task.TaskID}"></td>
+                                    <td>${scheduleTag} ${task.Title}</td>
+                                    <td>${task.taskContent}</td>
+                                    <td>${task.Type}</td>
+                                    <td>${task.fname} ${task.lname}</td>
+                                    <td>${task.DueDate}</td>
+                                    <td>${task.DueTime}</td>
+                                `;
+
+                                taskTableBody.appendChild(row);
+                            });
+
+                            // Re-bind "select all" functionality to new rows
+                            const taskCheckboxes = document.querySelectorAll('.task-checkbox');
+                            taskCheckboxes.forEach(checkbox => {
+                                checkbox.addEventListener('change', () => {
+                                    if (!checkbox.checked) {
+                                        selectAllCheckbox.checked = false;
+                                    } else if (
+                                        Array.from(taskCheckboxes).every(cb => cb.checked)
+                                    ) {
+                                        selectAllCheckbox.checked = true;
+                                    }
+                                });
+                            });
+                        }
+                    })
+                    .catch(error => console.error('Error fetching tasks:', error));
             }
 
-            fetch('taskApproval.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                    taskIDs: JSON.stringify(selectedTasks),
-                    action: action
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Show SweetAlert for success message
-                Swal.fire({
-                    title: action === 'approve' ? 'Approved!' : 'Rejected!',
-                    text: `The selected task(s) have been successfully ${action}d.`,
-                    icon: data.status === 'success' ? 'success' : 'error',
-                    timer: 2000, // Show for 2 seconds
-                    showConfirmButton: false,
-                });
 
-                // Refresh tasks after the alert
-                setTimeout(() => {
-                    fetchTasks(); // Refresh task list after action
-                }, 2000); // Refresh after 2.5 seconds to allow alert to show
-            })
-            .catch(error => {
-                console.error('Error during batch action:', error);
-                showNotification('An error occurred while processing your request.', 'error');
+            document.getElementById('approveSelected').addEventListener('click', () => {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You are about to approve the selected task(s).",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, approve it!',
+                    cancelButtonText: 'No, cancel!',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        handleBatchAction('approve');
+                    }
+                });
             });
-        }
-    });
-</script>
+
+            document.getElementById('rejectSelected').addEventListener('click', () => {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You are about to reject the selected task(s).",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, reject it!',
+                    cancelButtonText: 'No, cancel!',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        handleBatchAction('reject');
+                    }
+                });
+            });
+
+            function handleBatchAction(action) {
+                const selectedTasks = Array.from(document.querySelectorAll('.task-checkbox:checked')).map(checkbox => checkbox.dataset.taskId);
+
+                if (selectedTasks.length === 0) {
+                    showNotification('No tasks selected.', 'error');
+                    return;
+                }
+
+                fetch('taskApproval.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        taskIDs: JSON.stringify(selectedTasks),
+                        action: action
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Show SweetAlert for success message
+                    Swal.fire({
+                        title: action === 'approve' ? 'Approved!' : 'Rejected!',
+                        text: `The selected task(s) have been successfully ${action}d.`,
+                        icon: data.status === 'success' ? 'success' : 'error',
+                        timer: 2000, // Show for 2 seconds
+                        showConfirmButton: false,
+                    });
+
+                    // Refresh tasks after the alert
+                    setTimeout(() => {
+                        fetchTasks(); // Refresh task list after action
+                    }, 2000); // Refresh after 2.5 seconds to allow alert to show
+                })
+                .catch(error => {
+                    console.error('Error during batch action:', error);
+                    showNotification('An error occurred while processing your request.', 'error');
+                });
+            }
+        });
+    </script>
 
     <script>
         ClassicEditor
@@ -2759,6 +2590,7 @@ function removeFile(fileItem) {
 
 
     </script>
+
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="assets/js/script.js"></script>
 </body>
