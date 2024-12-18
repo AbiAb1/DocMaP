@@ -17,7 +17,7 @@
         if (isset($_SESSION['user_id'])) {
             $user_id = $_SESSION['user_id'];
         ?>
-        <i class='bx bxs-bell icon' id="notification-icon"></i>
+        <i class='bx bxs-bell icon' id="notification-icon" style ="color:black;"></i>
 
         <!-- Modal Structure for Notifications -->
         <div id="notifications-modal" class="modal">
@@ -69,7 +69,7 @@
         </div>
         <?php } ?>
     </a>
-    <a href="todo.php" class="nav-link">
+    <a href="todo.php" class="nav-link" style ="color:black;">
         <i class='bx bxs-notepad icon'></i>
         <!-- Notepad icon content -->
     </a>
