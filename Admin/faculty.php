@@ -13,7 +13,7 @@ $sql = "
     FROM 
         chairperson
     INNER JOIN 
-        useracc ON chairperson.UserID = useracc.UserID
+        useracc ON Cchairperson.UserID = useracc.UserID
     INNER JOIN 
         grade ON chairperson.Grade_ID = grade.Grade_ID
 ";
@@ -29,6 +29,7 @@ if ($result->num_rows > 0) {
 }
 
 $conn->close();
+
 ?>
 
 
@@ -38,7 +39,6 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Faculty</title>
-        <link rel="icon" type="image/png" href="../img/Logo/docmap-logo-1.png">
     <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
     <link href="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/styles.css">
@@ -48,7 +48,10 @@ $conn->close();
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         /* CSS for the faculty members list */
-    
+        body {
+            font-family: Arial, sans-serif;
+        }
+
         .faculty-list-container {
             margin: 20px;
             padding: 20px;
@@ -83,12 +86,12 @@ $conn->close();
         }
 
         .btn-update {
-            background-color:rgb(32, 126, 233);
+            background-color: #3498db;
             color: white;   
         }
 
         .btn-resign {
-            background-color:rgb(156, 23, 45);
+            background-color: #e74c3c;
             color: white;
         }
 
@@ -101,9 +104,9 @@ $conn->close();
             transition: border-color 0.3s ease;
 
         }
-        
+
         .search-input:focus {
-            border-color:#3498db;
+            border-color: #3498db;
             outline: none;
             box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
         }
@@ -196,53 +199,29 @@ $conn->close();
             }
         }
 
-        .pagination {
-            display: flex;
-            justify-content: center;
+        /* Pagination styles */
+        .pagination-container {
             margin-top: 20px;
-            margin-bottom: 30px;
+            text-align: center;
         }
 
-        .pagination a {
-            padding: 10px 15px;
+        .pagination button {
+            padding: 8px 16px;
             margin: 0 5px;
-            text-decoration: none;
-            background-color: transparent; /* Make the background of the page numbers transparent */
-            color:grey;
-        
-            border-radius: 50%; /* Make buttons circular */
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
         }
 
-        .pagination a.active {
-            background-color: transparent;
-            color: #9b2035;
-            font-weight:bold;
+        .pagination button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
         }
 
-        .pagination a:hover {
-            background-color: #ddd;
-        }
-
-        .pagination a.prev-button, .pagination a.next-button {
-            background-color: #a53649; /* Lighter shade for Previous and Next */
-            border-color: transparent; 
-            color: white;/* Lighter border color */
-        }
-
-        .pagination a.prev-button:hover, .pagination a.next-button:hover {
-            background-color: #a43150; /* Slightly darker shade when hovered */
-        }
-
-        .pagination a.first-button, .pagination a.last-button {
-            background-color: #9b2035; /* Dark background color for First and Last */
+        .pagination button:hover:not(:disabled) {
+            background-color: #3498db;
             color: white;
-        }
-
-        .pagination a.first-button:hover, .pagination a.last-button:hover {
-            background-color: #a43150; /* Lighter shade on hover for First and Last */
         }
 
         /*---------- Chairperson Container ----------*/
@@ -269,7 +248,7 @@ $conn->close();
         /* Style for the Assign Chairperson Button */
         #assignChairpersonBtn {
             padding: 10px 20px;
-            background-color: rgb(32, 126, 233);
+            background-color: #3498db;
             color: white;
             border: none;
             border-radius: 5px;
@@ -284,7 +263,7 @@ $conn->close();
         /* Style for the Delete Chairperson Button */
         #deleteChairpersonBtn {
             padding: 10px 20px;
-            background-color:rgb(156, 23, 45); 
+            background-color: #f44336; /* Red */
             color: white;
             border: none;
             border-radius: 5px;
@@ -297,14 +276,14 @@ $conn->close();
         }
 
         /*---------- Chairperson Table ----------*/
-        .chairperson-table, .faculty-table {
+        .chairperson-table {
             width: 100%;
             border-collapse: collapse;
         }
 
         .chairperson-table th, .chairperson-table td {
             padding: 12px;
-            text-align: center;
+            text-align: left;
             border-bottom: 1px solid #ddd;
         }
 
@@ -313,7 +292,7 @@ $conn->close();
             color: white;
         }
 
-        .chairperson-table tr:hover, .faculty-table tr:hover {
+        .chairperson-table tr:hover {
             background-color: #f1f1f1;
         }
 
@@ -504,18 +483,7 @@ $conn->close();
             margin-right: auto;
         }
 
-        .info-message {
-            display: flex;
-            align-items: center;
-            margin-top: 5px; /* Space between title and message */
-            
-        }
 
-        .info-message p {
-            font-size: 16px; /* Font size for the message */
-            color: #555; /* Color for the message text */
-            margin: 0; /* Remove default margin */
-        }
 
 
     </style>
@@ -536,13 +504,6 @@ $conn->close();
         <!-- MAIN -->
         <main>
             <h1 class="faculty-list-title">Faculty Members</h1>
-            <!-- Information Icon and Message -->
-                <div class="info-message" style="display: flex; align-items: center; margin-top: 10px;">
-                    <i class='bx bx-info-circle'style="font-size: 24px; margin-right: 10px; color:#9B2035; "></i>
-                    <p style="font-size: 14px; color: #555; margin: 0;"> <!-- Remove margin for better alignment -->
-                        You cannot undo once you removed a user.
-                </div>
-
             <div class="faculty-list-container">
                 
                 <!-- Action Buttons -->
@@ -594,7 +555,7 @@ $conn->close();
                 
                 <!-- Buttons for Deletion and Assign -->
                 <div class="button-container">
-                    <button id="assignChairpersonBtn" class="btn-update">Assign Chairperson</button>
+                    <button id="assignChairpersonBtn" class="btn-Assign">Assign Chairperson</button>
                     <button id="deleteChairpersonBtn" class="btn-delete">Delete Chairperson</button>
                 </div>
                 
@@ -857,7 +818,7 @@ $conn->close();
                         // Update the table with the fetched users
                         const tableBody = document.querySelector('.faculty-table tbody');
                         tableBody.innerHTML = '';
-
+                        
                         users.forEach(user => {
                             const row = document.createElement('tr');
                             row.innerHTML = `
@@ -888,53 +849,31 @@ $conn->close();
                 const paginationContainer = document.querySelector('.pagination');
                 paginationContainer.innerHTML = '';
 
-                // First button
-                if (current_page > 1) {
-                    const firstButton = document.createElement('a');
-                    firstButton.href = `?page=1`;
-                    firstButton.classList.add('first-button');
-                    firstButton.title = 'back to first';
-                    firstButton.innerHTML = '<i class="bx bx-chevrons-left"></i>';
-                    paginationContainer.appendChild(firstButton);
-                }
-
                 // Previous button
                 if (current_page > 1) {
-                    const prevButton = document.createElement('a');
-                    prevButton.href = `?page=${current_page - 1}`;
-                    prevButton.classList.add('prev-button');
-                    prevButton.innerHTML = '<i class="bx bx-chevron-left"></i>';
+                    const prevButton = document.createElement('button');
+                    prevButton.innerText = 'Prev';
+                    prevButton.addEventListener('click', () => loadFacultyMembers(current_page - 1));
                     paginationContainer.appendChild(prevButton);
                 }
 
-                // Page numbers
-                const start_page = Math.max(1, current_page - 2); // Ensure we don't go below 1
-                const end_page = Math.min(total_pages, current_page + 2); // Ensure we don't go above the last page
-
-                for (let i = start_page; i <= end_page; i++) {
-                    const pageButton = document.createElement('a');
-                    pageButton.href = `?page=${i}`;
-                    pageButton.classList.add(i === current_page ? 'active' : '');
+                // Page number buttons
+                for (let i = 1; i <= total_pages; i++) {
+                    const pageButton = document.createElement('button');
                     pageButton.innerText = i;
+                    if (i === current_page) {
+                        pageButton.disabled = true; // Disable the current page button
+                    }
+                    pageButton.addEventListener('click', () => loadFacultyMembers(i));
                     paginationContainer.appendChild(pageButton);
                 }
 
                 // Next button
                 if (current_page < total_pages) {
-                    const nextButton = document.createElement('a');
-                    nextButton.href = `?page=${current_page + 1}`;
-                    nextButton.classList.add('next-button');
-                    nextButton.innerHTML = '<i class="bx bx-chevron-right"></i>';
+                    const nextButton = document.createElement('button');
+                    nextButton.innerText = 'Next';
+                    nextButton.addEventListener('click', () => loadFacultyMembers(current_page + 1));
                     paginationContainer.appendChild(nextButton);
-                }
-
-                // Last button
-                if (current_page < total_pages) {
-                    const lastButton = document.createElement('a');
-                    lastButton.href = `?page=${total_pages}`;
-                    lastButton.classList.add('last-button');
-                    lastButton.innerHTML = '<i class="bx bx-chevrons-right"></i>';
-                    paginationContainer.appendChild(lastButton);
                 }
             }
 
@@ -969,7 +908,7 @@ $conn->close();
             function deleteUsersFromServer(selectedUsers) {
                 const userIDs = selectedUsers.map(user => user.UserID);
 
-                fetch('delete_user.php', {
+                fetch('delete_users.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userIDs })
