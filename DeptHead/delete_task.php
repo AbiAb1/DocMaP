@@ -1,38 +1,41 @@
 <?php
-// Database connection
-include 'connection.php';
+// Include the database connection file
+include 'connection.php'; // Update with your actual database connection file
 
-$logFile = 'logfile.log'; // Specify the log file path
+// Set the response header to JSON
+header('Content-Type: application/json');
 
-if (isset($_POST['task_id'])) {
-    $task_id = $_POST['task_id'];
-    error_log("Received request to delete task with ID: " . $task_id, 3, $logFile); // Log the received task_id
+// Initialize the response array
+$response = array();
 
-    // SQL query to delete the task based on TaskID
-    $sql = "DELETE FROM tasks WHERE TaskID = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param('i', $task_id);
+try {
+    // Check if task_id is provided in the POST request
+    $data = json_decode(file_get_contents("php://input"), true); // Decode JSON input
 
-    if ($stmt->execute()) {
-        error_log("Task with ID " . $task_id . " deleted successfully.", 3, $logFile); // Log successful deletion
-        $response = array('success' => true, 'message' => 'Task deleted successfully.');
+    if (isset($data['task_id']) && !empty($data['task_id'])) {
+        $task_id = intval($data['task_id']); // Sanitize input
+
+        // SQL query to delete a task based on TaskID
+        $sql = "DELETE FROM tasks WHERE TaskID = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('i', $task_id);
+
+        if ($stmt->execute()) {
+            $response = array('success' => true, 'message' => 'Task deleted successfully.');
+        } else {
+            $response = array('success' => false, 'message' => 'Failed to delete task: ' . $stmt->error);
+        }
+
+        $stmt->close();
     } else {
-        error_log("Failed to delete task with ID " . $task_id . ": " . $stmt->error, 3, $logFile); // Log error message
-        $response = array('success' => false, 'message' => 'Failed to delete task.');
+        $response = array('success' => false, 'message' => 'Invalid task ID.');
     }
-
-    $stmt->close();
-    $conn->close();
-
-    // Return JSON response
-    header('Content-Type: application/json');
-    echo json_encode($response);
-    exit;
-} else {
-    // Handle missing task_id error
-    $response = array('success' => false, 'message' => 'Task ID not provided.');
-    header('Content-Type: application/json');
-    echo json_encode($response);
-    exit;
+} catch (Exception $e) {
+    // Catch any exceptions and send a meaningful response
+    $response = array('success' => false, 'message' => 'An error occurred: ' . $e->getMessage());
 }
+
+// Send the response as JSON
+echo json_encode($response);
+
 ?>
