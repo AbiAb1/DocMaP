@@ -1100,7 +1100,7 @@ body {
     <!-- SIDEBAR -->
 
     <!-- CONTENT -->
-    <section id="content">
+    <section id="content" style ="background-color:#ffff;">
         <!-- NAVBAR -->
         <?php include 'topbar.php'; ?>
         <!-- NAVBAR -->
