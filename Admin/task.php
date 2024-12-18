@@ -1099,7 +1099,7 @@ $result = $conn->query($query);
     <!-- SIDEBAR -->
 
     <!-- CONTENT -->
-    <section id="content" style ="background-color:#ffff;">
+    <section id="content" >
         <!-- NAVBAR -->
         <?php include 'topbar.php'; ?>
         <!-- NAVBAR -->
