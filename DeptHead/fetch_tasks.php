@@ -29,7 +29,7 @@ if ($departmentsResult && $departmentsResult->num_rows > 0) {
         $deptName = $dept['dept_name'];
 
         // Fetch submitted task count for the department
-        $submittedQuery = "SELECT COUNT(UserID) AS totalSubmit 
+        $submittedQuery = "SELECT COUNT(DISTINCT task_user.Task_User_ID) AS totalSubmit 
                    FROM task_user 
                    INNER JOIN feedcontent ON task_user.ContentID = feedcontent.ContentID 
                    WHERE (task_user.Status = 'Submitted' or 'Approved' or 'Rejected') 
@@ -41,7 +41,7 @@ if ($departmentsResult && $departmentsResult->num_rows > 0) {
         $submittedResult = $submittedStmt->get_result();
 
         // Fetch assigned task count for the department
-        $assignedQuery = "SELECT COUNT(task_user.UserID) AS totalAssigned 
+        $assignedQuery = "SELECT COUNT( DISTINCT task_user.Task_User_ID) AS totalAssigned 
                   FROM task_user 
                   INNER JOIN feedcontent ON task_user.ContentID = feedcontent.ContentID 
                   INNER JOIN tasks ON feedcontent.ContentID = tasks.ContentID 
