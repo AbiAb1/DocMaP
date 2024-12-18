@@ -8,10 +8,10 @@ if (isset($_GET['dept_id'])) {
 
     // Fetch department-level statistics for total submit and assigned counts
     // Total submitted or approved tasks
-    $submittedQuery = "SELECT COUNT(DISTINCT tu.Task_User_UserID) AS totalSubmit 
+    $submittedQuery = "SELECT COUNT(tu.Task_User_UserID) AS totalSubmit 
                        FROM task_user tu
                        INNER JOIN feedcontent fc ON tu.ContentID = fc.ContentID 
-                       WHERE (tu.Status = 'Submitted' OR tu.Status = 'Approved') 
+                       WHERE (tu.Status = 'Submitted' OR tu.Status = 'Approved' OR tu.Status = 'Rejected') 
                        AND fc.dept_ID = ?";
     $submittedStmt = $conn->prepare($submittedQuery);
     $submittedStmt->bind_param('i', $dept_id);
@@ -20,7 +20,7 @@ if (isset($_GET['dept_id'])) {
     $totalSubmit = $submittedResult->fetch_assoc()['totalSubmit'] ?? 0;
 
     // Total assigned tasks with Status = 'Assign'
-    $assignedQuery = "SELECT COUNT(DISTINCT tu.Task_User_UserID) AS totalAssigned
+    $assignedQuery = "SELECT COUNT(tu.Task_User_UserID) AS totalAssigned
                       FROM task_user tu
                       INNER JOIN tasks t ON tu.TaskID = t.TaskID
                       INNER JOIN feedcontent fc ON t.ContentID = fc.ContentID
