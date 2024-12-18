@@ -262,7 +262,7 @@ if (isset($_GET['ContentID'])) {
 
         </style>
     </head>
-    <body>
+    <body style="background-color:#f0f0f0;">
         <!-- SIDEBAR -->
         <section id="sidebar">
             <?php include 'navbar.php'; ?>
