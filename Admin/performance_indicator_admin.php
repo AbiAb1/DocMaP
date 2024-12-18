@@ -46,70 +46,70 @@ if ($selectedYear === "All") {
     foreach ($schoolYears as $yearId => $year) {
         $query = "
             SELECT 
-                g.Grade_Level,
-                e.Enroll_Gross,
-                e.Enroll_Net,
-                c.Cohort_Figure,
-                c.Cohort_Rate,
-                d.Dropout_Figure,
-                d.Dropout_Rate,
-                r.Repeaters_Figure,
-                r.Repeaters_Rate,
-                p.Promotion_Figure,
-                p.Promotion_Rate,
-                t.Transition_Figure,
-                t.Transition_Rate,
-                a.Age_Group_12To15,
-                n.NAT_Score
-            FROM performance_indicator pi
-            JOIN schoolyear sy ON pi.School_Year_ID = sy.School_Year_ID
-            JOIN grade g ON pi.Grade_ID = g.Grade_ID
-            JOIN enroll e ON pi.Enroll_ID = e.Enroll_ID
-            JOIN dropout d ON pi.Dropout_ID = d.Dropout_ID
-            JOIN promotion p ON pi.Promotion_ID = p.Promotion_ID
-            JOIN cohort_survival c ON pi.Cohort_ID = c.Cohort_ID
-            JOIN repetition r ON pi.Repetition_ID = r.Repetition_ID
-            JOIN age a ON pi.Age_ID = a.Age_ID
-            JOIN nat n ON pi.NAT_ID = n.NAT_ID
-            JOIN transition t ON pi.Transition_ID = t.Transition_ID
-            WHERE sy.School_Year_ID = $yearId
-            GROUP BY g.Grade_Level, e.Enroll_Gross, e.Enroll_Net
-            ORDER BY g.Grade_Level";
+    g.Grade_Level,
+    e.Enroll_Gross,
+    e.Enroll_Net,
+    c.Cohort_Figure,
+    c.Cohort_Rate,
+    d.Dropout_Figure,
+    d.Dropout_Rate,
+    r.Repeaters_Figure,
+    r.Repeaters_Rate,
+    p.Promotion_Figure,
+    p.Promotion_Rate,
+    t.Transition_Figure,
+    t.Transition_Rate,
+    a.Age_Group_12To15,
+    n.NAT_Score
+FROM performance_indicator pi
+JOIN schoolyear sy ON pi.School_Year_ID = sy.School_Year_ID
+JOIN grade g ON pi.Grade_ID = g.Grade_ID
+JOIN enroll e ON pi.Enroll_ID = e.Enroll_ID
+JOIN dropout d ON pi.Dropout_ID = d.Dropout_ID
+JOIN promotion p ON pi.Promotion_ID = p.Promotion_ID
+JOIN cohort_survival c ON pi.Cohort_ID = c.Cohort_ID
+JOIN repetition r ON pi.Repetition_ID = r.Repetition_ID
+JOIN age a ON pi.Age_ID = a.Age_ID
+JOIN nat n ON pi.NAT_ID = n.NAT_ID
+JOIN transition t ON pi.Transition_ID = t.Transition_ID
+WHERE sy.School_Year_ID = $yearId
+GROUP BY g.Grade_Level, e.Enroll_Gross, e.Enroll_Net, c.Cohort_Figure, c.Cohort_Rate, d.Dropout_Figure, d.Dropout_Rate, r.Repeaters_Figure, r.Repeaters_Rate, p.Promotion_Figure, p.Promotion_Rate, t.Transition_Figure, t.Transition_Rate, a.Age_Group_12To15, n.NAT_Score
+ORDER BY g.Grade_Level;";
         $result = $conn->query($query);
         $records[$year] = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
     }
 } else {
     $query = "
         SELECT 
-            g.Grade_Level,
-            e.Enroll_Gross,
-            e.Enroll_Net,
-            c.Cohort_Figure,
-            c.Cohort_Rate,
-            d.Dropout_Figure,
-            d.Dropout_Rate,
-            r.Repeaters_Figure,
-            r.Repeaters_Rate,
-            p.Promotion_Figure,
-            p.Promotion_Rate,
-            t.Transition_Figure,
-            t.Transition_Rate,
-            a.Age_Group_12To15,
-            n.NAT_Score
-        FROM performance_indicator pi
-        JOIN schoolyear sy ON pi.School_Year_ID = sy.School_Year_ID
-        JOIN grade g ON pi.Grade_ID = g.Grade_ID
-        JOIN enroll e ON pi.Enroll_ID = e.Enroll_ID
-        JOIN dropout d ON pi.Dropout_ID = d.Dropout_ID
-        JOIN promotion p ON pi.Promotion_ID = p.Promotion_ID
-        JOIN cohort_survival c ON pi.Cohort_ID = c.Cohort_ID
-        JOIN repetition r ON pi.Repetition_ID = r.Repetition_ID
-        JOIN age a ON pi.Age_ID = a.Age_ID
-        JOIN nat n ON pi.NAT_ID = n.NAT_ID
-        JOIN transition t ON pi.Transition_ID = t.Transition_ID
-        WHERE sy.School_Year_ID = $selectedYear
-        GROUP BY g.Grade_Level, e.Enroll_Gross, e.Enroll_Net
-        ORDER BY g.Grade_Level";
+    g.Grade_Level,
+    e.Enroll_Gross,
+    e.Enroll_Net,
+    c.Cohort_Figure,
+    c.Cohort_Rate,
+    d.Dropout_Figure,
+    d.Dropout_Rate,
+    r.Repeaters_Figure,
+    r.Repeaters_Rate,
+    p.Promotion_Figure,
+    p.Promotion_Rate,
+    t.Transition_Figure,
+    t.Transition_Rate,
+    a.Age_Group_12To15,
+    n.NAT_Score
+FROM performance_indicator pi
+JOIN schoolyear sy ON pi.School_Year_ID = sy.School_Year_ID
+JOIN grade g ON pi.Grade_ID = g.Grade_ID
+JOIN enroll e ON pi.Enroll_ID = e.Enroll_ID
+JOIN dropout d ON pi.Dropout_ID = d.Dropout_ID
+JOIN promotion p ON pi.Promotion_ID = p.Promotion_ID
+JOIN cohort_survival c ON pi.Cohort_ID = c.Cohort_ID
+JOIN repetition r ON pi.Repetition_ID = r.Repetition_ID
+JOIN age a ON pi.Age_ID = a.Age_ID
+JOIN nat n ON pi.NAT_ID = n.NAT_ID
+JOIN transition t ON pi.Transition_ID = t.Transition_ID
+WHERE sy.School_Year_ID = $selectedYear
+GROUP BY g.Grade_Level, e.Enroll_Gross, e.Enroll_Net, c.Cohort_Figure, c.Cohort_Rate, d.Dropout_Figure, d.Dropout_Rate, r.Repeaters_Figure, r.Repeaters_Rate, p.Promotion_Figure, p.Promotion_Rate, t.Transition_Figure, t.Transition_Rate, a.Age_Group_12To15, n.NAT_Score
+ORDER BY g.Grade_Level;";
     $result = $conn->query($query);
     $records[$schoolYears[$selectedYear]] = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
 }
