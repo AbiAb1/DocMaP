@@ -21,12 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES["file"])) {
         exit;
     }
 
-    // Generate unique file name with a 6-character unique ID
-    $uniqueId = substr(uniqid(), -6); // Generate a 6-character unique ID
-    $uniqueFileName = $uniqueId . "_" . $sanitizedFileName;
-
     // Prepare GitHub API URL
-    $uploadUrl = "https://api.github.com/repos/$githubRepo/contents/Admin/TeacherData/$uniqueFileName";
+    $uploadUrl = "https://api.github.com/repos/$githubRepo/contents/Admin/TeacherData/$sanitizedFileName";
 
     // Read the file content
     $content = base64_encode(file_get_contents($fileTmpName));
