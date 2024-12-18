@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $userID = $_SESSION['user_id'];
 
         try {
-            $stmtDocuments = $conn->prepare("UPDATE Documents SET status = ? WHERE TaskID = ? AND ContentID = ?");
+            $stmtDocuments = $conn->prepare("UPDATE documents SET status = ? WHERE TaskID = ? AND ContentID = ?");
             $stmtDocuments->bind_param("iii", $status, $taskID, $contentID);
             $stmtDocuments->execute();
 
