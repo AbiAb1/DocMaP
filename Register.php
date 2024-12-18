@@ -28,19 +28,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = htmlspecialchars($_POST['email']);
     $ranking = htmlspecialchars($_POST['ranking']);
 
-    // GitHub URL for the Excel file
-    $githubUrl = 'https://raw.githubusercontent.com/AbiAb1/DocMaP/extra/Admin/TeacherData/LNHS-Teachers.xlsx';
-    $localFile = 'LNHS-Teachers.xlsx';
+    // Local path to the Excel file
+    $localFile = '/var/www/html/LNHS-Teachers.xlsx';
 
-    // Try downloading the file
-    try {
-        $fileContents = file_get_contents($githubUrl);
-        if ($fileContents === false) {
-            throw new Exception("Failed to download the file from GitHub.");
-        }
-        file_put_contents($localFile, $fileContents);
-    } catch (Exception $e) {
-        die("Error: " . $e->getMessage());
+    // Check if the file exists locally
+    if (!file_exists($localFile)) {
+        die("Error: The file LNHS-Teachers.xlsx does not exist.");
     }
 
     // Load the Excel file
