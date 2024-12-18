@@ -864,7 +864,7 @@ $conn->close();
                             row.innerHTML = `
                                 <td><input type="checkbox" class="select-user" 
                                         data-fullname="${user.fullname}" 
-                                        data-rank="${user.Rank}" 
+                                        data-rank="${user.'Rank'}" 
                                         data-address="${user.address}" 
                                         data-mobile="${user.mobile}" 
                                         data-email="${user.email}" 
