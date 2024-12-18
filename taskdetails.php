@@ -502,7 +502,7 @@ mysqli_close($conn);
         
         <h6 style ="margin-top:50px;">Attachments:</h6>
 
-    <?php
+   <?php
 if (!empty($documents)) {
     echo '<div class="Attachment-container row">';
     foreach ($documents as $document) {
@@ -533,6 +533,7 @@ if (!empty($documents)) {
     echo '<p>No attachments available.</p>';
 }
 ?>
+
 
 
 
