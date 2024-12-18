@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'connection.php';
+include 'connection.php'; // Make sure connection.php uses PDO
 
 $response = ['success' => false, 'message' => ''];
 
@@ -14,10 +14,12 @@ try {
             $status = $conn->quote($data['status']);
             $userID = $_SESSION['user_id'];
 
+            // Update Documents table
             $sqlUpdateDocuments = "UPDATE Documents SET status = ? WHERE TaskID = ? AND ContentID = ?";
             $stmtDocuments = $conn->prepare($sqlUpdateDocuments);
             $stmtDocuments->execute([$status, $taskID, $contentID]);
 
+            // Update task_user table
             $sqlUpdateTaskUser = "UPDATE task_user SET Status = ? WHERE TaskID = ? AND UserID = ?";
             $stmtTaskUser = $conn->prepare($sqlUpdateTaskUser);
             $stmtTaskUser->execute([$status, $taskID, $userID]);
@@ -37,5 +39,5 @@ try {
 }
 
 echo json_encode($response);
-$conn = null; // Always close the connection, even in case of error
+$conn = null; // Close the connection
 ?>
