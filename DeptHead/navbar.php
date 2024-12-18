@@ -6,7 +6,9 @@
 </div>
 
 <ul class="side-menu">
-			<li><a href="dash_dhead.php" class=""><i class='bx bxs-dashboard icon' ></i> Dashboard</a></li>
+<li><a href="dash_dhead.php" class="active" style="background-color: maroon;">
+    <i class='bx bxs-dashboard icon'></i> Dashboard
+</a></li>
 			<li class="divider" data-text="main">Main</li>
 			<li><a href="departments.php" ><i class='bx bxs-building icon' ></i>Departments</a></li>
 			<li class="divider" data-text="productivity">Main</li>
