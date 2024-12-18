@@ -189,7 +189,7 @@ mysqli_close($conn);
             <h1 class="title">Content</h1>
             
             <!-- Content Details -->
-            <div class="contentCard" style = "background-color: <?php echo $color; ?>;">
+            <div class="contentCard">
                 
                 <h2><?php echo $content_title; ?>  - <?php echo $content_captions; ?></h2>
                 <p title = "Department"><i class='bx bxs-building' style ="margin-right:3px;"></i><?php echo $dept_name; ?></p>
