@@ -378,7 +378,7 @@ $conn->close();
 
     </style>
 </head>
-<body style="background-color:#F1F0F6;">
+<body style="background-color:#f0f0f0;">
 
 <?php
 // Check if login was successful
@@ -741,7 +741,7 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
         });
     </script>
 
-   <script>
+    <script>
         $(document).ready(function () {
             $.ajax({
                 url: "fetchTopTeachers.php", // Backend script to fetch data
@@ -852,6 +852,7 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
             };
         }
     </script>
+
 
    <script>
         document.addEventListener("DOMContentLoaded", () => {

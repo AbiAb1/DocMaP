@@ -154,7 +154,7 @@ $conn->close();
         }
         body {
   background-color: #F1F0F6; /* Light gray */
-}
+}   
     </style>
 </head>
 <body>

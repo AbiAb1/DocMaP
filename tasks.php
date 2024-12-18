@@ -175,21 +175,21 @@ mysqli_close($conn);
 </head>
 <body">
     <!-- SIDEBAR -->
-    <section id="sidebar"style="background-color: white;">
+    <section id="sidebar">
         <?php include 'navbar.php'; ?>
     </section>
     <!-- SIDEBAR -->
-    <section id="content" style="background-color:white;">
+    <section id="content">
         <!-- NAVBAR -->
         <?php include 'topbar.php'; ?>
         <!-- NAVBAR -->
 
-        <!--xxasdasd MAIN -->
+        <!-- MAIN -->
         <main style="background-color:#F1F0F6;">
             <h1 class="title">Content</h1>
             
             <!-- Content Details -->
-            <div class="contentCard">
+            <div class="contentCard" style = "background-color: <?php echo $color; ?>;">
                 
                 <h2><?php echo $content_title; ?>  - <?php echo $content_captions; ?></h2>
                 <p title = "Department"><i class='bx bxs-building' style ="margin-right:3px;"></i><?php echo $dept_name; ?></p>

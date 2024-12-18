@@ -1091,7 +1091,7 @@ $result = $conn->query($query);
 
     </style>
 </head>
-<body style="background-color:#F1F0F6;">
+<body style="background-color:#f0f0f0;">
     <!-- SIDEBAR -->
     <section id="sidebar" style ="background-color:#ffff;">
         <?php include 'navbar.php'; ?>
