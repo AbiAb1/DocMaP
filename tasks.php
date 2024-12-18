@@ -175,17 +175,17 @@ mysqli_close($conn);
 </head>
 <body">
     <!-- SIDEBAR -->
-    <section id="sidebar">
+    <section id="sidebar"style="background-color: white;">
         <?php include 'navbar.php'; ?>
     </section>
     <!-- SIDEBAR -->
-    <section id="content">
+    <section id="content" style="background-color:white;">
         <!-- NAVBAR -->
         <?php include 'topbar.php'; ?>
         <!-- NAVBAR -->
 
-        <!-- MAIN -->
-        <main >
+        <!--xxasdasd MAIN -->
+        <main style="background-color:#F1F0F6;">
             <h1 class="title">Content</h1>
             
             <!-- Content Details -->
