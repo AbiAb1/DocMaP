@@ -577,26 +577,26 @@ mysqli_close($conn);
 
 
                          <?php
-if (!empty($documents)) {
+if (!empty($attachments)) {
     echo '<div class="Attachment-container row">';
     foreach ($documents as $document) {
         // Remove leading numbers and underscore
-        $displayName = preg_replace('/^\d+_/', '', $document['name']);
+        $displayName = preg_replace('/^\d+_/', '', $attachments['name']);
         // Local file path (replace with your actual path if stored locally)
-        $filePath = "Admin/Attachments/" . $document['name'];
+        $filePath = "Attachments/" . $attachments['name'];
 
         // Check if the file exists locally
         if (file_exists($filePath)) {
             $fileUrl = $filePath; // Serve from the local server
         } else {
             // GitHub raw URL fallback
-            $fileUrl = "https://raw.githubusercontent.com/AbiAb1/DocMaP2/extra/Admin/Attachments/" . urlencode($document['name']);
+            $fileUrl = "https://raw.githubusercontent.com/AbiAb1/DocMaP2/extra/Attachments/" . urlencode($attachments['name']);
         }
 
         echo '<div class="col-md-3">';
         echo '<a href="' . htmlspecialchars($fileUrl) . '" target="_blank" class="file">';
         echo '<span>' . htmlspecialchars($displayName) . '</span>';
-        echo '<div class="pin-icon" style="background-color: ' . htmlspecialchars($task_color) . ';">';
+        echo '<div class="pin-icon" >';
         echo '<i class="bx bx-paperclip"></i>';
         echo '</div>';
         echo '</a>';
