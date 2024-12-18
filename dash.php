@@ -544,7 +544,9 @@ $conn->close();
             display: none; /* Hide image on mobile screens */
         }
     }
-
+    body {
+  background-color: #F1F0F6; /* Light gray */
+}
 
 
 
