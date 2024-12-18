@@ -144,12 +144,12 @@
                                 <option value="Master Teacher I">Master Teacher I</option>
                                 <option value="Master Teacher II">Master Teacher II</option>
                                 <option value="Master Teacher III">Master Teacher III</option>
-                                <option value="Head Teacher I">Master Teacher I</option>
-                                <option value="Head Teacher II">Master Teacher II</option>
-                                <option value="Head Teacher III">Master Teacher III</option>
-                                <option value="Head Teacher IV">Master Teacher IV</option>
-                                <option value="Head Teacher V">Master Teacher V</option>
-                                <option value="Head Teacher VI">Master Teacher VI</option>
+                                <option value="Head Teacher I">Head Teacher I</option>
+                                <option value="Head Teacher II">Head Teacher II</option>
+                                <option value="Head Teacher III">Head Teacher III</option>
+                                <option value="Head Teacher IV">Head Teacher IV</option>
+                                <option value="Head Teacher V">Head Teacher V</option>
+                                <option value="Head Teacher VI">Head Teacher VI</option>
                             </select>
                         </div>
                     </div>
