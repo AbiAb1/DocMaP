@@ -19,31 +19,35 @@ if (isset($_GET['dept_id'])) {
     
     $departments = [];
     
-    // Fetch department-level statistics for total submit and assigned counts
-    // Total submitted or approved tasks
-     $submittedQuery = "SELECT COUNT(UserID) AS totalSubmit 
+        // Fetch submitted task count for the department
+        $submittedQuery = "SELECT COUNT(UserID) AS totalSubmit 
                    FROM task_user 
                    INNER JOIN feedcontent ON task_user.ContentID = feedcontent.ContentID 
                    WHERE (task_user.Status = 'Submitted' or 'Approved' or 'Rejected') 
                    AND feedcontent.dept_ID = ?";
 
-    $submittedStmt = $conn->prepare($submittedQuery);
-    $submittedStmt->bind_param('i', $dept_id);
-    $submittedStmt->execute();
-    $submittedResult = $submittedStmt->get_result();
-    $totalSubmit = $submittedResult->fetch_assoc()['totalSubmit'] ?? 0;
+        $submittedStmt = $conn->prepare($submittedQuery);
+        $submittedStmt->bind_param('i', $deptID);
+        $submittedStmt->execute();
+        $submittedResult = $submittedStmt->get_result();
 
-    // Total assigned tasks with Status = 'Assign'
-    $assignedQuery = "SELECT COUNT(UserID) AS totalAssigned 
-    FROM task_user 
-    INNER JOIN feedcontent ON task_user.ContentID = feedcontent.ContentID 
-    WHERE feedcontent.dept_ID = ?";
-    $assignedStmt = $conn->prepare($assignedQuery);
-    $assignedStmt->bind_param('i', $dept_id);
-    $assignedStmt->execute();
-    $assignedResult = $assignedStmt->get_result();
-    $totalAssigned = $assignedResult->fetch_assoc()['totalAssigned'] ?? 0;
+        // Fetch assigned task count for the department
+        $assignedQuery = "SELECT COUNT(UserID) AS totalAssigned 
+                          FROM task_user 
+                          INNER JOIN feedcontent ON task_user.ContentID = feedcontent.ContentID 
+                          WHERE feedcontent.dept_ID = ?";
 
+        $assignedStmt = $conn->prepare($assignedQuery);
+        $assignedStmt->bind_param('i', $deptID);
+        $assignedStmt->execute();
+        $assignedResult = $assignedStmt->get_result();
+
+        // Fetch task counts
+        $submittedRow = $submittedResult->fetch_assoc();
+        $assignedRow = $assignedResult->fetch_assoc();
+
+        $totalSubmit = $submittedRow['totalSubmit'] ?? 0;
+        $totalAssigned = $assignedRow['totalAssigned'] ?? 0;
     // Query to fetch tasks grouped by TimeStamp with a representative Title
     $tasksQuery = "SELECT 
     t.TimeStamp, 
