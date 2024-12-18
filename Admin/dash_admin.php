@@ -741,7 +741,7 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
         });
     </script>
 
-    <script>
+   <script>
         $(document).ready(function () {
             $.ajax({
                 url: "fetchTopTeachers.php", // Backend script to fetch data
@@ -852,7 +852,6 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
             };
         }
     </script>
-
 
    <script>
         document.addEventListener("DOMContentLoaded", () => {
