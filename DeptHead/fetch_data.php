@@ -3,8 +3,8 @@
 
 $servername = "doc-map2024_sean";
 $username = "mysql";
-$password = "";
-$dbname = "proftal4";
+$password = "qwerty";
+$dbname = "docmap1";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
