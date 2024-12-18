@@ -205,7 +205,9 @@ if (!$stmt_auto_reject->execute()) {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     <style>
-        
+        body {
+  background-color: #F1F0F6; /* Light gray */
+}
 
         .header {
             margin-top: 10px;

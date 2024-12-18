@@ -144,6 +144,9 @@ if ($stmt = mysqli_prepare($conn, $gradeLevelQuery)) {
     <link rel="stylesheet" href="assets/css/styles.css">
 
     <style>
+        body {
+  background-color: #F1F0F6; /* Light gray */
+}
         .header-section {
             position: relative;
             display: flex;

@@ -414,7 +414,7 @@ if ($result->num_rows > 0) {
 
     </style>
     </head>
-    <body style="background-color:#f0f0f0;">
+    <body style="background-color:#F1F0F6;">
         <!-- SIDEBAR -->
         <section id="sidebar">
             <?php include 'navbar.php'; ?>

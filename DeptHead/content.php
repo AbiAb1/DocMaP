@@ -51,6 +51,9 @@ if (isset($_GET['ContentID'])) {
         <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="assets/css/styles.css">
         <style>
+            body {
+  background-color: #F1F0F6; /* Light gray */
+}
             /* Custom styles */
             .contentCard {
                 background-color: var(--blue);

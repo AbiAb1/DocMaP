@@ -152,6 +152,9 @@ $conn->close();
             font-size: 1.5em;
             margin-right: 10px;
         }
+        body {
+  background-color: #F1F0F6; /* Light gray */
+}
     </style>
 </head>
 <body>

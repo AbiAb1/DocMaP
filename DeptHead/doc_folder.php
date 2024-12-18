@@ -64,6 +64,9 @@ if ($deptID) {
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
+        body {
+  background-color: #F1F0F6; /* Light gray */
+}
         .no-folders-message {
             text-align: center;
             font-size: 1.5rem;

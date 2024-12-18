@@ -495,7 +495,9 @@ mysqli_close($conn);
     font-weight:bold;
     color:#9b2035;
 }
-
+body {
+  background-color: #F1F0F6; /* Light gray */
+}
 
     </style>
 </head>

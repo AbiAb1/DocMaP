@@ -43,6 +43,9 @@ function getIconForMimeType($mimeType) {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
+  background-color: #F1F0F6; /* Light gray */
+}
+        body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;

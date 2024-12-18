@@ -69,6 +69,9 @@ $conn->close();
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         
     <style>
+        body {
+  background-color: #F1F0F6; /* Light gray */
+}
         .container {
             width: 100%; /* Ensure full width for responsiveness */
             border-radius: 20px;

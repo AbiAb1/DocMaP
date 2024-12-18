@@ -544,9 +544,7 @@ $conn->close();
             display: none; /* Hide image on mobile screens */
         }
     }
-    body {
-  background-color: #F1F0F6; /* Light gray */
-}
+
 
 
 
@@ -560,7 +558,7 @@ $conn->close();
     <!-- SIDEBAR -->
 
     <!-- NAVBAR -->
-    <section id="content" style ="background-color:#f0f0f0;">
+    <section id="content" style ="background-color:#F1F0F6;">
         <!-- NAVBAR -->
         <?php include 'topbar.php'; ?>
         <!-- NAVBAR -->

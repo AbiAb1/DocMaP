@@ -16,6 +16,9 @@
     <link href="https://unpkg.com/ionicons@5.5.2/dist/ionicons.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/styles.css">
     <style>
+        body {
+  background-color: #F1F0F6; /* Light gray */
+}
         /* Basic Styles */
         body {
             font-family: Arial, sans-serif;
