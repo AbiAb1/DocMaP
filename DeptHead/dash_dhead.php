@@ -655,7 +655,7 @@ if (!$result) {
     <!-- NAVBAR -->
     <section id="content">
         <!-- NAVBAR -->
-        <?php include 'topbar.php'; ?>
+        
         <!-- NAVBAR -->
 
         <!-- MAIN -->
