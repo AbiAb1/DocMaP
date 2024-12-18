@@ -39,6 +39,9 @@ if ($result) {
             'precision' => $precision,
         ];
     }
+} else {
+    // Error handling
+    error_log(mysqli_error($conn));
 }
 
 header('Content-Type: application/json');
