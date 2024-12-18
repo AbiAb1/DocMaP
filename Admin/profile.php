@@ -575,82 +575,73 @@ body {
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-document.getElementById('editButton').addEventListener('click', function () {
-    // Populate the modal fields with existing data
-    const fname = "<?php echo isset($ufname) ? htmlspecialchars($ufname, ENT_QUOTES, 'UTF-8') : ''; ?>";
-    const mname = "<?php echo isset($umname) ? htmlspecialchars($umname, ENT_QUOTES, 'UTF-8') : ''; ?>";
-    const lname = "<?php echo isset($ulname) ? htmlspecialchars($ulname, ENT_QUOTES, 'UTF-8') : ''; ?>";
-    const email = "<?php echo isset($email) ? htmlspecialchars($email, ENT_QUOTES, 'UTF-8') : ''; ?>";
-    const mobile = "<?php echo isset($mobile) ? htmlspecialchars($mobile, ENT_QUOTES, 'UTF-8') : ''; ?>";
-    const bday = "<?php echo isset($bday) ? htmlspecialchars($bday, ENT_QUOTES, 'UTF-8') : ''; ?>";
-    const sex = "<?php echo isset($sex) ? htmlspecialchars($sex, ENT_QUOTES, 'UTF-8') : ''; ?>";
-    const address = "<?php echo isset($address) ? htmlspecialchars($address, ENT_QUOTES, 'UTF-8') : ''; ?>";
-
-    document.getElementById('editFname').value = fname;
-    document.getElementById('editMname').value = mname;
-    document.getElementById('editLname').value = lname;
-    document.getElementById('editEmail').value = email;
-    document.getElementById('editMobile').value = mobile;
-    document.getElementById('editBday').value = bday;
-    document.getElementById('editSex').value = sex;
-    document.getElementById('editAddress').value = address;
-
-    // Show the modal
-    const modal = new bootstrap.Modal(document.getElementById('editModal'));
-    modal.show();
-});
-
-document.addEventListener('DOMContentLoaded', (event) => {
-    // Your JavaScript code here
-    document.getElementById('saveChanges').addEventListener('click', function () {
-        // Gather data from the modal fields
-        const formData = {
-            action: 'update',
-            fname: document.getElementById('editFname').value,
-            mname: document.getElementById('editMname').value,
-            lname: document.getElementById('editLname').value,
-            email: document.getElementById('editEmail').value,
-            mobile: document.getElementById('editMobile').value,
-            bday: document.getElementById('editBday').value,
-            sex: document.getElementById('editSex').value,
-            address: document.getElementById('editAddress').value
-        };
-
-        // Send data to the backend using AJAX
-        fetch('edit_user.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: data.message
-                }).then(() => { // After SweetAlert is closed
-                    // Refresh the page
-                    location.reload(); 
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: data.message
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'An error occurred while updating user details.'
+        document.getElementById('editButton').addEventListener('click', function () {
+            // Safely populate the modal fields with existing data from PHP
+            const fields = {
+                fname: "<?php echo isset($ufname) ? htmlspecialchars($ufname, ENT_QUOTES, 'UTF-8') : ''; ?>",
+                mname: "<?php echo isset($umname) ? htmlspecialchars($umname, ENT_QUOTES, 'UTF-8') : ''; ?>",
+                lname: "<?php echo isset($ulname) ? htmlspecialchars($ulname, ENT_QUOTES, 'UTF-8') : ''; ?>",
+                email: "<?php echo isset($email) ? htmlspecialchars($email, ENT_QUOTES, 'UTF-8') : ''; ?>",
+                mobile: "<?php echo isset($mobile) ? htmlspecialchars($mobile, ENT_QUOTES, 'UTF-8') : ''; ?>",
+                bday: "<?php echo isset($bday) ? htmlspecialchars($bday, ENT_QUOTES, 'UTF-8') : ''; ?>",
+                sex: "<?php echo isset($sex) ? htmlspecialchars($sex, ENT_QUOTES, 'UTF-8') : ''; ?>",
+                address: "<?php echo isset($address) ? htmlspecialchars($address, ENT_QUOTES, 'UTF-8') : ''; ?>"
+            };
+        
+            // Populate fields
+            Object.keys(fields).forEach((key) => {
+                const input = document.getElementById(`edit${key.charAt(0).toUpperCase() + key.slice(1)}`);
+                if (input) input.value = fields[key];
             });
         });
-    });
-});
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('saveChanges').addEventListener('click', function () {
+                // Gather data from the modal fields
+                const formData = {
+                    action: 'update',
+                    fname: document.getElementById('editFname').value,
+                    mname: document.getElementById('editMname').value,
+                    lname: document.getElementById('editLname').value,
+                    email: document.getElementById('editEmail').value,
+                    mobile: document.getElementById('editMobile').value,
+                    bday: document.getElementById('editBday').value,
+                    sex: document.getElementById('editSex').value,
+                    address: document.getElementById('editAddress').value
+                };
+        
+                // Send data to the backend using AJAX
+                fetch('edit_user.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: data.message
+                            }).then(() => location.reload());
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.message
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'An error occurred while updating user details.'
+                        });
+                    });
+            });
+        });
 
 </script>
 
