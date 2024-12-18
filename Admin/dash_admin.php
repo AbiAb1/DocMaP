@@ -445,7 +445,7 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
                                                                 <!-- Department Head Count -->
                                                                 <div class="col-6 text-left">
                                                                     <h4 style="font-weight: bold;"><?php echo $departmentHeadCount; ?></h4>
-                                                                    <div class="chart-container top-right">
+                                                                    <div class="chart-container top-right" style ="height:70px; width:70px;">
                                                                         <canvas id="deptHeadChart"></canvas>
                                                                     </div>
                                                                     <p style="font-weight: bold; font-size: 13px; margin-top: 10px;">Dept Head</p>
@@ -454,7 +454,7 @@ if (isset($_SESSION['login_success']) && $_SESSION['login_success'] === true) {
                                                                 <!-- Teacher Count -->
                                                                 <div class="col-6 text-left">
                                                                     <h4 style="font-weight: bold;"><?php echo $teacherCount; ?></h4>
-                                                                    <div class="chart-container top-right">
+                                                                    <div class="chart-container top-right" style ="height:70px; width:70px;">
                                                                         <canvas id="teacherChart"></canvas>
                                                                     </div>
                                                                     <p style="font-weight: bold; font-size: 13px; margin-top: 10px;">Teacher</p>
