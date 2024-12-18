@@ -91,4 +91,6 @@ try {
     $conn->rollback();
     handleError("An unexpected error occurred: " . $e->getMessage());
 }
+print_r($departments);
+
 ?>
