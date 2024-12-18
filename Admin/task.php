@@ -1743,6 +1743,11 @@ function removeFile(fileItem) {
                     showNotification('An error occurred while processing your request.', 'error');
                 });
             }
+            if ($success) {
+    echo json_encode(['status' => 'success']);
+  } else {
+    echo json_encode(['status' => 'error', 'message' => 'An error occurred during task approval.']); // Provide specific error
+  }
         });
     </script>
 
