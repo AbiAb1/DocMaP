@@ -502,7 +502,7 @@ mysqli_close($conn);
         
         <h6 style ="margin-top:50px;">Attachments:</h6>
 
-   <?php
+      <?php
 if (!empty($documents)) {
     echo '<div class="Attachment-container row">';
     foreach ($documents as $document) {
@@ -516,7 +516,7 @@ if (!empty($documents)) {
             $fileUrl = $filePath; // Serve from the local server
         } else {
             // GitHub raw URL fallback
-            $fileUrl = "https://raw.githubusercontent.com/AbiAb1/DocMaP2/extra/Admin/Attachments/" . urlencode($document['name']);
+            $fileUrl = "https://raw.githubusercontent.com/AbiAb1/DocMaP/extra/Admin/Attachments/" . urlencode($document['name']);
         }
 
         echo '<div class="col-md-3">';
