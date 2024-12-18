@@ -8,11 +8,12 @@ if (isset($_GET['dept_id'])) {
 
     // Fetch department-level statistics for total submit and assigned counts
     // Total submitted or approved tasks
-    $submittedQuery = "SELECT COUNT(tu.Task_User_UserID) AS totalSubmit 
-                       FROM task_user tu
-                       INNER JOIN feedcontent fc ON tu.ContentID = fc.ContentID 
-                       WHERE (tu.Status = 'Submitted' OR tu.Status = 'Approved' OR tu.Status = 'Rejected') 
-                       AND fc.dept_ID = ?";
+     $submittedQuery = "SELECT COUNT(UserID) AS totalSubmit 
+                   FROM task_user 
+                   INNER JOIN feedcontent ON task_user.ContentID = feedcontent.ContentID 
+                   WHERE (task_user.Status = 'Submitted' or 'Approved' or 'Rejected') 
+                   AND feedcontent.dept_ID = ?";
+
     $submittedStmt = $conn->prepare($submittedQuery);
     $submittedStmt->bind_param('i', $dept_id);
     $submittedStmt->execute();
@@ -20,12 +21,10 @@ if (isset($_GET['dept_id'])) {
     $totalSubmit = $submittedResult->fetch_assoc()['totalSubmit'] ?? 0;
 
     // Total assigned tasks with Status = 'Assign'
-    $assignedQuery = "SELECT COUNT(tu.Task_User_UserID) AS totalAssigned
-                      FROM task_user tu
-                      INNER JOIN tasks t ON tu.TaskID = t.TaskID
-                      INNER JOIN feedcontent fc ON t.ContentID = fc.ContentID
-                      WHERE fc.dept_ID = ? 
-                      AND t.Status = 'Assign'";  // Only count tasks with 'Assign' status
+    $assignedQuery = "SELECT COUNT(UserID) AS totalAssigned 
+    FROM task_user 
+    INNER JOIN feedcontent ON task_user.ContentID = feedcontent.ContentID 
+    WHERE feedcontent.dept_ID = ?";
     $assignedStmt = $conn->prepare($assignedQuery);
     $assignedStmt->bind_param('i', $dept_id);
     $assignedStmt->execute();
