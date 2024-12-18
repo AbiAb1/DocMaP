@@ -82,6 +82,7 @@ try {
         }
         $conn->commit();
         header('Content-Type: application/json');
+        print_r($departments);
         echo json_encode(['departments' => $departments]);
     } else {
         $conn->rollback();
@@ -91,6 +92,6 @@ try {
     $conn->rollback();
     handleError("An unexpected error occurred: " . $e->getMessage());
 }
-print_r($departments);
+
 
 ?>
