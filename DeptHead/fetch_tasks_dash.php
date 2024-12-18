@@ -35,7 +35,8 @@ if (isset($_GET['dept_id'])) {
         $assignedQuery = "SELECT COUNT(UserID) AS totalAssigned 
                           FROM task_user 
                           INNER JOIN feedcontent ON task_user.ContentID = feedcontent.ContentID 
-                          WHERE feedcontent.dept_ID = ?";
+                          INNER JOIN tasks t ON feedcontent.ContentID = t.ContentID
+                          WHERE t.type = 'Task' AND feedcontent.dept_ID = ?";
 
         $assignedStmt = $conn->prepare($assignedQuery);
         $assignedStmt->bind_param('i', $deptID);
