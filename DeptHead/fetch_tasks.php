@@ -1,5 +1,5 @@
 <?php
-include('connection.php'); // Your database connection file
+include 'connection.php';
 session_start();
 
 //Improved Error Handling
