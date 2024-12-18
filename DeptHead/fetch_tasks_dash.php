@@ -49,8 +49,6 @@ WHERE
     AND (t.ApprovalStatus = 'Approved' OR t.ApprovalStatus IS NULL)
 GROUP BY 
     t.TimeStamp
-HAVING 
-    totalAssigned > 0
 ORDER BY 
     t.TimeStamp DESC
   "; // Limit to 5 groups
