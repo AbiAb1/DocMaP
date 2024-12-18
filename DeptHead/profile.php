@@ -432,7 +432,7 @@ body {
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title">Edit User Details</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
                                     <form id="editForm">
@@ -483,7 +483,7 @@ body {
                                     </form>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close"></button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">Close</button>
 
                                     <button type="button" id="saveChanges" class="btn btn-primary">Save Changes</button>
                                 </div>
