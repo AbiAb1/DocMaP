@@ -186,7 +186,7 @@ function updateTaskStatus($conn, $taskIDs, $status) {
                 
                     // Additional notification for approval
                     $approvalNotificationTitle = "Your Task has been Approved!";
-                    $approvalNotificationContent = "Task: $taskTitle has been approved by the administrator.";
+                    $approvalNotificationContent = "Task: $taskTitle has been approved!";
                     $approvalNotifStmt = $conn->prepare("INSERT INTO notifications (UserID, TaskID, ContentID, Title, Content, Status) VALUES (?, ?, ?, ?, ?, ?)");
                     $approvalNotifStmt->bind_param("sssssi", $creatorUserID, $TaskID, $ContentID, $approvalNotificationTitle, $approvalNotificationContent, $status);
                 
