@@ -576,27 +576,84 @@ mysqli_close($conn);
                         
 
 
-                         <?php
-if (!empty($attachments)) {
+                        <?php if (!empty($attachments)): ?>
+    <h6 style="margin-top: 50px;">Attachments:</h6>
+    <div class="attachment-container">
+        <?php foreach ($attachments as $attachment): ?>
+            <?php
+            // Remove the leading numbers followed by an underscore
+            $displayName = preg_replace('/^\d+_/', '', $attachment['name']);
+            ?>
+            <div class="attachment-item">
+                <a href="./Attachments/<?php echo $attachment['name']; ?>" target="_blank" class="file-link">
+                    <!-- File Icon -->
+                    <div class="file-icon">
+                        <?php
+                        // Determine the icon based on the file extension
+                        $fileExtension = pathinfo($attachment['name'], PATHINFO_EXTENSION);
+                        switch (strtolower($fileExtension)) {
+                            case 'pdf':
+                                echo '<i class="bx bx-file-pdf"></i>';
+                                break;
+                            case 'jpg':
+                            case 'jpeg':
+                            case 'png':
+                                echo '<i class="bx bx-image"></i>';
+                                break;
+                            case 'doc':
+                            case 'docx':
+                                echo '<i class="bx bxs-file-doc"></i>';
+                                break;
+                            case 'xls':
+                            case 'xlsx':
+                                echo '<i class="bx bx-file-excel"></i>';
+                                break;
+                            case 'txt':
+                                echo '<i class="bx bx-file"></i>';
+                                break;
+                            default:
+                                echo '<i class="bx bx-file"></i>';
+                                break;
+                        }
+                        ?>
+                    </div>
+                    <!-- File Name -->
+                    <div class="file-info">
+                        <span class="file-name"><?php echo htmlspecialchars($displayName); ?></span>
+                    </div>
+                    <!-- Pin Icon -->
+                    <div class="pin-icon">
+                        <i class="bx bx-paperclip"></i>
+                    </div>
+                </a>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php else: ?>
+    <p>No attachments available.</p>
+<?php endif; ?>
+
+<?php
+if (!empty($documents)) {
     echo '<div class="Attachment-container row">';
-    foreach ($attachments as $attachment) {
+    foreach ($documents as $document) {
         // Remove leading numbers and underscore
-        $displayName = preg_replace('/^\d+_/', '', $attachment['name']);
+        $displayName = preg_replace('/^\d+_/', '', $document['name']);
         // Local file path (replace with your actual path if stored locally)
-        $filePath = "Attachments/" . $attachment['name'];
+        $filePath = "Admin/Attachments/" . $document['name'];
 
         // Check if the file exists locally
         if (file_exists($filePath)) {
             $fileUrl = $filePath; // Serve from the local server
         } else {
             // GitHub raw URL fallback
-            $fileUrl = "https://raw.githubusercontent.com/AbiAb1/DocMaP/extra/Attachments/" . urlencode($attachment['name']);
+            $fileUrl = "https://raw.githubusercontent.com/AbiAb1/DocMaP2/extra/Admin/Attachments/" . urlencode($document['name']);
         }
 
         echo '<div class="col-md-3">';
         echo '<a href="' . htmlspecialchars($fileUrl) . '" target="_blank" class="file">';
         echo '<span>' . htmlspecialchars($displayName) . '</span>';
-        echo '<div class="pin-icon" >';
+        echo '<div class="pin-icon" style="background-color: ' . htmlspecialchars($task_color) . ';">';
         echo '<i class="bx bx-paperclip"></i>';
         echo '</div>';
         echo '</a>';
@@ -607,6 +664,7 @@ if (!empty($attachments)) {
     echo '<p>No attachments available.</p>';
 }
 ?>
+
 
                     </div>
                 </div>
