@@ -179,7 +179,7 @@ mysqli_close($conn);
         <?php include 'navbar.php'; ?>
     </section>
     <!-- SIDEBAR -->
-    <section id="content" style="background-color:#F1F0F6;">
+    <section id="content">
         <!-- NAVBAR -->
         <?php include 'topbar.php'; ?>
         <!-- NAVBAR -->
