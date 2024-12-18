@@ -4,20 +4,11 @@ $username = "mysql";
 $password = "qwerty";
 $dbname = "docmap1";
 
-try {
-    // PDO connection string
-    $dsn = "mysql:host=$servername;dbname=$dbname;charset=utf8mb4";
-    $options = [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, // Set error mode to exception
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, // Fetch as associative arrays
-        PDO::ATTR_EMULATE_PREPARES => false, // Disable emulated prepared statements (for security)
-    ];
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
 
-    // Create PDO connection
-    $conn = new PDO($dsn, $username, $password, $options);
-    // Connection successful
-} catch (PDOException $e) {
-    // Handle connection errors
-    die("Connection failed: " . $e->getMessage());
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
 ?>
