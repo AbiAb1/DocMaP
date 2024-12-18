@@ -4,6 +4,10 @@
 $githubRepo = "AbiAb1/DocMaP"; // Your GitHub username/repo
 $branch = "extra"; // Branch where you want to upload
 
+// Define the target directory for the uploaded file
+$targetDir = "TeacherData/";
+$targetFile = $targetDir . "LNHS-Teachers.xlsx";
+
 // Check if the file was uploaded via AJAX
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES["file"])) {
     // Get the uploaded file details
@@ -21,11 +25,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES["file"])) {
         exit;
     }
 
+    // Save the file locally
+    if (!is_dir($targetDir)) {
+        mkdir($targetDir, 0777, true); // Create directory if it doesn't exist
+    }
+
+    if (!move_uploaded_file($fileTmpName, $targetFile)) {
+        echo json_encode(['status' => 'error', 'message' => 'Failed to save file locally.']);
+        exit;
+    }
+
     // Prepare GitHub API URL
     $uploadUrl = "https://api.github.com/repos/$githubRepo/contents/Admin/TeacherData/$sanitizedFileName";
 
     // Read the file content
-    $content = base64_encode(file_get_contents($fileTmpName));
+    $content = base64_encode(file_get_contents($targetFile));
 
     // Prepare the request body for adding the new file
     $data = json_encode([
@@ -103,7 +117,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES["file"])) {
         if ($httpCode == 201) {
             // File uploaded successfully to GitHub
             $githubDownloadUrl = $responseData['content']['download_url'];
-            echo json_encode(['status' => 'success', 'message' => 'File uploaded to GitHub successfully.', 'url' => $githubDownloadUrl]);
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'File uploaded successfully.',
+                'localPath' => $targetFile,
+                'githubUrl' => $githubDownloadUrl
+            ]);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Error uploading file to GitHub: ' . $response]);
         }
