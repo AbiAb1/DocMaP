@@ -1,4 +1,4 @@
-<div href="dash.php" class="brand" style="text-align:center; font-size:38px; margin-top: 15px;">
+<div href="dash.php" class="brand" style="text-align:center; font-size:38px; margin-top: 15px;background-color:#ffff;">
     <i class="icon">
         <img src="img/Logo/docmap-logo-1.png" alt="Icon" style="max-width: 40px; height: auto;">
     </i>
