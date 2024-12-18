@@ -1151,9 +1151,9 @@ if (!$stmt_auto_reject->execute()) {
 
     </style>
 </head>
-<body>
+<body style="background-color:#F1F0F6;">
     <!-- SIDEBAR -->
-    <section id="sidebar">
+    <section id="sidebar" style ="background-color:#ffff;">
         <?php include 'navbar.php'; ?>
     </section>
     <!-- SIDEBAR -->

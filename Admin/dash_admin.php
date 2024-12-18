@@ -372,13 +372,13 @@ $conn->close();
             background-color: transparent; /* Transparent background */
             position: relative; /* Allows positioning */
         }
-        body {
+body {
   background-color: #F1F0F6; /* Light gray */
 }
 
     </style>
 </head>
-<body style="background-color:#f0f0f0;">
+<body style="background-color:#F1F0F6;">
 
 <?php
 // Check if login was successful

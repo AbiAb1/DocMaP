@@ -1092,9 +1092,9 @@ body {
         
     </style>
 </head>
-<body>
+<body style="background-color:#F1F0F6;">
     <!-- SIDEBAR -->
-    <section id="sidebar">
+    <section id="sidebar" style ="background-color:#ffff;">
         <?php include 'navbar.php'; ?>
     </section>
     <!-- SIDEBAR -->
@@ -1106,7 +1106,7 @@ body {
         <!-- NAVBAR -->
 
         <!-- MAIN -->
-        <main style="background-color:#F1F0F6;">
+        <main>
             <div class="header">
                 <h1>Announcements</h1>
                 
