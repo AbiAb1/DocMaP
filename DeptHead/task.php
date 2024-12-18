@@ -205,9 +205,7 @@ if (!$stmt_auto_reject->execute()) {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     <style>
-        body {
-  background-color: #F1F0F6; /* Light gray */
-}
+        
 
         .header {
             margin-top: 10px;
@@ -1151,21 +1149,20 @@ if (!$stmt_auto_reject->execute()) {
 
     </style>
 </head>
-<body style="background-color:#F1F0F6;">
+<body>
     <!-- SIDEBAR -->
-    <section id="sidebar" style ="background-color:#ffff;">
+ <!-- SIDEBAR -->
+ <section id="sidebar"style="background-color: white;">
         <?php include 'navbar.php'; ?>
     </section>
     <!-- SIDEBAR -->
-
-    <!-- CONTENT -->
-    <section id="content">
+    <section id="content" style="background-color:white;">
         <!-- NAVBAR -->
         <?php include 'topbar.php'; ?>
         <!-- NAVBAR -->
 
         <!-- MAIN -->
-        <main>
+        <main style="background-color:#F1F0F6;">
         <div class="tab-buttons">
     <button class="tab-button <?php echo $active_tab === 'tasks' ? 'active' : ''; ?>" onclick="switchTab('tasks')">Tasks</button>
     <button class="tab-button <?php echo $active_tab === 'pending' ? 'active' : ''; ?>" onclick="switchTab('pending')">Pending Tasks</button>
