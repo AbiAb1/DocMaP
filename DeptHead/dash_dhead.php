@@ -795,27 +795,7 @@ if (!$result) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.41/moment-timezone-with-data.min.js"></script>
-    <script>
-    // Function to load the latest tasks from the server
-    function loadRecentTasks() {
-        // Fetch the recent tasks from the server
-        fetch('fetch_recent_docs.php')
-            .then(response => response.text())
-            .then(data => {
-                // Replace the content inside the container with the new data
-                document.getElementById('recent-tasks-container').innerHTML = data;
-            })
-            .catch(error => {
-                console.error('Error fetching recent tasks:', error);
-            });
-    }
 
-    // Initial load
-    loadRecentTasks();
-
-    // Reload the tasks every 5 seconds (5000 milliseconds)
-    setInterval(loadRecentTasks, 5000);
-</script>
     <script>
  $(document).ready(function () {
     let teacherData = []; // Store the fetched teacher data for filtering
@@ -1146,125 +1126,7 @@ function formatDate(date) {
 function formatTime(time) {
     var options = { hour: '2-digit', minute: '2-digit', hour12: true };
     return new Date('1970-01-01T' + time + 'Z').toLocaleTimeString('en-US', options);
-}
-
-    // Function to populate year options
-    function populateYearSelect() {
-        const yearSelect = document.getElementById('yearSelect');
-        const currentYear = new Date().getFullYear();
-        const startYear = currentYear - 10; // 5 years before
-        const endYear = currentYear + 0; // 5 years after
-        
-        // Clear existing options
-        yearSelect.innerHTML = '';
-
-        // Create the "All Years" option
-        const allYearsOption = document.createElement('option');
-        allYearsOption.value = '';
-        allYearsOption.textContent = 'All Years';
-        yearSelect.appendChild(allYearsOption);
-
-        // Populate year options
-        for (let year = startYear; year <= endYear; year++) {
-            const option = document.createElement('option');
-            option.value = year;
-            option.textContent = year;
-            yearSelect.appendChild(option);
-        }
-    }
-
-    // Chart options
-    var options = {
-        chart: {
-            type: 'line',
-            height: 350,
-            toolbar: {
-                show: true
-            }
-        },
-        series: [{
-            name: 'Documents Uploaded',
-            data: [] // Start with empty data
-        }],
-        xaxis: {
-            categories: [
-                'January', 'February', 'March', 'April', 'May', 'June',
-                'July', 'August', 'September', 'October', 'November', 'December'
-            ],
-            title: {
-                text: 'Months'
-            }
-        },
-        yaxis: {
-            title: {
-                text: 'Number of Uploaded Documents'
-            },
-            min: 0
-        },
-        tooltip: {
-            shared: true,
-            intersect: false
-        },
-        responsive: [{
-            breakpoint: 480,
-            options: {
-                chart: {
-                    width: 200
-                },
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }]
-    };
-
-    var chart = new ApexCharts(document.querySelector("#chart1"), options);
-    chart.render();
-
-    // Event listener for year selection
-    document.getElementById('yearSelect').addEventListener('change', updateChart);
-
-    // Fetch data from server
-    async function fetchData(year) {
-        return new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-            xhr.open("GET", `fetch_data.php?year=${year}`, true);
-            xhr.onload = function () {
-                if (xhr.status >= 200 && xhr.status < 300) {
-                    resolve(JSON.parse(xhr.responseText));
-                } else {
-                    reject('Failed to fetch data');
-                }
-            };
-            xhr.onerror = function () {
-                reject('Request failed');
-            };
-            xhr.send();
-        });
-    }
-
-    // Update chart data
-    async function updateChart() {
-        var selectedYear = document.getElementById('yearSelect').value;
-
-        try {
-            var filteredData = await fetchData(selectedYear);
-            chart.updateSeries([{
-                name: 'Documents Uploaded',
-                data: filteredData
-            }]);
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
-    // Initialize the year select and chart on page load
-    window.onload = function() {
-        populateYearSelect();
-        updateChart();
-    };
-    
-    
+}    
 </script>
 
 
