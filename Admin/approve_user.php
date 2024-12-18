@@ -1,7 +1,7 @@
 <?php
 include 'connection.php';
 
-require 'vendor/autoload.php'; // Path to Composer autoload file
+require '../vendor/autoload.php';  // Path to Composer autoload file
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
