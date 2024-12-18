@@ -150,7 +150,7 @@ $contents = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
 <body style ="background-color:#F1F0F6;">
     <!-- SIDEBAR -->
-    <section id="sidebar">
+    <section id="sidebar" style ="background-color:#ffff;">
         <?php include 'navbar.php'; ?>
     </section>
     <!-- SIDEBAR -->
@@ -176,7 +176,7 @@ $contents = mysqli_fetch_all($result, MYSQLI_ASSOC);
                         $contentColor = htmlspecialchars($row['ContentColor'], ENT_QUOTES, 'UTF-8');
                         
                         // Now applying ContentColor safely to the inline style
-                        echo "<div class='card' style='background-color: white;'>"; // Use background-color instead of color for the card's background
+                        echo "<div class='card' style='background-color: $contentColor;'>"; // Use background-color instead of color for the card's background
                         
                         echo "<h2><a style='color:#ffff; font-size: 25px;' href='tasks.php?content_id=" . htmlspecialchars($row['ContentID'], ENT_QUOTES, 'UTF-8') . "'>" . htmlspecialchars($row['Title'], ENT_QUOTES, 'UTF-8') . "</a></h2>";
                         echo "<p>" . htmlspecialchars($row['Captions'], ENT_QUOTES, 'UTF-8') . "</p>";
