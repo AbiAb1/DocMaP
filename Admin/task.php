@@ -1093,13 +1093,13 @@ $result = $conn->query($query);
 </head>
 <body style="background-color:#f0f0f0;">
     <!-- SIDEBAR -->
-    <section id="sidebar">
+    <section id="sidebar" style ="background-color:#ffff;">
         <?php include 'navbar.php'; ?>
     </section>
     <!-- SIDEBAR -->
 
     <!-- CONTENT -->
-    <section id="content">
+    <section id="content" style ="background-color:#ffff;">
         <!-- NAVBAR -->
         <?php include 'topbar.php'; ?>
         <!-- NAVBAR -->
