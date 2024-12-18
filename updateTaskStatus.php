@@ -1,43 +1,50 @@
 <?php
-session_start();
+// Include your database connection script
 include 'connection.php';
 
-$response = ['success' => false, 'message' => ''];
+// Check if the request is a POST request
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Decode the JSON data sent from the front-end
+    $data = json_decode(file_get_contents("php://input"));
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = json_decode(file_get_contents('php://input'), true);
+    // Extract taskID, contentID, and status from the decoded data
+    $taskID = mysqli_real_escape_string($conn, $data->taskID);
+    $contentID = mysqli_real_escape_string($conn, $data->contentID);
+    $status = mysqli_real_escape_string($conn, $data->status);
 
-    if (isset($data['taskID'], $data['contentID'], $data['status'])) {
-        $taskID = $data['taskID'];
-        $contentID = $data['contentID'];
-        $status = $data['status'];
-        $userID = $_SESSION['user_id'];
+    // Prepare SQL statement to update task status
+    $sql = "UPDATE Documents SET status = ? WHERE TaskID = ? AND ContentID = ?";
 
-        try {
-            // Update Documents table
-            $stmtDocuments = $conn->prepare("UPDATE Documents SET status = ? WHERE TaskID = ? AND ContentID = ?");
-            $stmtDocuments->bind_param("iii", $status, $taskID, $contentID); // Assuming integers
-            $stmtDocuments->execute();
+    // Use prepared statement to prevent SQL injection
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("iii", $status, $taskID, $contentID);
 
-            // Update task_user table
-            $stmtTaskUser = $conn->prepare("UPDATE task_user SET Status = ? WHERE TaskID = ? AND UserID = ?");
-            $stmtTaskUser->bind_param("sii", $status, $taskID, $userID); // Assuming string, int, int
-            $stmtTaskUser->execute();
-
-            $response['success'] = true;
-            $response['message'] = 'Task status updated successfully!';
-        } catch (mysqli_sql_exception $e) {
-            $response['message'] = "Database error: " . $e->getMessage();
-        } catch (Exception $e) {
-            $response['message'] = "An error occurred: " . $e->getMessage();
-        }
+    // Execute the statement
+    if ($stmt->execute()) {
+        // Return success response
+        $response = [
+            'success' => true,
+            'message' => 'Task status updated successfully!'
+        ];
+        echo json_encode($response);
     } else {
-        $response['message'] = 'Missing taskID, contentID, or status.';
+        // Return error response
+        $response = [
+            'success' => false,
+            'message' => 'Error updating task status'
+        ];
+        echo json_encode($response);
     }
-} else {
-    $response['message'] = 'Invalid request method.';
-}
 
-echo json_encode($response);
-$conn->close();
+    // Close the statement and connection
+    $stmt->close();
+    $conn->close();
+} else {
+    // Return error if not a POST request
+    $response = [
+        'success' => false,
+        'message' => 'Invalid request method'
+    ];
+    echo json_encode($response);
+}
 ?>
