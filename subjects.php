@@ -148,14 +148,14 @@ $contents = mysqli_fetch_all($result, MYSQLI_ASSOC);
     </style>
 </head>
 
-<body>
+<body style ="background-color:#f0f0f0;">
     <!-- SIDEBAR -->
     <section id="sidebar">
         <?php include 'navbar.php'; ?>
     </section>
     <!-- SIDEBAR -->
 
-    <section id="content" style ="background-color:#f0f0f0;">
+    <section id="content" >
         <!-- NAVBAR -->
         <?php include 'topbar.php'; ?>
         <!-- NAVBAR -->
