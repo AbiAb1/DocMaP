@@ -173,7 +173,7 @@ mysqli_close($conn);
 }
 </style>
 </head>
-<body>
+<body style="background-color:#f0f0f0;">
     <!-- SIDEBAR -->
     <section id="sidebar">
         <?php include 'navbar.php'; ?>
