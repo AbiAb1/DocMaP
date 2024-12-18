@@ -41,10 +41,13 @@ if ($departmentsResult && $departmentsResult->num_rows > 0) {
         $submittedResult = $submittedStmt->get_result();
 
         // Fetch assigned task count for the department
-        $assignedQuery = "SELECT COUNT(UserID) AS totalAssigned 
-                          FROM task_user 
-                          INNER JOIN feedcontent ON task_user.ContentID = feedcontent.ContentID 
-                          WHERE feedcontent.dept_ID = ?";
+        $assignedQuery = "SELECT COUNT(task_user.UserID) AS totalAssigned 
+                  FROM task_user 
+                  INNER JOIN feedcontent ON task_user.ContentID = feedcontent.ContentID 
+                  INNER JOIN tasks ON feedcontent.ContentID = tasks.ContentID 
+                  WHERE feedcontent.dept_ID = ? 
+                  AND tasks.Type = 'Task'";
+
 
         $assignedStmt = $conn->prepare($assignedQuery);
         $assignedStmt->bind_param('i', $deptID);
