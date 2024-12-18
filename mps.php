@@ -206,7 +206,7 @@ $printButtonDisabled = (mysqli_num_rows($resultMPS) == 0) ? 'disabled' : '';
 
     </style>
 </head>
-<body>
+<body  style="background-color#ffff;">
     <!-- SIDEBAR -->
     <section id="sidebar">
         <?php include 'navbar.php'; ?>
