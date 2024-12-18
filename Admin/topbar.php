@@ -17,7 +17,7 @@
         if (isset($_SESSION['user_id'])) {
             $user_id = $_SESSION['user_id'];
         ?>
-        <i class='bx bxs-bell icon' id="notification-icon"></i>
+        <i class='bx bxs-bell icon' id="notification-icon" style =" color:black;"></i>
         <div class="dropdown-menu" id="notifications-dropdown">
             <h4 style="font-weight:bold;color:#9B2035">Notifications</h4>
             <?php
@@ -59,7 +59,7 @@
         </div>
     </a>
     <a href="#" class="nav-link">
-        <i class='bx bxs-notepad icon'></i>
+        <i class='bx bxs-notepad icon' style =" color:black;"></i>
         <!-- Notepad icon content -->
     </a>
     <span class="divider"></span>
