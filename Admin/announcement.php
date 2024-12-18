@@ -1072,7 +1072,7 @@ body {
 </head>
 <body style="background-color:#f0f0f0;">
     <!-- SIDEBAR -->
-    <section id="sidebar">
+    <section id="sidebar" style ="background-color:#ffff;">
         <?php include 'navbar.php'; ?>
     </section>
     <!-- SIDEBAR -->
