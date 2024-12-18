@@ -140,6 +140,7 @@ function updateTaskStatus($conn, $taskIDs, $status) {
             $taskTitle = $taskDetails['Title'];
             $DueDate = $taskDetails['DueDate'];
             $DueTime = $taskDetails['DueTime'];
+            $timestamp = date('Y-m-d H:i:s');
 
             // Fetch associated users
             $userContentQuery = $conn->prepare("SELECT ua.UserID FROM usercontent uc 
