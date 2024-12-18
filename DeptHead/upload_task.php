@@ -76,15 +76,14 @@ if (isset($_FILES['file']) && count($_FILES['file']['name']) > 0 && !empty($_FIL
         write_log("Processing file $fileOriginalName: New Name = $fileName, Type = $fileType, Size = $fileSize, MimeType = $fileMimeType");
 
         // Check file size
-        if ($fileSize > 30000000) { // Limit to 5MB
+        if ($fileSize > 10000000) { // Limit to 10MB
             write_log("File too large: $fileOriginalName");
             $allFilesUploaded = false;
             continue; // Skip to the next file
         }
 
         // Allow certain file formats
-        $allowedTypes = array('jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'pptx',
-    'mp4', 'mov', 'avi', 'wmv', 'mkv');
+        $allowedTypes = array('jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'pptx');
         if (!in_array($fileType, $allowedTypes)) {
             write_log("Invalid file type: $fileOriginalName");
             $allFilesUploaded = false;
