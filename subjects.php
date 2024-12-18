@@ -155,7 +155,7 @@ $contents = mysqli_fetch_all($result, MYSQLI_ASSOC);
     </section>
     <!-- SIDEBAR -->
 
-    <section id="content">
+    <section id="content" style ="background-color:#f0f0f0;">
         <!-- NAVBAR -->
         <?php include 'topbar.php'; ?>
         <!-- NAVBAR -->
