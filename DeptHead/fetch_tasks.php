@@ -78,7 +78,9 @@ $sql = "SELECT t.TaskID AS TaskID, t.Title AS TaskTitle, t.taskContent, t.DueDat
         FROM tasks t
         LEFT JOIN feedcontent fc ON t.ContentID = fc.ContentID
         LEFT JOIN department d ON fc.dept_ID = d.dept_ID
-        WHERE t.Type = 'Task' AND d.dept_ID = ? AND t.ApprovalStatus = 'Approved' 
+        WHERE t.Type = 'Task' AND d.dept_ID = ? AND (t.ApprovalStatus = 'Approved' OR t.ApprovalStatus IS NULL)
+        HAVING 
+    totalAssigned > 0
         ORDER BY t.TimeStamp DESC  
         LIMIT ? OFFSET ?";
 $stmt_tasks = $conn->prepare($sql);

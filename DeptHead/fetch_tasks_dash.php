@@ -61,7 +61,7 @@ LEFT JOIN
 LEFT JOIN 
     task_user tu ON t.TaskID = tu.TaskID
 WHERE 
-    t.Type IN ('Task', 'Announcement')
+    t.Type = 'Task' 
     AND fc.dept_ID = ? 
     AND (t.ApprovalStatus = 'Approved' OR t.ApprovalStatus IS NULL)
 GROUP BY 
