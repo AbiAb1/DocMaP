@@ -860,11 +860,12 @@ $conn->close();
                         tableBody.innerHTML = '';
             
                         users.forEach(user => {
+                            console.log('Rendering user:', user); // Debugging
                             const row = document.createElement('tr');
                             row.innerHTML = `
                                 <td><input type="checkbox" class="select-user" 
                                         data-fullname="${user.fullname}" 
-                                        data-rank="${user.'Rank'}" 
+                                        data-rank="${user.Rank}" 
                                         data-address="${user.address}" 
                                         data-mobile="${user.mobile}" 
                                         data-email="${user.email}" 
@@ -877,6 +878,7 @@ $conn->close();
                             `;
                             tableBody.appendChild(row);
                         });
+
             
                         // Update pagination controls
                         updatePagination(total_pages, current_page);
