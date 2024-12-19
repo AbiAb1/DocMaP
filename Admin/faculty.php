@@ -13,7 +13,7 @@ $sql = "
     FROM 
         chairperson
     INNER JOIN 
-        useracc ON Cchairperson.UserID = useracc.UserID
+        useracc ON chairperson.UserID = useracc.UserID
     INNER JOIN 
         grade ON chairperson.Grade_ID = grade.Grade_ID
 ";
