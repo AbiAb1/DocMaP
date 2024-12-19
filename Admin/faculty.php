@@ -725,7 +725,7 @@ $conn->close();
                 }
             });
 
-            // Function to get selected user data (remains the same)
+            // Function to get selected user data
             function getSelectedUsers() {
                 const selectedCheckboxes = document.querySelectorAll('.select-user:checked');
                 return Array.from(selectedCheckboxes).map(checkbox => ({
@@ -737,7 +737,6 @@ $conn->close();
                     email: checkbox.getAttribute('data-email'),
                 }));
             }
-
             // Function to send updated users to the server
             function updateUsersOnServer(updatedUsers) {
                 // Filter out unchanged users
@@ -797,6 +796,7 @@ $conn->close();
                         });
                     });
             }
+
 
             // Function to load faculty members and update the table
             function loadFacultyMembers(page = 1) {
