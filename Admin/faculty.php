@@ -29,7 +29,6 @@ if ($result->num_rows > 0) {
 }
 
 $conn->close();
-
 ?>
 
 
@@ -39,6 +38,7 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Faculty</title>
+        <link rel="icon" type="image/png" href="../img/Logo/docmap-logo-1.png">
     <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
     <link href="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/styles.css">
@@ -48,9 +48,7 @@ $conn->close();
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         /* CSS for the faculty members list */
-        body {
-            font-family: Arial, sans-serif;
-        }
+        
 
         .faculty-list-container {
             margin: 20px;
@@ -86,12 +84,12 @@ $conn->close();
         }
 
         .btn-update {
-            background-color: #3498db;
+            background-color:blue;
             color: white;   
         }
 
         .btn-resign {
-            background-color: #e74c3c;
+            background-color: red;
             color: white;
         }
 
@@ -199,29 +197,53 @@ $conn->close();
             }
         }
 
-        /* Pagination styles */
-        .pagination-container {
+        .pagination {
+            display: flex;
+            justify-content: center;
             margin-top: 20px;
-            text-align: center;
+            margin-bottom: 30px;
         }
 
-        .pagination button {
-            padding: 8px 16px;
+        .pagination a {
+            padding: 10px 15px;
             margin: 0 5px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
+            text-decoration: none;
+            background-color: transparent; /* Make the background of the page numbers transparent */
+            color:grey;
+        
+            border-radius: 50%; /* Make buttons circular */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .pagination button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
+        .pagination a.active {
+            background-color: transparent;
+            color: #9b2035;
+            font-weight:bold;
         }
 
-        .pagination button:hover:not(:disabled) {
-            background-color: #3498db;
+        .pagination a:hover {
+            background-color: #ddd;
+        }
+
+        .pagination a.prev-button, .pagination a.next-button {
+            background-color: #a53649; /* Lighter shade for Previous and Next */
+            border-color: transparent; 
+            color: white;/* Lighter border color */
+        }
+
+        .pagination a.prev-button:hover, .pagination a.next-button:hover {
+            background-color: #a43150; /* Slightly darker shade when hovered */
+        }
+
+        .pagination a.first-button, .pagination a.last-button {
+            background-color: #9b2035; /* Dark background color for First and Last */
             color: white;
+        }
+
+        .pagination a.first-button:hover, .pagination a.last-button:hover {
+            background-color: #a43150; /* Lighter shade on hover for First and Last */
         }
 
         /*---------- Chairperson Container ----------*/
@@ -276,14 +298,14 @@ $conn->close();
         }
 
         /*---------- Chairperson Table ----------*/
-        .chairperson-table {
+        .chairperson-table, .faculty-table {
             width: 100%;
             border-collapse: collapse;
         }
 
         .chairperson-table th, .chairperson-table td {
             padding: 12px;
-            text-align: left;
+            text-align: center;
             border-bottom: 1px solid #ddd;
         }
 
@@ -292,7 +314,7 @@ $conn->close();
             color: white;
         }
 
-        .chairperson-table tr:hover {
+        .chairperson-table tr:hover, .faculty-table tr:hover {
             background-color: #f1f1f1;
         }
 
@@ -482,9 +504,24 @@ $conn->close();
             margin-left: auto;
             margin-right: auto;
         }
+
+        .info-message {
+            display: flex;
+            align-items: center;
+            margin-top: 5px; /* Space between title and message */
+            
+        }
+        
+        .info-message p {
+            font-size: 16px; /* Font size for the message */
+            color: #555; /* Color for the message text */
+            margin: 0; /* Remove default margin */
+        }
+
+
     </style>
 </head>
-<body>
+<body style="background-color:#F1F0F6;">
     <!-- SIDEBAR -->
     <section id="sidebar">
         <?php include 'navbar.php'; ?>
@@ -500,8 +537,15 @@ $conn->close();
         <!-- MAIN -->
         <main>
             <h1 class="faculty-list-title">Faculty Members</h1>
-            <div class="faculty-list-container">
+            <!-- Information Icon and Message -->
+                <div class="info-message" style="display: flex; align-items: center; margin-top: 10px;">
+                    <i class='bx bx-info-circle'style="font-size: 24px; margin-right: 10px; color:#9B2035; "></i>
+                    <p style="font-size: 14px; color: #555; margin: 0;"> <!-- Remove margin for better alignment -->
+                        You cannot undo once you removed a user.
+                </div>
 
+            <div class="faculty-list-container">
+                
                 <!-- Action Buttons -->
                 <div class="faculty-actions">
                     <div class="action-buttons">
@@ -512,7 +556,12 @@ $conn->close();
                             <i class="fas fa-trash-alt"></i> Resign
                         </button>
                     </div>
-                    <input type="text" id="searchInput" class="search-input" placeholder="Search Faculty..."/>
+                    <input
+                        type="text"
+                        id="searchInput"
+                        class="search-input"
+                        placeholder="Search Faculty..."
+                    />
                 </div>
 
                 <!-- Faculty Table -->
@@ -528,7 +577,8 @@ $conn->close();
                         </tr>
                     </thead>
                     <tbody>
-                        </tbody>
+                        
+                    </tbody>
                 </table>
                 <!-- Pagination controls -->
                 <div class="pagination-container">
@@ -542,25 +592,26 @@ $conn->close();
             <!------------------------------------ Chairperson Container ------------------------------->
             <div class="chairperson-container">
                 <h2>Chairpersons</h2>
-
+                
                 <!-- Buttons for Deletion and Assign -->
                 <div class="button-container">
-                    <button id="assignChairpersonBtn" class="btn-Assign">Assign Chairperson</button>
+                    <button id="assignChairpersonBtn" class="btn-update">Assign Chairperson</button>
                     <button id="deleteChairpersonBtn" class="btn-delete">Delete Chairperson</button>
                 </div>
-
+                
                 <table class="chairperson-table">
                     <thead>
                         <tr>
                             <th><input type="checkbox" id="selectAll-chairperson"></th>
                             <th>Full Name</th>
                             <th>Grade Level</th>
-                        </tr>
+                        </tr>   
                     </thead>
                     <tbody>
                         <?php if (!empty($chairpersonData)) : ?>
                             <?php foreach ($chairpersonData as $chairperson) : ?>
                                 <tr>
+                                    <!-- Checkbox for selecting chairpersons -->
                                     <td><input type="checkbox" name="chairpersonID[]" value="<?= $chairperson['Chairperson_ID']; ?>"></td>
                                     <td><?= htmlspecialchars($chairperson['FullName']); ?></td>
                                     <td><?= htmlspecialchars($chairperson['Grade_Level']); ?></td>
@@ -725,7 +776,7 @@ $conn->close();
                 }
             });
 
-            // Function to get selected user data (remains the same)
+            // Function to get selected user data
             function getSelectedUsers() {
                 const selectedCheckboxes = document.querySelectorAll('.select-user:checked');
                 return Array.from(selectedCheckboxes).map(checkbox => ({
@@ -737,7 +788,6 @@ $conn->close();
                     email: checkbox.getAttribute('data-email'),
                 }));
             }
-
             // Function to send updated users to the server
             function updateUsersOnServer(updatedUsers) {
                 // Filter out unchanged users
@@ -804,17 +854,17 @@ $conn->close();
                     .then(response => response.json())
                     .then(data => {
                         const { users, total_pages, current_page } = data;
-
+            
                         // Update the table with the fetched users
                         const tableBody = document.querySelector('.faculty-table tbody');
                         tableBody.innerHTML = '';
-                        
+            
                         users.forEach(user => {
                             const row = document.createElement('tr');
                             row.innerHTML = `
                                 <td><input type="checkbox" class="select-user" 
                                         data-fullname="${user.fullname}" 
-                                        data-rank="${user.Rank}" 
+                                        data-rank="${user.'Rank'}" 
                                         data-address="${user.address}" 
                                         data-mobile="${user.mobile}" 
                                         data-email="${user.email}" 
@@ -827,7 +877,7 @@ $conn->close();
                             `;
                             tableBody.appendChild(row);
                         });
-
+            
                         // Update pagination controls
                         updatePagination(total_pages, current_page);
                     })
@@ -838,32 +888,54 @@ $conn->close();
             function updatePagination(total_pages, current_page) {
                 const paginationContainer = document.querySelector('.pagination');
                 paginationContainer.innerHTML = '';
-
+            
+                // First button
+                if (current_page > 1) {
+                    const firstButton = document.createElement('a');
+                    firstButton.href = `?page=1`;
+                    firstButton.classList.add('first-button');
+                    firstButton.title = 'back to first';
+                    firstButton.innerHTML = '<i class="bx bx-chevrons-left"></i>';
+                    paginationContainer.appendChild(firstButton);
+                }
+            
                 // Previous button
                 if (current_page > 1) {
-                    const prevButton = document.createElement('button');
-                    prevButton.innerText = 'Prev';
-                    prevButton.addEventListener('click', () => loadFacultyMembers(current_page - 1));
+                    const prevButton = document.createElement('a');
+                    prevButton.href = `?page=${current_page - 1}`;
+                    prevButton.classList.add('prev-button');
+                    prevButton.innerHTML = '<i class="bx bx-chevron-left"></i>';
                     paginationContainer.appendChild(prevButton);
                 }
-
-                // Page number buttons
-                for (let i = 1; i <= total_pages; i++) {
-                    const pageButton = document.createElement('button');
+            
+                // Page numbers
+                const start_page = Math.max(1, current_page - 2); // Ensure we don't go below 1
+                const end_page = Math.min(total_pages, current_page + 2); // Ensure we don't go above the last page
+            
+                for (let i = start_page; i <= end_page; i++) {
+                    const pageButton = document.createElement('a');
+                    pageButton.href = `?page=${i}`;
+                    pageButton.classList.add(i === current_page ? 'active' : '');
                     pageButton.innerText = i;
-                    if (i === current_page) {
-                        pageButton.disabled = true; // Disable the current page button
-                    }
-                    pageButton.addEventListener('click', () => loadFacultyMembers(i));
                     paginationContainer.appendChild(pageButton);
                 }
-
+            
                 // Next button
                 if (current_page < total_pages) {
-                    const nextButton = document.createElement('button');
-                    nextButton.innerText = 'Next';
-                    nextButton.addEventListener('click', () => loadFacultyMembers(current_page + 1));
+                    const nextButton = document.createElement('a');
+                    nextButton.href = `?page=${current_page + 1}`;
+                    nextButton.classList.add('next-button');
+                    nextButton.innerHTML = '<i class="bx bx-chevron-right"></i>';
                     paginationContainer.appendChild(nextButton);
+                }
+            
+                // Last button
+                if (current_page < total_pages) {
+                    const lastButton = document.createElement('a');
+                    lastButton.href = `?page=${total_pages}`;
+                    lastButton.classList.add('last-button');
+                    lastButton.innerHTML = '<i class="bx bx-chevrons-right"></i>';
+                    paginationContainer.appendChild(lastButton);
                 }
             }
 
@@ -894,42 +966,11 @@ $conn->close();
                 }
             });
 
-            // Initial load of faculty members for the first page
-            loadFacultyMembers(1); 
-
-            // Filter faculty members by search input (remains the same)
-            document.getElementById('searchInput').addEventListener('input', function() {
-                const filter = this.value.toLowerCase();
-                const rows = document.querySelectorAll('.faculty-table tbody tr');
-
-                rows.forEach(row => {
-                    const fullName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-                    const position = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
-                    const address = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
-                    const mobile = row.querySelector('td:nth-child(5)').textContent.toLowerCase();
-                    const email = row.querySelector('td:nth-child(6)').textContent.toLowerCase();
-
-                    // Check if the row matches the search term in any column
-                    if (
-                        fullName.includes(filter) ||
-                        position.includes(filter) ||
-                        address.includes(filter) ||
-                        mobile.includes(filter) ||
-                        email.includes(filter)
-                    ) {
-                        row.style.display = ''; // Show row
-                    } else {
-                        row.style.display = 'none'; // Hide row
-                    }
-                });
-            });
-
-
             // Function to delete selected users from the server
             function deleteUsersFromServer(selectedUsers) {
                 const userIDs = selectedUsers.map(user => user.UserID);
 
-                fetch('delete_users.php', {
+                fetch('delete_user.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userIDs })
@@ -963,68 +1004,37 @@ $conn->close();
                 });
             }
 
-            // Function to send updated users to the server
-            function updateUsersOnServer(updatedUsers) {
-                // Filter out unchanged users
-                const changedUsers = updatedUsers.filter(user => {
-                    const original = document.querySelector(`.select-user[value="${user.UserID}"]`);
-                    return (
-                        user.firstName !== original.getAttribute('data-fullname').split(' ')[0] ||
-                        user.middleName !== (original.getAttribute('data-fullname').split(' ')[1] || '') ||
-                        user.lastName !== (original.getAttribute('data-fullname').split(' ')[2] || '') ||
-                        user.rank !== original.getAttribute('data-rank') ||
-                        user.address !== original.getAttribute('data-address') ||
-                        user.mobile !== original.getAttribute('data-mobile') ||
-                        user.email !== original.getAttribute('data-email')
-                    );
+
+            // Filter faculty members by search input
+            document.getElementById('searchInput').addEventListener('input', function () {
+                const filter = this.value.toLowerCase();
+                const rows = document.querySelectorAll('.faculty-table tbody tr');
+
+                rows.forEach(row => {
+                    const fullName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                    const position = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+                    const address = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
+                    const mobile = row.querySelector('td:nth-child(5)').textContent.toLowerCase();
+                    const email = row.querySelector('td:nth-child(6)').textContent.toLowerCase();
+
+                    // Check if the row matches the search term in any column
+                    if (
+                        fullName.includes(filter) ||
+                        position.includes(filter) ||
+                        address.includes(filter) ||
+                        mobile.includes(filter) ||
+                        email.includes(filter)
+                    ) {
+                        row.style.display = ''; // Show row
+                    } else {
+                        row.style.display = 'none'; // Hide row
+                    }
                 });
-
-                if (changedUsers.length === 0) {
-                    Swal.fire('No Changes', 'No data was changed. Update not required.', 'info');
-                    return;
-                }
-
-                // Send changes to the server
-                fetch('update_users.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ users: changedUsers })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Success alert
-                            Swal.fire({
-                                title: 'Success!',
-                                text: 'Users have been successfully updated.',
-                                icon: 'success',
-                                confirmButtonText: 'OK'
-                            }).then(() => location.reload()); // Optionally reload to reflect changes
-                        } else {
-                            // Error alert with a specific message from the server
-                            let errorMessage = data.error || 'There was an error updating the users. Please try again.';
-                            Swal.fire({
-                                title: 'Error!',
-                                text: errorMessage,
-                                icon: 'error',
-                                confirmButtonText: 'OK'
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        // Unexpected error alert
-                        console.error('Error updating users:', error);
-                        Swal.fire({
-                            title: 'Error!',
-                            text: 'An unexpected error occurred. Please try again later.',
-                            icon: 'error',
-                            confirmButtonText: 'OK'
-                        });
-                    });
-            }
-
+            });
+        </script>
 
         
+        <script>
             document.getElementById('assignChairpersonBtn').addEventListener('click', function() {
                 document.getElementById('assignChairpersonModal').style.display = 'flex';
             });
@@ -1147,7 +1157,7 @@ $conn->close();
 
 
             // JavaScript to select/deselect all checkboxes
-             document.getElementById("selectAll-chairperson").addEventListener("click", function() {
+            document.getElementById("selectAll-chairperson").addEventListener("click", function() {
                 const checkboxes = document.querySelectorAll("input[name='chairpersonID[]']");
                 checkboxes.forEach(function(checkbox) {
                     checkbox.checked = document.getElementById("selectAll-chairperson").checked;
@@ -1157,6 +1167,7 @@ $conn->close();
 
 
         </script>
+     <script src="assets/js/script.js"></script>
 
         
 </body>
