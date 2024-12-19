@@ -597,7 +597,7 @@ $conn->close();
                                     include 'connection.php';
 
                                     // Fetch users eligible to be chairpersons
-                                    $usersQuery = "SELECT UserID, CONCAT(fname, ' ', mname, ' ', lname) AS FullName, 'Rank' 
+                                    $usersQuery = "SELECT UserID, CONCAT(fname, ' ', mname, ' ', lname) AS FullName, Rank 
                                                 FROM useracc 
                                                 WHERE role IN ('Department Head', 'Teacher')";
                                     $usersResult = $conn->query($usersQuery);
@@ -814,13 +814,13 @@ $conn->close();
                             row.innerHTML = `
                                 <td><input type="checkbox" class="select-user" 
                                         data-fullname="${user.fullname}" 
-                                        data-rank="${user.Rank}" 
+                                        data-rank="${user.'Rank'}" 
                                         data-address="${user.address}" 
                                         data-mobile="${user.mobile}" 
                                         data-email="${user.email}" 
                                         value="${user.UserID}"></td>
                                 <td>${user.fullname}</td>
-                                <td>${user.Rank}</td>
+                                <td>${user.'Rank'}</td>
                                 <td>${user.address}</td>
                                 <td>${user.mobile}</td>
                                 <td>${user.email}</td>
