@@ -14,7 +14,7 @@ $result = $conn->query("SELECT COUNT(*) AS total FROM useracc WHERE role IN ('De
 $total_records = $result->fetch_assoc()['total'];
 
 // Fetch users for the current page
-$query = "SELECT UserID, fname, mname, lname, 'Rank', address, mobile, email 
+$query = "SELECT UserID, fname, mname, lname, Rank, address, mobile, email 
           FROM useracc 
           WHERE role IN ('Department Head', 'Teacher') 
           LIMIT $offset, $records_per_page";
