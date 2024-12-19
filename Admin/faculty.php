@@ -597,7 +597,7 @@ $conn->close();
                                     include 'connection.php';
 
                                     // Fetch users eligible to be chairpersons
-                                    $usersQuery = "SELECT UserID, CONCAT(fname, ' ', mname, ' ', lname) AS FullName, Rank 
+                                    $usersQuery = "SELECT UserID, CONCAT(fname, ' ', mname, ' ', lname) AS FullName, 'Rank' 
                                                 FROM useracc 
                                                 WHERE role IN ('Department Head', 'Teacher')";
                                     $usersResult = $conn->query($usersQuery);
