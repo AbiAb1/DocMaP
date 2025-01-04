@@ -8,7 +8,7 @@ if (!isset($_SESSION['dept_ID'])) {
 }
 $dept_ID = $_SESSION['dept_ID']; // Get dept_ID from session
 
-// Query to get recent tasks and teacher names for a specific department
+// Query to get recent tasks and teacher names for a specific department.  No changes needed here.
 $sql = "
     SELECT 
         ua.UserID,
@@ -37,90 +37,60 @@ if ($stmt = mysqli_prepare($conn, $sql)) {
     $result = mysqli_stmt_get_result($stmt);
 
     if (mysqli_num_rows($result) > 0) {
+        echo "<div class='scrollable-container'>"; // Single container for scrolling
         echo "<ul style='list-style: none; padding-left: 0;'>";
 
         while ($row = mysqli_fetch_assoc($result)) {
-            echo "<div style='max-height: 200px; overflow-y: auto;'>
-            <ul style='list-style: none; padding-left: 0; margin: 0;'>
-                <li class='task-item' style='margin-bottom: 15px;'>
-                    <div style='font-size: 16px; font-weight:bold' >Title:
-                        " . htmlspecialchars($row['taskTitle']) . "
-                    </div>
-                     <small>Submitted by:</small>
-                    <div style='font-size: 14px; color: #777;'>
-                        <small>" . htmlspecialchars($row['name']) . "</small>
-                    </div>
-                </li>
-            </ul>
-          </div>";
+            echo "<li class='task-item'>
+                    <strong style='font-size: 16px;'>Title:</strong> " . htmlspecialchars($row['taskTitle']) . "<br>
+                    <small>Submitted by: " . htmlspecialchars($row['name']) . "</small>
+                  </li>";
         }
 
         echo "</ul>";
+        echo "</div>"; // Close scrollable container
     } else {
         echo "<p>No recent submissions found.</p>";
     }
 
     mysqli_stmt_close($stmt);
 } else {
-    echo "<p>Error with query execution.</p>";
+    echo "<p>Error with query execution: " . mysqli_error($conn) . "</p>"; // Added error reporting
 }
 ?>
 
 <style>
-    /* General Styles for Task Item */
+    .scrollable-container {
+        max-height: 200px;
+        overflow-y: auto;
+        padding: 10px; /* Added padding for better appearance */
+        border: 1px solid #ddd; /* Added border for better visual separation */
+    }
+
     .task-item {
-        margin-bottom: 15px;
-        padding: 10px;
-        font-size: 16px;
-        border-bottom: 1px solid #ddd;
-        display: flex;
-        flex-direction: column;
+        margin-bottom: 10px; /* Adjusted margin */
     }
 
     .task-item strong {
-        font-size: 18px;
+        font-size: 16px;
         color: #333;
     }
 
     .task-item small {
         font-size: 14px;
         color: #777;
+        display: block; /* Makes small text a new line */
     }
 
-    /* Scrollable Container */
-    .scrollable-container {
-        max-height: 200px;
-        overflow-y: auto;
-        padding-right: 5px; /* To prevent scroll from being cut off */
-    }
-
-    /* Responsive Styles */
+    /* Responsive adjustments (simplified) */
     @media (max-width: 768px) {
-        .task-item {
+        .task-item strong, .task-item small {
             font-size: 14px;
-        }
-
-        .task-item strong {
-            font-size: 16px;
-        }
-
-        .task-item small {
-            font-size: 12px;
         }
     }
-
     @media (max-width: 576px) {
-        .task-item {
-            padding: 5px;
+        .task-item strong, .task-item small {
             font-size: 12px;
-        }
-
-        .task-item strong {
-            font-size: 14px;
-        }
-
-        .task-item small {
-            font-size: 10px;
         }
     }
 </style>
