@@ -1,86 +1,376 @@
 <?php
-// Database connection
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header("Location: index.php");
+    exit();
+}
+
 include 'connection.php';
 
-// Handle AJAX request for updating a task
-if (isset($_POST['update_task_id'])) {
-    // Log all POST data
-    error_log("POST Data: " . print_r($_POST, true) . "\n", 3, 'logfile.log');
+// Log file path
+$log_file = 'logfile.log';
 
-    $taskID = $_POST['update_task_id'];
+// Function to write to log file
+function write_log($message) {
+    global $log_file;
+    $timestamp = date("Y-m-d H:i:s");
+    file_put_contents($log_file, "[$timestamp] $message\n", FILE_APPEND);
+}
 
-    // Check if grades were submitted
-    if (isset($_POST['grade']) && !empty($_POST['grade'])) {
-        $contentIDs = implode(',', $_POST['grade']); // Combine selected grades into a comma-separated string
-    } else {
-        error_log("No grades selected for TaskID: $taskID\n", 3, 'logfile.log');
-        exit;
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/logfile.log');
+
+write_log("Database connected successfully.");
+
+// Get data from form
+$UserID = $_SESSION['user_id'];
+$ContentIDs = isset($_POST['grade']) ? $_POST['grade'] : []; // Get all selected ContentIDs as an array
+$Type = 'Announcement';
+$Title = $_POST['title'];
+$taskContent = $_POST['instructions'];
+$timeStamp = date('Y-m-d H:i:s'); // Current timestamp
+$ApprovalStatus = "Approved";
+
+// Optional due date and time
+$DueDate = NULL; // Set as null since no field exists
+$DueTime = NULL; // Set as null since no field exists
+
+// Get schedule date and time from POST if the action is schedule
+if ($_POST['taskAction'] === 'Schedule') {
+    $ScheduleDate = $_POST['schedule-date'];
+    $ScheduleTime = $_POST['schedule-time'];
+    $Status = 'Schedule';
+} else {
+    $ScheduleDate = null;
+    $ScheduleTime = null;
+    $Status = $_POST['taskAction'] === 'Draft' ? 'Draft' : 'Assign'; // Set to Draft if action is draft
+}
+
+write_log("Received form data: UserID = $UserID, ContentIDs = " . implode(", ", $ContentIDs) . ", Type = $Type, Title = $Title, DueDate = $DueDate, taskContent = $taskContent, DueTime = $DueTime, Status = $Status, Schedule Date = $ScheduleDate, Schedule Time = $ScheduleTime");
+
+// File upload handling with GitHub integration
+$uploadOk = 1;
+$target_dir = realpath(__DIR__ . '/Attachments') . '/'; // Absolute path to the directory
+$allFilesUploaded = true;
+
+
+if (!is_dir($target_dir)) {
+    mkdir($target_dir, 0777, true); // Create directory if not exists
+}
+
+$uploadedFiles = [];
+
+if (isset($_FILES['file']) && count($_FILES['file']['name']) > 0 && !empty($_FILES['file']['name'][0])) {
+    $fileCount = count($_FILES['file']['name']);
+
+    for ($i = 0; $i < $fileCount; $i++) {
+        $fileTmpName = $_FILES['file']['tmp_name'][$i];
+        $fileOriginalName = basename($_FILES['file']['name'][$i]);
+        $fileType = strtolower(pathinfo($fileOriginalName, PATHINFO_EXTENSION));
+        $fileSize = $_FILES['file']['size'][$i];
+        $fileMimeType = mime_content_type($fileTmpName);
+
+        // Sanitize file name
+        $fileOriginalName = preg_replace('/[^a-zA-Z0-9_.]/', '', str_replace([' ', '-'], '_', $fileOriginalName));
+
+        // Generate a random file name
+        $randomNumber = rand(100000, 999999);
+        $fileName = $randomNumber . "_" . $fileOriginalName;
+        $target_file = $target_dir . $fileName;
+
+
+        // Check file size
+        if ($fileSize > 5000000) { // Limit to 5MB
+            $allFilesUploaded = false;
+            continue;
+        }
+
+        // Allow certain file formats
+        $allowedTypes = array('jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'pptx');
+        if (!in_array($fileType, $allowedTypes)) {
+            $allFilesUploaded = false;
+            continue;
+        }
+
+        if (move_uploaded_file($fileTmpName, $target_file)) {
+        
+            // GitHub Repository Details
+            $githubRepo = "AbiAb1/DocMaP2"; // GitHub username/repo
+            $branch = "extra";
+            $uploadUrl = "https://api.github.com/repos/$githubRepo/contents/Admin/Attachments/$fileName";
+        
+            // Fetch GitHub Token from Environment Variables
+            $githubToken = $_ENV['GITHUB_TOKEN']?? null;
+            if (!$githubToken) {
+                continue;
+            }
+        
+            // Prepare File Data for GitHub
+     
+            $content = base64_encode(file_get_contents($target_file));
+            $data = json_encode([
+                "message" => "Adding a new file to upload folder",
+                "content" => $content,
+                "branch" => $branch
+            ]);
+        
+            $headers = [
+                "Authorization: token $githubToken",
+                "Content-Type: application/json",
+                "User-Agent: DocMaP"
+            ];
+        
+            // GitHub API Call
+            $ch = curl_init($uploadUrl);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        
+            if ($response === false) {
+            } else {
+                $responseData = json_decode($response, true);
+                if ($httpCode == 201) { // Successful upload
+                    $githubDownloadUrl = $responseData['content']['download_url'];
+        
+                    // Save File Information to the Database
+                    $uploadedFiles[] = [
+                        'fileName' => $fileName,
+                        'fileMimeType' => $fileMimeType,
+                        'fileSize' => $fileSize,
+                        'githubUrl' => $githubDownloadUrl
+                    ];
+                } 
+            }
+        
+            curl_close($ch);
+        
+            // Optionally Delete Local File After Upload
+            if (file_exists($target_file)) {
+                unlink($target_file);
+
+            }
+        } else {
+            $allFilesUploaded = false;
+        }        
     }
+}
 
-    $title = $_POST['update_title'];
-    $taskContent = $_POST['update_instructions'];
-    $actionType = $_POST['actionType']; // Added actionType from the form
-
-    // Set as null since no field exists
-    $dueDate = NULL;
-    $dueTime = NULL;
-
-    // Variables for schedule-specific data
-    $scheduleDate = isset($_POST['update_schedule_date']) ? $_POST['update_schedule_date'] : null;
-    $scheduleTime = isset($_POST['update_schedule_time']) ? $_POST['update_schedule_time'] : null;
-
-     // Log the schedule date and time
-     error_log("Schedule Date: " . $scheduleDate . "\n", 3, 'logfile.log');
-     error_log("Schedule Time: " . $scheduleTime . "\n", 3, 'logfile.log');
-
-    // Log the update request details to logfile.log
-    error_log("Update Task - TaskID: $taskID, ContentIDs: $contentIDs, Title: $title, DueDate: $dueDate, DueTime: $dueTime, Instructions: $taskContent, ActionType: $actionType\n", 3, 'logfile.log');
-
-    // Prepare base SQL
-    $sql = "UPDATE tasks SET ContentID = ?, Title = ?, taskContent = ?, DueDate = ?, DueTime = ?, Status = ?";
-
-    // Append SQL for scheduled tasks
-    if ($actionType == 'Schedule' && $scheduleDate && $scheduleTime) {
-        error_log("Schedule Date: $scheduleDate, Schedule Time: $scheduleTime\n", 3, 'logfile.log');
-        $sql .= ", Schedule_Date = ?, Schedule_Time = ?";
-    }
-
-    $sql .= " WHERE TaskID = ?";
-
-    // Prepare statement
+// Insert task into tasks table for each ContentID
+foreach ($ContentIDs as $ContentID) {
+    // Prepare the SQL for inserting into tasks
+    $sql = "INSERT INTO tasks (UserID, ContentID, Type, Title, taskContent, DueDate, DueTime, Schedule_Date, Schedule_Time, Status, ApprovalStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,?,?)";
     $stmt = $conn->prepare($sql);
 
-    // Bind parameters based on action type
-    if ($actionType == 'Schedule' && $scheduleDate && $scheduleTime) {
-        $status = 'Schedule';
-        error_log("Prepared statement with schedule date and time\n", 3, 'logfile.log');
-        $stmt->bind_param('ssssssssi', $contentIDs, $title, $taskContent, $dueDate, $dueTime, $status, $scheduleDate, $scheduleTime, $taskID);
+    if ($stmt) {
+        
+        $stmt->bind_param("sssssssssss", $UserID, $ContentID, $Type, $Title, $taskContent, $DueDate, $DueTime,$ScheduleDate, $ScheduleTime, $Status, $ApprovalStatus);
+
+        if ($stmt->execute()) {
+            $TaskID = $stmt->insert_id;
+            
+            // Insert files into attachment table using the fetched TaskID
+            foreach ($uploadedFiles as $file) {
+                $docuStmt = $conn->prepare("INSERT INTO attachment (UserID, ContentID, TaskID, name, mimeType, size, uri, TimeStamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                $timestamp = date("Y-m-d H:i:s"); // Current timestamp
+                $docuStmt->bind_param("ssssssss", $UserID, $ContentID, $TaskID, $file['fileName'], $file['fileMimeType'], $file['fileSize'], $file['target_file'], $timestamp);
+
+                // Execute the statement for the attachment table
+                if (!$docuStmt->execute()) {
+                    error_log("Error inserting file into attachment table: " . $docuStmt->error);
+                }
+                $docuStmt->close(); // Close statement after each ContentID
+            }
+
+            if ($_POST['taskAction'] === 'Assign') { // Only proceed if taskAction is 'Assign'
+                // Fetch users associated with the ContentID from usercontent
+                $userContentQuery = $conn->prepare("
+                SELECT ua.UserID, uc.Status
+                FROM usercontent uc
+                JOIN useracc ua ON uc.UserID = ua.UserID
+                WHERE uc.ContentID = ?
+                AND uc.Status = 1
+                ");
+                $userContentQuery->bind_param("i", $ContentID); // Assuming ContentID is an integer
+                $userContentQuery->execute();
+                $userResult = $userContentQuery->get_result();
+
+                if ($userResult) {
+                    while ($row = $userResult->fetch_assoc()) {
+                        $userInContentId = $row['UserID'];
+                        // Insert into task_user for each user associated with this ContentID
+                        $taskUserSql = "INSERT INTO task_user (ContentID, TaskID, UserID, Status) VALUES (?, ?, ?, 'Assigned')";
+                        $taskUserStmt = $conn->prepare($taskUserSql);
+                        if ($taskUserStmt) {
+                            $taskUserStmt->bind_param("sss", $ContentID, $TaskID, $userInContentId);
+                            if (!$taskUserStmt->execute()) {
+                                error_log("Error inserting into task_user: " . $taskUserStmt->error);
+                            }
+                            $taskUserStmt->close();
+                        } else {
+                            error_log("Error preparing task_user statement: " . $conn->error);
+                        }
+                    }
+                } else {
+                    error_log("Error fetching users for ContentID $ContentID: " . $conn->error);
+                }
+
+                // Fetch user name for notifications
+                $userQuery = $conn->prepare("SELECT CONCAT(fname, ' ', lname) AS fullName FROM useracc WHERE UserID = ?");
+                $userQuery->bind_param("s", $UserID);
+                $userQuery->execute();
+                $userName = $userQuery->get_result()->fetch_assoc()['fullName'];
+
+
+                // Fetch content title for notifications
+                $contentQuery = $conn->prepare("SELECT Title , Captions FROM feedcontent WHERE ContentID = ?");
+                $contentQuery->bind_param("s", $ContentID);
+                $contentQuery->execute();
+                $contentResult = $contentQuery->get_result();
+
+                if ($contentResult->num_rows > 0) {
+                    $row = $contentResult->fetch_assoc();
+                    $contentTitle = $row['Title'];
+                    $contentCaptions = $row['Captions'];
+                    
+                    // Concatenate Title and Captions
+                    $fullContent = $contentTitle . ' - ' . $contentCaptions; // Adjust the separator as needed
+                    
+                } else {
+                    $fullContent = "Unknown Content"; // Default value if no content found
+                }
+
+                // Create notification
+                $notificationTitle = "$userName posted a new $Type! ($fullContent)";
+                $notificationContent = "$Title: $taskContent";
+
+                $notifStmt = $conn->prepare("INSERT INTO notifications (UserID, TaskID, ContentID, Title, Content, Status) VALUES (?, ?, ?, ?, ?, ?)");
+                $status = 1;
+                $notifStmt->bind_param("sssssi", $UserID, $TaskID, $ContentID, $notificationTitle, $notificationContent, $status);
+
+                if ($notifStmt->execute()) {
+                    $notifID = $notifStmt->insert_id;  // Get the inserted NotifID
+                    
+                    // Insert into notif_user table for each user associated with this ContentID
+                    $userContentQuery = $conn->prepare("SELECT ua.UserID FROM usercontent uc JOIN useracc ua ON uc.UserID = ua.UserID WHERE uc.ContentID = ?");
+                    $userContentQuery->bind_param("i", $ContentID);
+                    $userContentQuery->execute();
+                    $userContentResult = $userContentQuery->get_result();
+
+                    if ($userContentResult) {
+                        while ($row = $userContentResult->fetch_assoc()) {
+                            $userInContentId = $row['UserID'];
+
+                            // Insert into notif_user for each user
+                            $notifUserStmt = $conn->prepare("INSERT INTO notif_user (NotifID, UserID, Status, TimeStamp) VALUES (?, ?, ?, ?)");
+                            $timestamp = date("Y-m-d H:i:s");  // Current timestamp
+                            $status = 1;  // Status is 1 for all users
+                            $notifUserStmt->bind_param("iiss", $notifID, $userInContentId, $status, $timestamp);
+
+                            if ($notifUserStmt->execute()) {
+                                error_log("Notification user inserted: NotifID $notifID, UserID $userInContentId");
+                            } else {
+                                error_log("Error inserting into notif_user: " . $notifUserStmt->error);
+                            }
+
+                            $notifUserStmt->close(); // Close after each insertion
+                        }
+                    } else {
+                        error_log("Error fetching users for ContentID $ContentID: " . $conn->error);
+                    }
+                    // Fetch mobile numbers for bulk SMS
+                    $mobileQuery = $conn->prepare("
+                    SELECT ua.mobile, UPPER(CONCAT(ua.fname, ' ', ua.lname)) AS FullName 
+                    FROM usercontent uc
+                    JOIN useracc ua ON uc.UserID = ua.UserID
+                    WHERE uc.ContentID = ?
+                ");
+                $mobileQuery->bind_param("i", $ContentID);
+                $mobileQuery->execute();
+                $mobileResult = $mobileQuery->get_result();
+                
+                if ($mobileResult->num_rows > 0) {
+                    $mobileNumbers = [];
+                    $messages = [];
+                
+                    while ($row = $mobileResult->fetch_assoc()) {
+                        $mobileNumbers[] = $row['mobile']; // Add mobile number to the array
+                        $messages[] = "NEW ANNOUNCEMENT ALERT!\n\nHi " . $row['FullName'] . "! " . $notificationTitle . " \"" . $Title . "\". Don't miss it! Have a nice day!";
+
+
+                    }
+                
+                    // Create comma-separated list of mobile numbers
+                    $mobileNumbersList = implode(",", $mobileNumbers);
+                
+                    
+                    // Send SMS using Semaphore API (example)
+                    $api_url = "https://api.semaphore.co/api/v4/messages"; // Semaphore API URL
+                    $api_key = "d796c0e11273934ac9d789536133684a"; // Your Semaphore API key
+                
+                    foreach ($messages as $index => $message) {
+                        $number = $mobileNumbers[$index]; // Get the corresponding mobile number
+                
+                        // Prepare POST data
+                        $postData = [
+                            'apikey' => $api_key,
+                            'number' => $number, // Individual number
+                            'message' => $message
+                        ];
+                
+                        // Initialize cURL session
+                        $ch = curl_init();
+                        curl_setopt($ch, CURLOPT_URL, $api_url);
+                        curl_setopt($ch, CURLOPT_POST, true);
+                        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                
+                        // Execute cURL request
+                        $response = curl_exec($ch);
+                        if (curl_errno($ch)) {
+                            error_log("Error sending SMS to number ($number): " . curl_error($ch));
+                        } else {
+                            error_log("SMS sent successfully to number: $number");
+                        }
+                        curl_close($ch);
+                    }
+                } else {
+                    error_log("No mobile numbers found for ContentID $ContentID");
+                }
+                
+
+                    // Close user query
+                    $userContentQuery->close();
+                } else {
+                    error_log("Error inserting into notifications: " . $notifStmt->error);
+                }
+
+                $notifStmt->close(); // Close notification statement
+
+                $userQuery->close();
+                $contentQuery->close();
+            } // End of if $_POST['taskAction'] === 'Assign'
+
+            $stmt->close(); // Close statement after each iteration
+        } else {
+            error_log("Error inserting into tasks: " . $stmt->error);
+        }
     } else {
-        $status = ($actionType == 'Assign') ? 'Assign' : 'Draft';
-        $stmt->bind_param('ssssssi', $contentIDs, $title, $taskContent, $dueDate, $dueTime, $status, $taskID);
+        error_log("Error preparing tasks statement: " . $conn->error);
     }
-
-    // Execute and handle the response
-    $response = array();
-    if ($stmt->execute()) {
-        $response['success'] = true;
-        $response['message'] = 'Reminder updated successfully!';
-        // Log successful update
-        error_log("Reminder update successful - TaskID: $taskID, Status: $actionType\n", 3, 'logfile.log');
-    } else {
-        $response['success'] = false;
-        $response['message'] = 'Failed to update reminder.';
-        // Log error details
-        error_log("Update Reminder Error: " . $stmt->error . "\n", 3, 'logfile.log');
-    }
-
-    // Close statement and connection
-    $stmt->close();
-    $conn->close();
-
-    // Return JSON response
-    header('Content-Type: application/json');
-    echo json_encode($response);
-    exit;
 }
+
+// Set response
+header('Content-Type: application/json');
+$response = array("success" => true, "message" => "Tasks created successfully.");
+if (!$allFilesUploaded) {
+    $response = array("success" => false, "message" => "Tasks created, but some files may not have been uploaded.");
+}
+echo json_encode($response);
+
+$conn->close();
+write_log("Database connection closed.");
 ?>
