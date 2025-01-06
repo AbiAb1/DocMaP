@@ -161,7 +161,7 @@ foreach ($ContentIDs as $ContentID) {
             foreach ($uploadedFiles as $file) {
                 $docuStmt = $conn->prepare("INSERT INTO attachment (UserID, ContentID, TaskID, name, mimeType, size, uri, TimeStamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
                 $timestamp = date("Y-m-d H:i:s"); // Current timestamp
-                $docuStmt->bind_param("ssssssss", $UserID, $ContentID, $TaskID, $file['fileName'], $file['fileMimeType'], $file['fileSize'], $file['target_file'], $timestamp);
+                $docuStmt->bind_param("ssssssss", $UserID, $ContentID, $TaskID, $file['fileName'], $file['fileMimeType'], $file['fileSize'], $file['githubUrl'], $timestamp);
 
                 // Execute the statement for the attachment table
                 if (!$docuStmt->execute()) {
