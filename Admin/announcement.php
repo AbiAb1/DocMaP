@@ -1834,7 +1834,7 @@ body {
                             const checkbox = document.createElement('div');
                             checkbox.className = 'checkbox-container';
                             checkbox.innerHTML = `
-                                <input type="checkbox" name="grade[]" value="${grade.ContentID}" ${isChecked} 
+                                <input type="checkbox" name="update_grade[]" value="${grade.ContentID}" ${isChecked} 
                                 style="outline: none !important; box-shadow: none !important;">
                                 <label style="font-weight: bold;">${grade.Title} - ${grade.Captions}</label>`;
                             updategradesContainer.appendChild(checkbox);
