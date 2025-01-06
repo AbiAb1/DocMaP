@@ -10,13 +10,11 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-
 // Database connection
 include 'connection.php';
 
 // Handle AJAX request for updating a task
 if (isset($_POST['update_task_id'])) {
-
 
     // Check if grades were submitted
     if (isset($_POST['update_grade']) && !empty($_POST['update_grade'])) {
@@ -25,7 +23,6 @@ if (isset($_POST['update_task_id'])) {
         echo json_encode(['success' => false, 'message' => 'No grades provided.']);
         exit;
     }
-
 
     $taskID = $_POST['update_task_id'];
     $title = $_POST['update_title'];
@@ -40,6 +37,8 @@ if (isset($_POST['update_task_id'])) {
     $scheduleDate = isset($_POST['update_schedule_date']) ? $_POST['update_schedule_date'] : null;
     $scheduleTime = isset($_POST['update_schedule_time']) ? $_POST['update_schedule_time'] : null;
 
+    // JSON-encode the content IDs array
+    $encodedContentIDs = json_encode($contentIDs);
 
     // Prepare base SQL
     $sql = "UPDATE tasks SET ContentID = ?, Title = ?, taskContent = ?, DueDate = ?, DueTime = ?, Status = ?";
@@ -57,10 +56,10 @@ if (isset($_POST['update_task_id'])) {
     // Bind parameters based on action type
     if ($actionType == 'Schedule' && $scheduleDate && $scheduleTime) {
         $status = 'Schedule';
-        $stmt->bind_param('ssssssssi',json_encode($contentIDs), $title, $taskContent, $dueDate, $dueTime, $status, $scheduleDate, $scheduleTime, $taskID);
+        $stmt->bind_param('ssssssssi', $encodedContentIDs, $title, $taskContent, $dueDate, $dueTime, $status, $scheduleDate, $scheduleTime, $taskID);
     } else {
         $status = ($actionType == 'Assign') ? 'Assign' : 'Draft';
-        $stmt->bind_param('ssssssi',json_encode($contentIDs), $title, $taskContent, $dueDate, $dueTime, $status, $taskID);
+        $stmt->bind_param('ssssssi', $encodedContentIDs, $title, $taskContent, $dueDate, $dueTime, $status, $taskID);
     }
 
     // Execute and handle the response
