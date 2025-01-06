@@ -17,18 +17,17 @@ include 'connection.php';
 // Handle AJAX request for updating a task
 if (isset($_POST['update_task_id'])) {
 
-    $taskID = $_POST['update_task_id'];
 
     // Check if grades were submitted
     if (isset($_POST['update_grade']) && !empty($_POST['update_grade'])) {
-        $contentIDs = implode(',', $_POST['update_grade']); // Combine selected grades into a comma-separated string
+        $contentIDs = $_POST['update_grade']; // Store grades as an array
     } else {
         echo json_encode(['success' => false, 'message' => 'No grades provided.']);
         exit;
     }
 
 
-
+    $taskID = $_POST['update_task_id'];
     $title = $_POST['update_title'];
     $taskContent = $_POST['update_instructions'];
     $actionType = $_POST['actionType']; // Added actionType from the form
