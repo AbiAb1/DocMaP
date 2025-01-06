@@ -57,10 +57,10 @@ if (isset($_POST['update_task_id'])) {
     // Bind parameters based on action type
     if ($actionType == 'Schedule' && $scheduleDate && $scheduleTime) {
         $status = 'Schedule';
-        $stmt->bind_param('ssssssssi', $contentIDs, $title, $taskContent, $dueDate, $dueTime, $status, $scheduleDate, $scheduleTime, $taskID);
+        $stmt->bind_param('ssssssssi',json_encode($contentIDs), $title, $taskContent, $dueDate, $dueTime, $status, $scheduleDate, $scheduleTime, $taskID);
     } else {
         $status = ($actionType == 'Assign') ? 'Assign' : 'Draft';
-        $stmt->bind_param('ssssssi', $contentIDs, $title, $taskContent, $dueDate, $dueTime, $status, $taskID);
+        $stmt->bind_param('ssssssi',json_encode($contentIDs), $title, $taskContent, $dueDate, $dueTime, $status, $taskID);
     }
 
     // Execute and handle the response
