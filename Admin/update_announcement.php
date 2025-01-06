@@ -14,15 +14,12 @@ if (isset($_POST['update_task_id'])) {
     $taskID = $_POST['update_task_id'];
 
     // Check if grades were submitted
-    if (isset($_POST['grade']) && !empty($_POST['grade'])) {
-        $grades = array_filter($_POST['grade'], 'is_numeric'); 
-        if (empty($grades)) {
-            exit('Invalid grades provided.');
-        }
-        $contentIDs = implode(',', $grades);
+    if (isset($_POST['update_grade']) && !empty($_POST['update_grade'])) {
+        $contentIDs = implode(',', $_POST['update_grade']); // Combine selected grades into a comma-separated string
     } else {
-        exit('No grades provided.');
+        exit;
     }
+
 
 
     $title = $_POST['update_title'];
