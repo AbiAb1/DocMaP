@@ -5,6 +5,12 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+// Enable error reporting
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+
 // Database connection
 include 'connection.php';
 
@@ -17,6 +23,7 @@ if (isset($_POST['update_task_id'])) {
     if (isset($_POST['update_grade']) && !empty($_POST['update_grade'])) {
         $contentIDs = implode(',', $_POST['update_grade']); // Combine selected grades into a comma-separated string
     } else {
+        echo json_encode(['success' => false, 'message' => 'No grades provided.']);
         exit;
     }
 
@@ -61,10 +68,10 @@ if (isset($_POST['update_task_id'])) {
     $response = array();
     if ($stmt->execute()) {
         $response['success'] = true;
-        $response['message'] = 'Reminder updated successfully!';
+        $response['message'] = 'Announcement updated successfully!';
     } else {
         $response['success'] = false;
-        $response['message'] = 'Failed to update reminder.';
+        $response['message'] = 'Failed to update announcement.';
     }
 
     // Close statement and connection
