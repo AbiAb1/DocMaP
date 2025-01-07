@@ -59,7 +59,7 @@ $queryMPS = "
     SELECT m.mpsID, m.UserID, m.ContentID, q.School_Year_ID, q.Quarter_Name, 
            CONCAT(fc.Title, ' - ', fc.Captions) AS GradeSection, 
            m.TotalNumOfItems, m.TotalNumOfStudents, m.TotalNumTested, 
-           m.HighestScore, m.LowestScore, m.MPS, sy.Year_Range AS SY
+           m.MPS, sy.Year_Range AS SY
     FROM mps m
     INNER JOIN quarter q ON m.Quarter_ID = q.Quarter_ID
     INNER JOIN feedcontent fc ON m.ContentID = fc.ContentID
@@ -206,7 +206,7 @@ $printButtonDisabled = (mysqli_num_rows($resultMPS) == 0) ? 'disabled' : '';
 
     </style>
 </head>
-<body  style="background-color: #F1F0F6;">
+<body>
     <!-- SIDEBAR -->
     <section id="sidebar">
         <?php include 'navbar.php'; ?>
@@ -285,20 +285,7 @@ $printButtonDisabled = (mysqli_num_rows($resultMPS) == 0) ? 'disabled' : '';
                                 </div>
                             </div>
 
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="highestScore">Highest Score:</label>
-                                        <input type="number" class="form-control" id="highestScore" name="highest_score" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="lowestScore">Lowest Score:</label>
-                                        <input type="number" class="form-control" id="lowestScore" name="lowest_score" required>
-                                    </div>
-                                </div>
-                            </div>
+                            
 
                             <div class="row">
                                 <div class="col-md-6">
@@ -368,10 +355,10 @@ $printButtonDisabled = (mysqli_num_rows($resultMPS) == 0) ? 'disabled' : '';
                             <th>Grade Section</th>
                             <th>Total No. Items</th>
                             <th>Total No. Students</th>
-                            <th>Total No. Tested</th>
-                            <th>Highest Score</th>
-                            <th>Lowest Score</th>
+                            <th>Total Takers</th>
+                           
                             <th>MPS</th>
+                            <th>Mastery/Achievement Level</th>
                             <th  class="action-column">Action</th>
                         </tr>
                     </thead>
@@ -379,6 +366,26 @@ $printButtonDisabled = (mysqli_num_rows($resultMPS) == 0) ? 'disabled' : '';
                         <?php
                         if ($resultMPS && mysqli_num_rows($resultMPS) > 0) {
                             while ($row = mysqli_fetch_assoc($resultMPS)) {
+                                $mps = htmlspecialchars($row['MPS']);
+                                $mpsClass = $mps < 75 ? 'text-danger' : 'text-success';
+
+                                // Determine Mastery/Achievement Level
+                                if ($mps >= 96) {
+                                    $achievementLevel = "Mastered";
+                                } elseif ($mps >= 86) {
+                                    $achievementLevel = "Closely Approximating Mastery";
+                                } elseif ($mps >= 66) {
+                                    $achievementLevel = "Moving Towards Mastery";
+                                } elseif ($mps >= 35) {
+                                    $achievementLevel = "Average";
+                                } elseif ($mps >= 15) {
+                                    $achievementLevel = "Low";
+                                } elseif ($mps >= 5) {
+                                    $achievementLevel = "Very Low";
+                                } else {
+                                    $achievementLevel = "Absolutely No Mastery";
+                                }
+
                                 echo '<tr>';
                                 echo '<td>' . htmlspecialchars($row['SY']) . '</td>';
                                 echo '<td>' . htmlspecialchars($row['Quarter_Name']) . '</td>';
@@ -386,119 +393,56 @@ $printButtonDisabled = (mysqli_num_rows($resultMPS) == 0) ? 'disabled' : '';
                                 echo '<td>' . htmlspecialchars($row['TotalNumOfItems']) . '</td>';
                                 echo '<td>' . htmlspecialchars($row['TotalNumOfStudents']) . '</td>';
                                 echo '<td>' . htmlspecialchars($row['TotalNumTested']) . '</td>';
-                                echo '<td>' . htmlspecialchars($row['HighestScore']) . '</td>';
-                                echo '<td>' . htmlspecialchars($row['LowestScore']) . '</td>';
-                                // Check MPS value and apply class
-                                $mpsClass = htmlspecialchars($row['MPS']) < 75 ? 'text-danger' : 'text-success';
-                                echo '<td style="font-weight:bold;" class="' . $mpsClass . '">' . htmlspecialchars($row['MPS']) . '</td>';
+                                echo '<td style="font-weight:bold;" class="' . $mpsClass . '">' . $mps . '%</td>';
+                                echo '<td style="font-weight:bold;">' . $achievementLevel . '</td>'; // New column for Mastery/Achievement Level
                                 echo '<td class="action-column">';
-
-
+                                    echo '<button class="btn btn-primary btn-rounded edit-btn" data-id="' . htmlspecialchars($row['mpsID']) . '" data-toggle="modal" data-target="#editModal">
+                                            <i class="bx bx-show-alt" ></i>
+                                        </button>';
                                 echo '<button class="btn btn-danger btn-rounded delete-btn" data-id="' . htmlspecialchars($row['mpsID']) . '" data-toggle="modal" data-target="#deleteModal">
                                         <i class="bx bx-trash"></i>
                                     </button>';
-
+                                 
                                 echo '</td>';
                                 echo '</tr>';
                             }
                         } else {
-                            // No data for today's quarter
-                            echo '<tr><td colspan="10">No data available for the current quarter</td></tr>';
+                            echo '<tr><td colspan="11">No data available for the current quarter</td></tr>';
                         }
                         ?>
                     </tbody>
 
+
                 </table>
             </div>
-            <!-- Modal HTML Structure -->
-<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+            <!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editModalLabel">Edit MPS</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title" id="editModalLabel">MPS Computation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="editMpsForm" enctype="multipart/form-data">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="contentSelect">Grade and Section:</label>
-                                <input type="text" class="form-control readonly-input" id="contentSelect" name="contentSelect" readonly>
-                                <input type="hidden" name="content_id">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="quarterInput">Quarter:</label>
-                                <input type="text" class="form-control readonly-input" id="quarterInput" name="quarter_name" readonly>
-                                <input type="hidden" name="quarter_id">
-                            </div>
-                        </div>
-                    </div>
+                <p><strong>Computation Formula:</strong></p>
+                <p><strong>MPS = (Total Scores / (Total No. of Items * Total No. Tested)) * 100</strong></p>
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="totalItems">Total Number of Items:</label>
-                                <input type="number" class="form-control" id="totalItems" name="total_items" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="totalStudents">Total No. of Students:</label>
-                                <input type="number" class="form-control" id="totalStudents" name="total_students" required>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="totalTested">Total No. Tested:</label>
-                                <input type="number" class="form-control" id="totalTested" name="total_tested" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="totalScores">Total Scores:</label>
-                                <input type="number" class="form-control" id="totalScores" name="total_scores" required>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="highestScore">Highest Score:</label>
-                                <input type="number" class="form-control" id="highestScore" name="highest_score" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="lowestScore">Lowest Score:</label>
-                                <input type="number" class="form-control" id="lowestScore" name="lowest_score" required>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="mps">MPS (Mean Percentage Score):</label>
-                                <input type="number" class="form-control readonly-input" id="mps" name="mps" step="0.01" readonly>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button type="submit" id="editMpsButton" class="btn btn-primary">Upload</button>
-                </form>
+                <p><strong>Details:</strong></p>
+                <div id="computationDetails">
+                    <!-- Computation details will be displayed here -->
+                </div>
+                <div id="computedMPS">
+                    <!-- Computed MPS will be displayed here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
+
+
         </main>
     </section>
     <!-- jQuery, Bootstrap JS, and other dependencies -->
@@ -509,6 +453,51 @@ $printButtonDisabled = (mysqli_num_rows($resultMPS) == 0) ? 'disabled' : '';
 
     <!-- Your custom scripts -->
     <script src="assets/js/script.js"></script>
+    <script>
+     // Handle the click event on the Edit button
+$(document).on('click', '.edit-btn', function() {
+    const mpsID = $(this).data('id'); // Get the mpsID for the clicked row
+
+    // Make an AJAX request to fetch the necessary data for this record
+    $.ajax({
+        url: 'get_mps_details.php', // The PHP script that fetches details based on mpsID
+        method: 'POST',
+        data: {
+            mpsID: mpsID
+        },
+        dataType: 'json',
+        success: function(data) {
+            if (data.success) {
+                const totalScoresValue = data.totalScoresValue;
+                const totalItemsValue = data.totalItemsValue;
+                const totalTestedValue = data.totalTestedValue;
+
+                // Calculate the MPS based on the formula
+                const mps = (totalScoresValue / (totalItemsValue * totalTestedValue)) * 100;
+
+                // Prepare the computation details to display in the modal
+                const computationDetails = `
+                    <p><strong>Total Scores Value:</strong> ${totalScoresValue}</p>
+                    <p><strong>Total Items Value:</strong> ${totalItemsValue}</p>
+                    <p><strong>Total Tested Value:</strong> ${totalTestedValue}</p>
+                    <p><strong>Computed MPS:</strong> ${mps.toFixed(2)}%</p>
+                `;
+
+                // Insert the computation details into the modal
+                $('#computationDetails').html(computationDetails);
+                $('#computedMPS').html(`<p><strong>MPS = (${totalScoresValue}) / (${totalItemsValue} * ${totalTestedValue}) × 100 = ${mps.toFixed(2)}%</strong></p>`);
+            } else {
+                // Handle error case (if no data found)
+                $('#computationDetails').html('<p>No data available for this MPS ID.</p>');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching MPS details:', error);
+        }
+    });
+});
+
+    </script>
 
     <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -573,8 +562,7 @@ function openEditModal(button) {
                 console.log('Quarter:', response.Quarter_Name);
                 console.log('Total Students:', response.TotalNumOfStudents);
                 console.log('Total Tested:', response.TotalNumTested);
-                console.log('Highest Score:', response.HighestScore);
-                console.log('Lowest Score:', response.LowestScore);
+                
                 console.log('MPS:', response.MPS);
                 console.log('Total Items:', response.TotalNumOfItems);
                 console.log('Total Scores:', response.TotalScores);
@@ -585,8 +573,7 @@ function openEditModal(button) {
                 $('#quarterInput').val(response.Quarter_Name); // Quarter
                 $('#totalStudents').val(response.TotalNumOfStudents); // Total Students
                 $('#totalTested').val(response.TotalNumTested); // Total Tested
-                $('#highestScore').val(response.HighestScore); // Highest Score
-                $('#lowestScore').val(response.LowestScore); // Lowest Score
+                
                 $('#mps').val(response.MPS); // MPS (Mean Percentage Score)
                 $('#totalItems').val(response.TotalNumOfItems); // Total Items
                 $('#totalScores').val(response.TotalScores); // Total Scores
@@ -777,77 +764,75 @@ function openEditModal(button) {
 
 
 <script>
-            $(document).ready(function() {
-                // When the filter button is clicked
-                $('#filterButton').click(function() {
-                    // Fetch selected values from the dropdowns
-                    const schoolYear = $('#schoolYearSelect').val();
-                    const quarter = $('#quarterSelect').val();
-                    const gradeLevel = $('#gradeLevelSelect').val();
-                    
-                    console.log('Filter button clicked');
-                    console.log('Selected School Year:', schoolYear);
-                    console.log('Selected Quarter:', quarter);
-                    console.log('Selected Grade Level:', gradeLevel);
+$(document).ready(function() {
+    // When the filter button is clicked
+    $('#filterButton').click(function() {
+        // Fetch selected values from the dropdowns
+        const schoolYear = $('#schoolYearSelect').val();
+        const quarter = $('#quarterSelect').val();
+        const gradeLevel = $('#gradeLevelSelect').val();
+        
+        console.log('Filter button clicked');
+        console.log('Selected School Year:', schoolYear);
+        console.log('Selected Quarter:', quarter);
+        console.log('Selected Grade Level:', gradeLevel);
 
-                    // Check if any of the selected filter values are empty
-                    if (!schoolYear || !quarter || !gradeLevel) {
-                        // Show SweetAlert instead of default alert
-                        Swal.fire({
-                            icon: 'warning', // You can change the icon to 'error', 'success', etc.
-                            title: 'Invalid Selection',
-                            text: 'Please select valid options for all filters.',
-                            confirmButtonText: 'OK'
-                        });
-                        return; // Prevent the AJAX request if any filter is not selected
-                    }
-
-                    // AJAX request to fetch filtered data
-                    $.ajax({
-                        url: 'filter-mps.php',
-                        method: 'POST',
-                        data: {
-                            school_year: schoolYear,
-                            quarter: quarter,
-                            grade_level: gradeLevel
-                        },
-                        dataType: 'json',
-                        success: function(data) {
-                            console.log('Data received:', data); // Check the response data
-                            const tbody = $('#mpsTable tbody');
-                            tbody.empty(); // Clear current table rows
-                            
-                            if (data.length > 0) {
-                                data.forEach(row => {
-                                    const mpsClass = row.MPS < 75 ? 'text-danger' : 'text-success';
-                                    const html = `
-                                        <tr>
-                                            <td>${row.SY}</td>
-                                            <td>${row.Quarter_Name}</td>
-                                            <td>${row.GradeSection}</td>
-                                            <td>${row.TotalNumOfItems}</td>
-                                            <td>${row.TotalNumOfStudents}</td>
-                                            <td>${row.TotalNumTested}</td>
-                                            <td>${row.HighestScore}</td>
-                                            <td>${row.LowestScore}</td>
-                                            <td class="${mpsClass}">${row.MPS}</td>
-                                            <td class="action-column">
-                                                <button class="btn btn-danger btn-rounded delete-btn" data-id="${row.mpsID}" data-toggle="modal" data-target="#deleteModal">
-                                                    <i class="bx bx-trash"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    `;
-                                    tbody.append(html);
-                                });
-                                $('#printButton').prop('disabled', false);
-                            } else {
-                                tbody.append('<tr><td colspan="9">No data found</td></tr>');
-                                $('#printButton').prop('disabled', true).css({
-                'background-color': '#d6d6d6',
-                'cursor': 'not-allowed'
+        // Check if any of the selected filter values are empty
+        if (!schoolYear || !quarter || !gradeLevel) {
+            // Show SweetAlert instead of default alert
+            Swal.fire({
+                icon: 'warning', // You can change the icon to 'error', 'success', etc.
+                title: 'Invalid Selection',
+                text: 'Please select valid options for all filters.',
+                confirmButtonText: 'OK'
             });
+            return; // Prevent the AJAX request if any filter is not selected
+        }
 
+        // AJAX request to fetch filtered data
+        $.ajax({
+            url: 'filter-mps.php',
+            method: 'POST',
+            data: {
+                school_year: schoolYear,
+                quarter: quarter,
+                grade_level: gradeLevel
+            },
+            dataType: 'json',
+            success: function(data) {
+                console.log('Data received:', data); // Check the response data
+                const tbody = $('#mpsTable tbody');
+                tbody.empty(); // Clear current table rows
+                
+                if (data.length > 0) {
+                    data.forEach(row => {
+                        const mpsClass = row.MPS < 75 ? 'text-danger' : 'text-success';
+                        const html = `
+                            <tr>
+                                <td>${row.SY}</td>
+                                <td>${row.Quarter_Name}</td>
+                                <td>${row.GradeSection}</td>
+                                <td>${row.TotalNumOfItems}</td>
+                                <td>${row.TotalNumOfStudents}</td>
+                                <td>${row.TotalNumTested}</td>
+                                <td class="${mpsClass}">${row.MPS}</td>
+                                <td class="achievement-column" style="font-weight:bold;">${row.AchievementLevel}</td>
+                                <td class="action-column">
+                                    <button class="btn btn-danger btn-rounded delete-btn" data-id="${row.mpsID}" data-toggle="modal" data-target="#deleteModal">
+                                        <i class="bx bx-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                        tbody.append(html);
+                    });
+                    $('#printButton').prop('disabled', false);
+                } else {
+                    tbody.append('<tr><td colspan="9">No data found</td></tr>');
+                    $('#printButton').prop('disabled', true).css({
+                        'background-color': '#d6d6d6',
+                        'cursor': 'not-allowed'
+                    });
                 }
             },
             error: function(xhr, status, error) {
@@ -860,7 +845,6 @@ function openEditModal(button) {
     // Use event delegation to handle the edit button click
     $(document).on('click', '.edit-btn', function() {
         const mpsID = $(this).data('id');
-        // Logic to handle editing, e.g., populating the edit modal
         console.log('Edit button clicked for MPS ID:', mpsID);
         // Add code to populate the edit modal here
     });
@@ -923,6 +907,7 @@ function openEditModal(button) {
         });
     });
 });
+
 </script>
 
 
