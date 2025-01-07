@@ -818,12 +818,16 @@ $(document).ready(function() {
                                 <td class="${mpsClass}">${row.MPS}</td>
                                 <td class="achievement-column" style="font-weight:bold;">${row.AchievementLevel}</td>
                                 <td class="action-column">
+                                    <button class="btn btn-primary btn-rounded edit-btn" data-id="${row.mpsID}" data-toggle="modal" data-target="#editModal">
+                                        <i class="bx bx-show-alt"></i>
+                                    </button>
                                     <button class="btn btn-danger btn-rounded delete-btn" data-id="${row.mpsID}" data-toggle="modal" data-target="#deleteModal">
                                         <i class="bx bx-trash"></i>
                                     </button>
                                 </td>
                             </tr>
                         `;
+
                         tbody.append(html);
                     });
                     $('#printButton').prop('disabled', false);
