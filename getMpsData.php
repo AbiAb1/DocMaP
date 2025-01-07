@@ -15,7 +15,7 @@ if (isset($_GET['mps_id'])) {
     $sql = "SELECT m.mpsID, m.UserID, m.ContentID, q.School_Year_ID, q.Quarter_Name, 
                    CONCAT(fc.Title, ' - ', fc.Captions) AS GradeSection, 
                    m.TotalNumOfStudents, m.TotalNumTested, m.HighestScore, m.TotalNumOfItems,
-                   m.LowestScore,m.TotalScores, m.MPS, sy.Year_Range AS SY
+                    m.MPS, sy.Year_Range AS SY
             FROM mps m
             INNER JOIN quarter q ON m.Quarter_ID = q.Quarter_ID
             INNER JOIN feedcontent fc ON m.ContentID = fc.ContentID
@@ -65,3 +65,4 @@ if (isset($_GET['mps_id'])) {
 // Close the database connection
 $conn->close();
 ?>
+
