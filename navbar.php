@@ -8,10 +8,10 @@
 <ul class="side-menu" style="background-color:#ffff;">
     <li><a href="dash.php" class="active" style ="background-color:#9b2035;color:#ffff;"><i class='bx bxs-dashboard icon'></i> Dashboard</a></li>
     <li class="divider" data-text="main">Main</li>
-    <li><a href="subjects.php"><i class='bx bxs-bookmarks icon'></i>All Grades</a></li>
+    <li><a href="subjects.php"><i class='bx bxs-bookmarks icon'></i>All Grade Level</a></li>
     <li>
         <a href="#" style="background-color:#9B2035;color:#fff;">
-            <i class='bx bxs-bookmark icon'></i> Grades
+            <i class='bx bxs-bookmark icon'></i> Grade Level
         </a>
         <!-- Search Bar -->
         <input type="text" id="subjectSearch" placeholder="Search Grade..." style="margin: 10px 0; padding: 5px; width: 95%;">
