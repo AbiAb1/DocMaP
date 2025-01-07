@@ -15,8 +15,8 @@ $grade_level = isset($_POST['grade_level']) ? $_POST['grade_level'] : '';
 // Build the base query
 $queryMPS = "SELECT m.mpsID, m.UserID, m.ContentID, q.School_Year_ID, q.Quarter_Name, 
                     CONCAT(fc.Title, ' - ', fc.Captions) AS GradeSection, 
-                    m.TotalNumOfStudents, m.TotalNumTested, m.HighestScore, m.TotalNumOfItems,
-                    m.LowestScore, m.MPS, sy.Year_Range AS SY
+                    m.TotalNumOfStudents, m.TotalNumTested,  m.TotalNumOfItems,
+                     m.MPS, sy.Year_Range AS SY
              FROM mps m
              INNER JOIN quarter q ON m.Quarter_ID = q.Quarter_ID
              INNER JOIN feedcontent fc ON m.ContentID = fc.ContentID
@@ -46,10 +46,33 @@ if (!$resultMPS) {
 $data = [];
 if ($resultMPS) {
     while ($row = mysqli_fetch_assoc($resultMPS)) {
+        $mps = $row['MPS'];
+        
+        // Determine the achievement level
+        if ($mps >= 96) {
+            $achievementLevel = "Mastered";
+        } elseif ($mps >= 86) {
+            $achievementLevel = "Closely Approximating Mastery";
+        } elseif ($mps >= 66) {
+            $achievementLevel = "Moving Towards Mastery";
+        } elseif ($mps >= 35) {
+            $achievementLevel = "Average";
+        } elseif ($mps >= 15) {
+            $achievementLevel = "Low";
+        } elseif ($mps >= 5) {
+            $achievementLevel = "Very Low";
+        } else {
+            $achievementLevel = "Absolutely No Mastery";
+        }
+
+        // Add achievement level to the row
+        $row['AchievementLevel'] = $achievementLevel;
+
         $data[] = $row;
     }
 }
 
 // Output the data
 echo json_encode($data);
+
 ?>
