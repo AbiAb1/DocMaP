@@ -23,8 +23,8 @@ if (isset($_GET['task_id'])) {
     $task_id = $_GET['task_id'];
     $user_id = $_SESSION['user_id']; // Get user ID from session
 
-    // Query to fetch task details based on TaskID and join with useracc to get user's full name
-    $sql_task_details = "SELECT tasks.*, useracc.fname, useracc.lname ,fc.ContentColor as contentcolor
+   // Query to fetch task details based on TaskID and join with useracc to get user's full name
+    $sql_task_details = "SELECT tasks.*, useracc.fname, useracc.lname ,useracc.sex,fc.ContentColor as contentcolor
                          FROM tasks 
                         JOIN feedcontent fc ON tasks.ContentID = fc.ContentID
                          LEFT JOIN useracc ON tasks.UserID = useracc.UserID
@@ -41,7 +41,9 @@ if (isset($_GET['task_id'])) {
         $task_type = $row_task_details['Type'];
         $task_due_date = $row_task_details['DueDate']; // Assuming DueDate is the column name
         $task_due_time = $row_task_details['DueTime'];
-        $user_fullname = $row_task_details['fname'] . ' ' . $row_task_details['lname']; // Concatenate fname and lname
+         // Check sex and prepend "Mr." or "Mrs."
+        $prefix = ($row_task_details['sex'] === 'Male') ? 'Mr.' : (($row_task_details['sex'] === 'Female') ? 'Mrs.' : '');
+        $user_fullname = $prefix . ' ' . $row_task_details['fname'] . ' ' . $row_task_details['lname']; // Concatenate with prefix
     } else {
         echo "Task details not found.";
         exit(); // Exit if task details are not found
