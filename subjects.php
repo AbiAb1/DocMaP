@@ -163,7 +163,7 @@ $contents = mysqli_fetch_all($result, MYSQLI_ASSOC);
         <!-- MAIN -->
         <main>
             <div class="d-flex justify-content-between align-items-center">
-                <h2 class="title" style="margin-bottom: 20px;">Grades</h2>
+                <h2 class="title" style="margin-bottom: 20px;">Grade Level</h2>
                 <div class="fab" data-toggle="modal" data-target="#exampleModal">
                     <i class='bx bx-plus'></i>
                 </div>
