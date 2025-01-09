@@ -248,75 +248,100 @@ $rowCount = mysqli_num_rows($result); // Get the number of rows returned
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-    $(document).ready(function() {
-        $('#uploadTemplateForm').on('submit', function(e) {
-            e.preventDefault(); // Prevent form submission
-
-            var formData = new FormData(this);
-
-            $.ajax({
-                url: 'upload_template.php',
-                type: 'POST',
-                data: formData,
-                contentType: false,
-                processData: false,
-                success: function(response) {
-                    var result = JSON.parse(response);
-                    if (result.status === 'success') {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Uploaded!',
-                            text: result.message,
-                        }).then(() => {
-                            $('#uploadModal').modal('hide'); // Hide modal
-                            location.reload(); // Reload page
-                        });
-                    } else {
+        $(document).ready(function() {
+            $('#uploadTemplateForm').on('submit', function(e) {
+                e.preventDefault(); // Prevent form submission
+    
+                var formData = new FormData(this);
+    
+                $.ajax({
+                    url: 'upload_template.php',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        var result = JSON.parse(response);
+                        if (result.status === 'success') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Uploaded!',
+                                text: result.message,
+                            }).then(() => {
+                                $('#uploadModal').modal('hide'); // Hide modal
+                                location.reload(); // Reload page
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: result.message,
+                            });
+                        }
+                    },
+                    error: function() {
                         Swal.fire({
                             icon: 'error',
                             title: 'Oops...',
-                            text: result.message,
+                            text: 'Something went wrong with the AJAX request.',
                         });
                     }
-                },
-                error: function() {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Something went wrong with the AJAX request.',
+                });
+            });
+        });
+    </script>
+    <script>
+        function confirmDelete(templateId, filename) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Send AJAX request to delete the file
+                    fetch('delete_template.php', {
+                        method: 'POST', // Use POST for better security
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ templateId, filename }), // Pass data as JSON
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire('Deleted!', 'Your template has been deleted.', 'success');
+                            
+                            // Optionally remove the deleted template row from the table
+                            const row = document.querySelector(`#template-row-${templateId}`);
+                            if (row) {
+                                row.remove();
+                            }
+                        } else {
+                            Swal.fire('Error!', data.message || 'Failed to delete the template.', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire('Error!', 'An unexpected error occurred.', 'error');
                     });
                 }
             });
-        });
-    });
-</script>
-    <script>
-    function confirmDelete(templateId, filename) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Redirect to delete_template.php with templateId
-                window.location.href = 'delete_template.php?id=' + templateId + '&filename=' + filename;
-            }
-        });
-    }
-
-    // Search functionality
-    $(document).ready(function() {
-        $('#searchInput').on('keyup', function() {
-            var value = $(this).val().toLowerCase();
-            $('#templateTableBody tr').filter(function() {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+        }
+    
+    
+        // Search functionality
+        $(document).ready(function() {
+            $('#searchInput').on('keyup', function() {
+                var value = $(this).val().toLowerCase();
+                $('#templateTableBody tr').filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
             });
         });
-    });
     </script>
 </body>
 </html>
