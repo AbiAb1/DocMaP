@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['template_file'])) {
 
             // Save File Information to Database
             $query = "INSERT INTO `templates`(`UserID`, `name`, `filename`, `mimetype`, `size`, `uri`, `created_at`) 
-                      VALUES ('$userId', '$name', '$newFileName', '$mimetype', '$size', '$target_file', '$githubDownloadUrl', '$created_at')";
+                      VALUES ('$userId', '$name', '$newFileName', '$mimetype', '$size'a, '$githubDownloadUrl', '$created_at')";
             if (mysqli_query($conn, $query)) {
                 $response = ['status' => 'success', 'message' => 'Template uploaded successfully', 'github_url' => $githubDownloadUrl];
             } else {
