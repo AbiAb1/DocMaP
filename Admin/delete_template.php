@@ -6,8 +6,10 @@ header('Content-Type: application/json'); // Set response type to JSON
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
-    $templateId = $input['templateId'] ?? null;
-    $filename = $input['filename'] ?? null;
+
+    // Explicitly typecast or validate input variables
+    $templateId = isset($input['templateId']) ? (int)$input['templateId'] : null; // Cast to integer
+    $filename = isset($input['filename']) ? trim($input['filename']) : null; // Ensure it's a sanitized string
 
     if ($templateId && $filename) {
         $apiUrl = "https://api.github.com/repos/AbiAb1/DocMaP/contents/Admin/Templates/$filename?ref=extra";
@@ -52,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // File deleted from GitHub, delete from database
                 $query = "DELETE FROM templates WHERE TemplateID = ?";
                 if ($stmt = mysqli_prepare($conn, $query)) {
-                    mysqli_stmt_bind_param($stmt, 'i', $templateId);
+                    mysqli_stmt_bind_param($stmt, 'i', $templateId); // Use integer binding
                     if (mysqli_stmt_execute($stmt)) {
                         echo json_encode(['success' => true, 'message' => 'Template deleted successfully from both GitHub and database.']);
                         exit();
