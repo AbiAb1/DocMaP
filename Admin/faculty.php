@@ -608,7 +608,7 @@ $conn->close();
                                             <tr>
                                                 <td><input type='radio' name='userID' value='{$user['UserID']}' required></td>
                                                 <td>" . htmlspecialchars($user['FullName']) . "</td>
-                                                <td>" . htmlspecialchars($user['Rank'] ?? 'N/A') . "</td>
+                                                <td>" . htmlspecialchars($user['URank'] ?? 'N/A') . "</td>
                                             </tr>";
                                         }
                                     } else {
@@ -684,7 +684,7 @@ $conn->close();
                                         <label>Last Name:</label>
                                         <input type="text" class="swal2-input user-lastname" value="${lastName || ''}">
                                         <label>Rank:</label>
-                                        <input type="text" class="swal2-input user-rank" value="${user.rank || ''}">
+                                        <input type="text" class="swal2-input user-rank" value="${user.urank || ''}">
                                         <label>Address:</label>
                                         <input type="text" class="swal2-input user-address" value="${user.address || ''}">
                                         <label>Mobile:</label>
@@ -706,7 +706,7 @@ $conn->close();
                                         firstName: document.querySelectorAll('.user-firstname')[index].value,
                                         middleName: document.querySelectorAll('.user-middlename')[index].value,
                                         lastName: document.querySelectorAll('.user-lastname')[index].value,
-                                        rank: document.querySelectorAll('.user-rank')[index].value,
+                                        urank: document.querySelectorAll('.user-rank')[index].value,
                                         address: document.querySelectorAll('.user-address')[index].value,
                                         mobile: document.querySelectorAll('.user-mobile')[index].value,
                                         email: document.querySelectorAll('.user-email')[index].value,
@@ -731,7 +731,7 @@ $conn->close();
                 return Array.from(selectedCheckboxes).map(checkbox => ({
                     UserID: checkbox.value,
                     fullname: checkbox.getAttribute('data-fullname'),
-                    rank: checkbox.getAttribute('data-rank'),
+                    urank: checkbox.getAttribute('data-rank'),
                     address: checkbox.getAttribute('data-address'),
                     mobile: checkbox.getAttribute('data-mobile'),
                     email: checkbox.getAttribute('data-email'),
@@ -746,7 +746,7 @@ $conn->close();
                         user.firstName !== original.getAttribute('data-fullname').split(' ')[0] ||
                         user.middleName !== (original.getAttribute('data-fullname').split(' ')[1] || '') ||
                         user.lastName !== (original.getAttribute('data-fullname').split(' ')[2] || '') ||
-                        user.rank !== original.getAttribute('data-rank') ||
+                        user.urank !== original.getAttribute('data-rank') ||
                         user.address !== original.getAttribute('data-address') ||
                         user.mobile !== original.getAttribute('data-mobile') ||
                         user.email !== original.getAttribute('data-email')
@@ -972,7 +972,7 @@ $conn->close();
                         user.firstName !== original.getAttribute('data-fullname').split(' ')[0] ||
                         user.middleName !== (original.getAttribute('data-fullname').split(' ')[1] || '') ||
                         user.lastName !== (original.getAttribute('data-fullname').split(' ')[2] || '') ||
-                        user.rank !== original.getAttribute('data-rank') ||
+                        user.urank !== original.getAttribute('data-rank') ||
                         user.address !== original.getAttribute('data-address') ||
                         user.mobile !== original.getAttribute('data-mobile') ||
                         user.email !== original.getAttribute('data-email')
