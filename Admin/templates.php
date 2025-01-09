@@ -313,13 +313,11 @@ $rowCount = mysqli_num_rows($result); // Get the number of rows returned
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            Swal.fire('Deleted!', 'Your template has been deleted.', 'success');
-                            
-                            // Optionally remove the deleted template row from the table
-                            const row = document.querySelector(`#template-row-${templateId}`);
-                            if (row) {
-                                row.remove();
-                            }
+                            Swal.fire('Deleted!', 'Your template has been deleted.', 'success')
+                            .then(() => {
+                                // Reload the page if deletion is successful
+                                location.reload();
+                            });
                         } else {
                             Swal.fire('Error!', data.message || 'Failed to delete the template.', 'error');
                         }
@@ -331,8 +329,8 @@ $rowCount = mysqli_num_rows($result); // Get the number of rows returned
                 }
             });
         }
-    
-    
+
+
         // Search functionality
         $(document).ready(function() {
             $('#searchInput').on('keyup', function() {
