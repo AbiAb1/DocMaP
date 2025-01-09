@@ -21,7 +21,9 @@ if (isset($_GET['id']) && isset($_GET['file'])) {
             // Fetch GitHub Token from Environment Variables
             $githubToken = $_ENV['GITHUB_TOKEN']?? null;
             if (!$githubToken) {
-                continue;
+                $_SESSION['error'] = 'GitHub token is missing.';
+                header("Location: templates.php");
+                exit();
             }
             
             $authHeader = "Authorization: token $githubToken";
