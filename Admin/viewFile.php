@@ -1,19 +1,6 @@
 <?php
 if (!isset($_GET['file'])) {
-    echo "<!DOCTYPE html>
-    <html lang='en'>
-    <head>
-        <meta charset='UTF-8'>
-        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-        <meta http-equiv='Cache-Control' content='no-cache, no-store, must-revalidate'>
-        <meta http-equiv='Pragma' content='no-cache'>
-        <meta http-equiv='Expires' content='0'>
-        <title>No File Specified</title>
-    </head>
-    <body>
-        <h1>No file specified</h1>
-    </body>
-    </html>";
+    echo "No file specified";
     exit;
 }
 
@@ -24,20 +11,7 @@ $fileContent = @file_get_contents($url);
 
 if ($fileContent === false) {
     http_response_code(404);
-    echo "<!DOCTYPE html>
-    <html lang='en'>
-    <head>
-        <meta charset='UTF-8'>
-        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-        <meta http-equiv='Cache-Control' content='no-cache, no-store, must-revalidate'>
-        <meta http-equiv='Pragma' content='no-cache'>
-        <meta http-equiv='Expires' content='0'>
-        <title>File Not Found</title>
-    </head>
-    <body>
-        <h1>File not found</h1>
-    </body>
-    </html>";
+    echo "File not found";
     exit;
 }
 
@@ -58,26 +32,5 @@ $mimeTypeMap = [
 $mimeType = $mimeTypeMap[$extension] ?? 'application/octet-stream';
 
 header("Content-Type: $mimeType");
-
-// Display HTML content within a webpage structure for viewable files
-if ($mimeType === 'text/plain' || $mimeType === 'text/html') {
-    echo "<!DOCTYPE html>
-    <html lang='en'>
-    <head>
-        <meta charset='UTF-8'>
-        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-        <meta http-equiv='Cache-Control' content='no-cache, no-store, must-revalidate'>
-        <meta http-equiv='Pragma' content='no-cache'>
-        <meta http-equiv='Expires' content='0'>
-        <title>Viewing File: " . htmlspecialchars($filename) . "</title>
-    </head>
-    <body>
-        <h1>Viewing File: " . htmlspecialchars($filename) . "</h1>
-        <pre>" . htmlspecialchars($fileContent) . "</pre>
-    </body>
-    </html>";
-} else {
-    // Directly output non-viewable files like PDFs or images
-    echo $fileContent;
-}
+echo $fileContent;
 ?>
