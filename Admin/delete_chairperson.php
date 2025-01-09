@@ -9,7 +9,7 @@ if (isset($_POST['chairpersonID']) && !empty($_POST['chairpersonID'])) {
 
     // Prepare the SQL DELETE query
     $ids = implode(',', array_map('intval', $selectedChairpersons)); // Ensure the IDs are integers
-    $sql = "DELETE FROM Chairperson WHERE Chairperson_ID IN ($ids)";
+    $sql = "DELETE FROM chairperson WHERE Chairperson_ID IN ($ids)";
 
     if ($conn->query($sql) === TRUE) {
         echo json_encode(['status' => 'success', 'message' => 'Chairperson(s) deleted successfully.']);
