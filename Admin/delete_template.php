@@ -14,15 +14,42 @@ if (isset($_GET['id']) && isset($_GET['file'])) {
     if ($stmt = mysqli_prepare($conn, $query)) {
         mysqli_stmt_bind_param($stmt, 'i', $templateId);
         if (mysqli_stmt_execute($stmt)) {
-            // Check if the file exists and delete it
-            $filePath = "https://raw.githubusercontent.com/AbiAb1/DocMaP/extra/Admin/Templates/" . $filename; // Path to the file
-            if (file_exists($filePath)) {
-                unlink($filePath); // Delete the file
+            // GitHub file deletion logic (using GitHub API)
+            $apiUrl = "https://api.github.com/repos/AbiAb1/DocMaP/contents/extra/Admin/Templates/$filename";
+            
+
+            // Fetch GitHub Token from Environment Variables
+            $githubToken = $_ENV['GITHUB_TOKEN']?? null;
+            if (!$githubToken) {
+                continue;
             }
-            // Set success message
-            $_SESSION['message'] = 'Template deleted successfully.';
-            header("Location: templates.php"); // Redirect to the templates page
-            exit();
+            
+            $authHeader = "Authorization: token $githubToken";
+            
+            // Initialize curl for API request
+            $ch = curl_init($apiUrl);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'User-Agent: DocMaP',
+                $authHeader,
+            ));
+            
+            $response = curl_exec($ch);
+            curl_close($ch);
+            
+            // Check if GitHub file deletion was successful
+            if ($response) {
+                // File deleted successfully
+                $_SESSION['message'] = 'Template deleted successfully.';
+                header("Location: templates.php");
+                exit();
+            } else {
+                // Handle GitHub API error
+                $_SESSION['error'] = 'Failed to delete the file from GitHub.';
+                header("Location: templates.php");
+                exit();
+            }
         } else {
             // Handle query execution error
             $_SESSION['error'] = 'Failed to delete the template. Please try again.';
