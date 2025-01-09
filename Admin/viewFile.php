@@ -54,7 +54,7 @@ $mimeType = $mimeTypeMap[$extension] ?? 'application/octet-stream';
 header("Content-Type: $mimeType");
 
 // For text and HTML files, display the content in a browser-friendly format
-if ($mimeType === 'text/plain' || $mimeType === 'text/html' || $mimeType === 'application/pdf' || $mimeType === 'image/jpeg' || $mimeType === 'image/png') {
+if ($mimeType === 'text/plain' || $mimeType === 'text/html') {
     echo "<!DOCTYPE html>
     <html lang='en'>
     <head>
@@ -67,8 +67,47 @@ if ($mimeType === 'text/plain' || $mimeType === 'text/html' || $mimeType === 'ap
         <pre>" . htmlspecialchars($fileContent) . "</pre>
     </body>
     </html>";
+} elseif ($mimeType === 'application/pdf') {
+    // For PDF files, display the PDF in an embedded viewer
+    echo "<!DOCTYPE html>
+    <html lang='en'>
+    <head>
+        <meta charset='UTF-8'>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+        <title>Viewing PDF: " . htmlspecialchars($filename) . "</title>
+    </head>
+    <body>
+        <h1>Viewing PDF: " . htmlspecialchars($filename) . "</h1>
+        <embed src='" . $url . "' width='100%' height='800px' type='application/pdf'>
+    </body>
+    </html>";
+} elseif ($mimeType === 'image/jpeg' || $mimeType === 'image/png') {
+    // For image files, display the image
+    echo "<!DOCTYPE html>
+    <html lang='en'>
+    <head>
+        <meta charset='UTF-8'>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+        <title>Viewing Image: " . htmlspecialchars($filename) . "</title>
+    </head>
+    <body>
+        <h1>Viewing Image: " . htmlspecialchars($filename) . "</h1>
+        <img src='" . $url . "' alt='" . htmlspecialchars($filename) . "' width='100%'>
+    </body>
+    </html>";
 } else {
-    // For other file types (like docx, xlsx, etc.), just display the raw content or force download
-    echo $fileContent;
+    // For other file types, force a download or display a message
+    echo "<!DOCTYPE html>
+    <html lang='en'>
+    <head>
+        <meta charset='UTF-8'>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+        <title>Viewing File: " . htmlspecialchars($filename) . "</title>
+    </head>
+    <body>
+        <h1>File type not directly viewable</h1>
+        <p>You can <a href='" . $url . "' download>download the file here</a>.</p>
+    </body>
+    </html>";
 }
 ?>
