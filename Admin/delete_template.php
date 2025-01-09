@@ -2,74 +2,70 @@
 session_start();
 include 'connection.php';
 
-// Check if the id and file are set in the GET request
-if (isset($_GET['id']) && isset($_GET['file'])) {
-    $templateId = $_GET['id'];
-    $filename = $_GET['file'];
+header('Content-Type: application/json'); // Set response type to JSON
 
-    // GitHub file deletion logic (using GitHub API)
-    $apiUrl = "https://api.github.com/repos/AbiAb1/DocMaP/contents/extra/Admin/Templates/$filename";
-    
-    // Fetch GitHub Token from Environment Variables
-    $githubToken = $_ENV['GITHUB_TOKEN'] ?? null;
-    if (!$githubToken) {
-        $_SESSION['error'] = 'GitHub token is missing.';
-        header("Location: templates.php");
-        exit();
-    }
-    
-    $authHeader = [
-                "Authorization: token $githubToken",
-                "Content-Type: application/json",
-                "User-Agent: DocMaP"
-    ];
+// Check if the request method is POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Parse JSON input
+    $input = json_decode(file_get_contents('php://input'), true);
+    $templateId = $input['templateId'] ?? null;
+    $filename = $input['filename'] ?? null;
 
-    // Initialize curl for API request
-    $ch = curl_init($apiUrl);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Follow redirects
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $authHeader);
+    if ($templateId && $filename) {
+        // GitHub file deletion logic (using GitHub API)
+        $apiUrl = "https://api.github.com/repos/AbiAb1/DocMaP/contents/extra/Admin/Templates/$filename";
+
+        // Fetch GitHub Token from Environment Variables
+        $githubToken = $_ENV['GITHUB_TOKEN'] ?? null;
+        if (!$githubToken) {
+            echo json_encode(['success' => false, 'message' => 'GitHub token is missing.']);
+            exit();
+        }
+
+        $authHeader = [
+            "Authorization: token $githubToken",
+            "Content-Type: application/json",
+            "User-Agent: DocMaP"
+        ];
+
+        // Initialize cURL for API request
+        $ch = curl_init($apiUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $authHeader);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        // Check if GitHub file deletion was successful
+        if ($httpCode === 200 || $httpCode === 204) {
+            // File deleted from GitHub successfully, now delete from database
+            $query = "DELETE FROM templates WHERE TemplateID = ?";
             
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    
-    // Check if GitHub file deletion was successful (200 OK)
-    if ($httpCode === 200) {
-        // File deleted from GitHub successfully, now proceed with database deletion
-        $query = "DELETE FROM templates WHERE TemplateID = ?";
-        
-        // Prepare and execute the statement for database deletion
-        if ($stmt = mysqli_prepare($conn, $query)) {
-            mysqli_stmt_bind_param($stmt, 'i', $templateId);
-            if (mysqli_stmt_execute($stmt)) {
-                // Template deleted from database
-                $_SESSION['message'] = 'Template deleted successfully from both GitHub and database.';
-                header("Location: templates.php");
-                exit();
+            if ($stmt = mysqli_prepare($conn, $query)) {
+                mysqli_stmt_bind_param($stmt, 'i', $templateId);
+                if (mysqli_stmt_execute($stmt)) {
+                    echo json_encode(['success' => true, 'message' => 'Template deleted successfully from both GitHub and database.']);
+                    exit();
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'Failed to delete the template from the database.']);
+                    exit();
+                }
             } else {
-                // Handle database deletion error
-                $_SESSION['error'] = 'Failed to delete the template from the database. Please try again.';
-                header("Location: templates.php");
+                echo json_encode(['success' => false, 'message' => 'Failed to prepare the SQL statement for database deletion.']);
                 exit();
             }
         } else {
-            // Handle statement preparation error for database
-            $_SESSION['error'] = 'Failed to prepare the SQL statement for database deletion.';
-            header("Location: templates.php");
+            echo json_encode(['success' => false, 'message' => 'Failed to delete the file from GitHub. HTTP code: ' . $httpCode]);
             exit();
         }
     } else {
-        // Handle GitHub API error
-        $_SESSION['error'] = 'Failed to delete the file from GitHub. HTTP code: ' . $httpCode;
-        header("Location: templates.php");
+        echo json_encode(['success' => false, 'message' => 'Invalid request data.']);
         exit();
     }
 } else {
-    // Redirect if id or file is not set
-    $_SESSION['error'] = 'Invalid request.';
-    header("Location: templates.php");
+    echo json_encode(['success' => false, 'message' => 'Invalid request method.']);
     exit();
 }
 ?>
