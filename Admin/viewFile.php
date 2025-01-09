@@ -1,3 +1,50 @@
+<?php
+// Ensure no output before headers
+if (!isset($_GET['file'])) {
+    echo "No file specified";
+    exit;
+}
+
+// Validate the filename
+$filename = basename($_GET['file']); // Prevent directory traversal
+if (empty($filename)) {
+    echo "Invalid file name.";
+    exit;
+}
+
+$url = "https://raw.githubusercontent.com/AbiAb1/DocMaP/extra/Admin/Templates/" . urlencode($filename);
+
+$fileContent = @file_get_contents($url);
+
+if ($fileContent === false) {
+    http_response_code(404);
+    echo "File not found";
+    exit;
+}
+
+// Attempt to detect MIME type
+$pathInfo = pathinfo($filename);
+$extension = strtolower($pathInfo['extension'] ?? '');
+$mimeTypeMap = [
+    'pdf' => 'application/pdf',
+    'jpg' => 'image/jpeg',
+    'jpeg' => 'image/jpeg',
+    'png' => 'image/png',
+    'txt' => 'text/plain',
+    'html' => 'text/html',
+    'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    // Add more extensions as needed
+];
+$mimeType = $mimeTypeMap[$extension] ?? 'application/octet-stream';
+
+// Set the content type header before any output
+header("Content-Type: $mimeType");
+
+// Now send the content of the file
+echo $fileContent;
+exit;
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,47 +53,6 @@
     <title>View File</title>
 </head>
 <body>
-    <?php
-    if (!isset($_GET['file'])) {
-        echo "No file specified";
-        exit;
-    }
-
-    // Validate the filename
-    $filename = basename($_GET['file']); // Prevent directory traversal
-    if (empty($filename)) {
-        echo "Invalid file name.";
-        exit;
-    }
-
-    $url = "https://raw.githubusercontent.com/AbiAb1/DocMaP/extra/Admin/Templates/" . urlencode($filename);
-
-    $fileContent = @file_get_contents($url);
-
-    if ($fileContent === false) {
-        http_response_code(404);
-        echo "File not found";
-        exit;
-    }
-
-    // Attempt to detect MIME type
-    $pathInfo = pathinfo($filename);
-    $extension = strtolower($pathInfo['extension'] ?? '');
-    $mimeTypeMap = [
-        'pdf' => 'application/pdf',
-        'jpg' => 'image/jpeg',
-        'jpeg' => 'image/jpeg',
-        'png' => 'image/png',
-        'txt' => 'text/plain',
-        'html' => 'text/html',
-        'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        // Add more extensions as needed
-    ];
-    $mimeType = $mimeTypeMap[$extension] ?? 'application/octet-stream';
-
-    header("Content-Type: $mimeType");
-    echo $fileContent;
-    ?>
+    <!-- HTML content here if needed, though this might not be required for direct file output -->
 </body>
 </html>
