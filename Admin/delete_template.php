@@ -18,20 +18,20 @@ if (isset($_GET['id']) && isset($_GET['file'])) {
         exit();
     }
     
-    $authHeader = "Authorization: token $githubToken";
-    
-    // Initialize curl for API request to delete the file from GitHub
+    $authHeader = [
+                "Authorization: token $githubToken",
+                "Content-Type: application/json",
+                "User-Agent: DocMaP"
+    ];
+
+    // Initialize curl for API request
     $ch = curl_init($apiUrl);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Follow redirects
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        'User-Agent: DocMaP',
-        $authHeader,
-    ));
-    
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $authHeader);
+            
     $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE); // Get HTTP response code
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
     
     // Check if GitHub file deletion was successful (200 OK)
