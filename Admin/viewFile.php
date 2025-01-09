@@ -1,17 +1,10 @@
 <?php
-// Ensure no output before headers
 if (!isset($_GET['file'])) {
     echo "No file specified";
     exit;
 }
 
-// Validate the filename
-$filename = basename($_GET['file']); // Prevent directory traversal
-if (empty($filename)) {
-    echo "Invalid file name.";
-    exit;
-}
-
+$filename = $_GET['file'];
 $url = "https://raw.githubusercontent.com/AbiAb1/DocMaP/extra/Admin/Templates/" . urlencode($filename);
 
 $fileContent = @file_get_contents($url);
@@ -38,19 +31,6 @@ $mimeTypeMap = [
 ];
 $mimeType = $mimeTypeMap[$extension] ?? 'application/octet-stream';
 
-// Set the content type header before any output
 header("Content-Type: $mimeType");
-
-
+echo $fileContent;
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View File</title>
-</head>
-<body>
-    <pre><?php echo htmlspecialchars($fileContent); ?></pre>
-</body>
-</html>
