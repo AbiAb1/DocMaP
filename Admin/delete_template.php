@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         exit();
                     } else {
                         // GitHub deletion failed, rollback database deletion
-                        $rollbackQuery = "INSERT INTO templates (TemplateID, Filename) VALUES (?, ?)";
+                        $rollbackQuery = "INSERT INTO templates (TemplateID, filename) VALUES (?, ?)";
                         if ($rollbackStmt = mysqli_prepare($conn, $rollbackQuery)) {
                             mysqli_stmt_bind_param($rollbackStmt, 'is', $templateId, $filename);
                             mysqli_stmt_execute($rollbackStmt);
