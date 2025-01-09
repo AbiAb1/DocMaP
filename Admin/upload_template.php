@@ -8,6 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['template_file'])) {
     $userId = $_SESSION['user_id']; // Assume logged-in UserID
     $name = mysqli_real_escape_string($conn, $_POST['template_name']);
     $file = $_FILES['template_file'];
+    $fileTmpName = $file['tmp_name'];
     $newFileName = uniqid() . '_' . basename($file['name']); // Unique filename
     $mimetype = $file['type'];
     $size = $file['size'];
@@ -18,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['template_file'])) {
         mkdir($uploadDir, 0755); // Create folder with appropriate permissions
     }
 
-    $target_file = $uploadDir . $fileName;
+    $target_file = $uploadDir . $newFileName;
     $created_at = date('Y-m-d H:i:s');
 
     // Move file to local folder
