@@ -69,7 +69,7 @@ if ($resultQuarter) {
 $queryMPS = "
     SELECT m.mpsID, m.UserID, m.ContentID, q.School_Year_ID, q.Quarter_Name, 
            CONCAT(fc.Title, ' - ', fc.Captions) AS GradeSection, 
-           m.TotalNumOfStudents, m.TotalNumTested, m.HighestScore, 
+           m.TotalNumOfStudents, m.TotalNumTested, 
            m.LowestScore, m.MPS, sy.Year_Range AS SY,
            CONCAT(ua.fname, ' ', ua.lname) AS SubTeacher
     FROM mps m
@@ -81,6 +81,7 @@ $queryMPS = "
     WHERE q.Quarter_ID = ?
       AND d.dept_ID = ?;
 ";
+ 
 
 // Prepare the statement
 if ($stmtMPS = mysqli_prepare($conn, $queryMPS)) {
