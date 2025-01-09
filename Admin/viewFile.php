@@ -54,7 +54,7 @@ $mimeType = $mimeTypeMap[$extension] ?? 'application/octet-stream';
 header("Content-Type: $mimeType");
 
 // For text and HTML files, display the content in a browser-friendly format
-if ($mimeType === 'text/plain' || $mimeType === 'text/html') {
+if ($mimeType === 'text/plain' || $mimeType === 'text/html' || $mimeType === 'application/pdf' || $mimeType === 'image/jpeg' || $mimeType === 'image/png') {
     echo "<!DOCTYPE html>
     <html lang='en'>
     <head>
@@ -67,12 +67,6 @@ if ($mimeType === 'text/plain' || $mimeType === 'text/html') {
         <pre>" . htmlspecialchars($fileContent) . "</pre>
     </body>
     </html>";
-} elseif ($mimeType === 'application/pdf') {
-    // For PDF files, output the content directly
-    echo $fileContent;
-} elseif ($mimeType === 'image/jpeg' || $mimeType === 'image/png') {
-    // For image files, output the content directly (image will be displayed in the browser)
-    echo $fileContent;
 } else {
     // For other file types (like docx, xlsx, etc.), just display the raw content or force download
     echo $fileContent;
