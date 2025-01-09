@@ -5,7 +5,7 @@ if (!isset($_GET['file'])) {
 }
 
 $filename = $_GET['file'];
-$url = "https://raw.githubusercontent.com/AbiAb1/DocMaP/extra/Admin/Attachments/" . urlencode($filename);
+$url = "https://raw.githubusercontent.com/AbiAb1/DocMaP/extra/Admin/Templates/" . urlencode($filename);
 
 $fileContent = @file_get_contents($url);
 
