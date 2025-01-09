@@ -166,8 +166,8 @@ $rowCount = mysqli_num_rows($result); // Get the number of rows returned
                                     <td><?php echo htmlspecialchars($row['created_at']); ?></td>
                                     <td>
                                        <!-- View Icon -->
-                                        <a href="https://raw.githubusercontent.com/AbiAb1/DocMaP/extra/Admin/Templates/<?php echo $row['filename']; ?>" target="_blank" class="btn btn-circle btn-view" title="View">
-                                            <i class="fas fa-eye"></i> <!-- View Icon (Font Awesome) -->
+                                        <a href="https://htmlpreview.github.io/?https://raw.githubusercontent.com/AbiAb1/DocMaP/extra/Admin/Templates/<?php echo $row['filename']; ?>" target="_blank" class="btn btn-circle btn-view" title="View">
+                                            <i class="fas fa-eye"></i>
                                         </a>
                                         <!-- Delete Icon -->
                                         <a href="#" class="btn btn-circle btn-delete" title="Delete" 
