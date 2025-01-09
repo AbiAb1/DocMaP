@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $filename = $input['filename'] ?? null;
 
     if ($templateId && $filename) {
-        $apiUrl = "https://api.github.com/repos/AbiAb1/DocMaP/contents/extra/Admin/Templates/$filename";
+        $apiUrl = "https://api.github.com/repos/AbiAb1/DocMaP/contents/Admin/Templates/$filename?ref=extra";
         $githubToken = $_ENV['GITHUB_TOKEN'] ?? null;
 
         // Log the API URL for debugging
