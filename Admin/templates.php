@@ -166,7 +166,7 @@ $rowCount = mysqli_num_rows($result); // Get the number of rows returned
                                     <td><?php echo htmlspecialchars($row['created_at']); ?></td>
                                     <td>
                                         <!-- View Icon -->
-                                        <a href="Templates/<?php echo $row['filename']; ?>" target="_blank" class="btn btn-circle btn-view" title="View">
+                                        <a href=""https://api.github.com/repos/$githubRepo/contents/Admin/Templates/<?php echo $row['filename']; ?>" target="_blank" class="btn btn-circle btn-view" title="View">
                                             <i class="fas fa-eye"></i> <!-- View Icon (Font Awesome) -->
                                         </a>
                                         <!-- Delete Icon -->
