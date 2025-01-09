@@ -5,11 +5,20 @@ include 'connection.php';
 $response = ['status' => 'error', 'message' => 'Something went wrong'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['template_file'])) {
+    function sanitizeFileName($filename) {
+        // Remove special characters and spaces
+        $filename = preg_replace('/[^A-Za-z0-9_\-\.]/', '_', $filename);
+        return $filename;
+    }
+
     $userId = $_SESSION['user_id']; // Assume logged-in UserID
     $name = mysqli_real_escape_string($conn, $_POST['template_name']);
     $file = $_FILES['template_file'];
     $fileTmpName = $file['tmp_name'];
-    $newFileName = uniqid() . '_' . basename($file['name']); // Unique filename
+    
+    // Sanitize the original filename
+    $sanitizedOriginalName = sanitizeFileName(basename($file['name']));
+    $newFileName = uniqid() . '_' . $sanitizedOriginalName; // Unique filename
     $mimetype = $file['type'];
     $size = $file['size'];
 
@@ -70,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['template_file'])) {
 
             // Save File Information to Database
             $query = "INSERT INTO `templates`(`UserID`, `name`, `filename`, `mimetype`, `size`, `uri`, `created_at`) 
-                      VALUES ('$userId', '$name', '$newFileName', '$mimetype', '$size'a, '$githubDownloadUrl', '$created_at')";
+                      VALUES ('$userId', '$name', '$newFileName', '$mimetype', '$size', '$githubDownloadUrl', '$created_at')";
             if (mysqli_query($conn, $query)) {
                 $response = ['status' => 'success', 'message' => 'Template uploaded successfully', 'github_url' => $githubDownloadUrl];
             } else {
