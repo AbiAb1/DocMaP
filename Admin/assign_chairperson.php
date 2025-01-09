@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $gradeID = $_POST['gradeID'];
 
     // SQL query to insert a new chairperson
-    $sql = "INSERT INTO Chairperson (UserID, Grade_ID) VALUES (?, ?)";
+    $sql = "INSERT INTO chairperson (UserID, Grade_ID) VALUES (?, ?)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ii", $userID, $gradeID);
 
