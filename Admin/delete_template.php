@@ -13,6 +13,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $apiUrl = "https://api.github.com/repos/AbiAb1/DocMaP/contents/extra/Admin/Templates/$filename";
         $githubToken = $_ENV['GITHUB_TOKEN'] ?? null;
 
+        // Log the API URL for debugging
+        error_log("GitHub API URL: $apiUrl");
+
         if (!$githubToken) {
             echo json_encode(['success' => false, 'message' => 'GitHub token is missing.']);
             exit();
@@ -24,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             "User-Agent: DocMaP"
         ];
 
-        // Step 1: Get the `sha` of the file
+        // Step 1: Validate File Existence on GitHub
         $ch = curl_init($apiUrl);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $authHeader);
@@ -65,6 +68,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo json_encode(['success' => false, 'message' => 'Failed to delete the file from GitHub. HTTP code: ' . $deleteCode]);
                 exit();
             }
+        } elseif ($httpCode === 404) {
+            echo json_encode(['success' => false, 'message' => 'File not found on GitHub. Verify the file path.']);
+            curl_close($ch);
+            exit();
         } else {
             echo json_encode(['success' => false, 'message' => 'Failed to fetch file data from GitHub. HTTP code: ' . $httpCode]);
             curl_close($ch);
