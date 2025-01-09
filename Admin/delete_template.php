@@ -4,6 +4,11 @@ include 'connection.php';
 
 header('Content-Type: application/json'); // Set response type to JSON
 
+// Helper function to append debug messages
+function debug_message($message) {
+    echo "<script>console.log(" . json_encode($message) . ");</script>";
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
     $templateId = $input['templateId'] ?? null;
@@ -13,13 +18,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $apiUrl = "https://api.github.com/repos/AbiAb1/DocMaP/contents/Admin/Templates/$filename?ref=extra";
         $githubToken = $_ENV['GITHUB_TOKEN'] ?? null;
 
-        // Log the API URL and inputs for debugging
-        error_log("GitHub API URL: $apiUrl");
-        error_log("Filename: $filename");
-        error_log("Template ID: $templateId");
+        // Log API URL and inputs
+        debug_message("GitHub API URL: $apiUrl");
+        debug_message("Filename: $filename");
+        debug_message("Template ID: $templateId");
 
         if (!$githubToken) {
-            error_log("GitHub token is missing.");
+            debug_message("GitHub token is missing.");
             echo json_encode(['success' => false, 'message' => 'GitHub token is missing.']);
             exit();
         }
@@ -37,20 +42,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        // Log response and HTTP code for debugging
-        error_log("HTTP Code on Fetch: $httpCode");
-        error_log("GitHub API Response (Fetch): $response");
+        // Log response and HTTP code
+        debug_message("HTTP Code on Fetch: $httpCode");
+        debug_message("GitHub API Response (Fetch): $response");
 
         if (curl_errno($ch)) {
-            error_log("cURL error (Fetch): " . curl_error($ch));
+            debug_message("cURL error (Fetch): " . curl_error($ch));
         }
 
         if ($httpCode === 200) {
             $fileData = json_decode($response, true);
             $sha = $fileData['sha'];
 
-            // Log fetched SHA for debugging
-            error_log("Fetched SHA: $sha");
+            // Log fetched SHA
+            debug_message("Fetched SHA: $sha");
 
             // Step 2: Delete the file using its `sha`
             $deletePayload = json_encode(['message' => "Deleting $filename", 'sha' => $sha]);
@@ -62,11 +67,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $deleteCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
             // Log response and HTTP code for deletion
-            error_log("HTTP Code on Delete: $deleteCode");
-            error_log("GitHub API Response (Delete): $deleteResponse");
+            debug_message("HTTP Code on Delete: $deleteCode");
+            debug_message("GitHub API Response (Delete): $deleteResponse");
 
             if (curl_errno($ch)) {
-                error_log("cURL error (Delete): " . curl_error($ch));
+                debug_message("cURL error (Delete): " . curl_error($ch));
             }
 
             curl_close($ch);
@@ -80,12 +85,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         echo json_encode(['success' => true, 'message' => 'Template deleted successfully from both GitHub and database.']);
                         exit();
                     } else {
-                        error_log("Failed to execute database query.");
+                        debug_message("Failed to execute database query.");
                         echo json_encode(['success' => false, 'message' => 'Failed to delete the template from the database.']);
                         exit();
                     }
                 } else {
-                    error_log("Failed to prepare database query.");
+                    debug_message("Failed to prepare database query.");
                     echo json_encode(['success' => false, 'message' => 'Failed to prepare the SQL statement for database deletion.']);
                     exit();
                 }
@@ -94,23 +99,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit();
             }
         } elseif ($httpCode === 404) {
-            error_log("File not found on GitHub.");
+            debug_message("File not found on GitHub.");
             echo json_encode(['success' => false, 'message' => 'File not found on GitHub. Verify the file path.']);
             curl_close($ch);
             exit();
         } else {
-            error_log("Failed to fetch file data from GitHub. HTTP code: $httpCode");
+            debug_message("Failed to fetch file data from GitHub. HTTP code: $httpCode");
             curl_close($ch);
             echo json_encode(['success' => false, 'message' => 'Failed to fetch file data from GitHub. HTTP code: ' . $httpCode]);
             exit();
         }
     } else {
-        error_log("Invalid request data. Template ID or filename missing.");
+        debug_message("Invalid request data. Template ID or filename missing.");
         echo json_encode(['success' => false, 'message' => 'Invalid request data.']);
         exit();
     }
 } else {
-    error_log("Invalid request method.");
+    debug_message("Invalid request method.");
     echo json_encode(['success' => false, 'message' => 'Invalid request method.']);
     exit();
 }
