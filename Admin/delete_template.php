@@ -13,7 +13,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($templateId && $filename) {
         $apiUrl = "https://api.github.com/repos/AbiAb1/DocMaP/contents/Admin/Templates/$filename?ref=extra";
-         echo json_encode($apiUrl);
         $githubToken = $_ENV['GITHUB_TOKEN'] ?? null;
 
         // Log the API URL for debugging
