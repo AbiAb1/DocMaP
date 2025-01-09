@@ -15,7 +15,7 @@ if (isset($_GET['id']) && isset($_GET['file'])) {
         mysqli_stmt_bind_param($stmt, 'i', $templateId);
         if (mysqli_stmt_execute($stmt)) {
             // Check if the file exists and delete it
-            $filePath = 'Templates/' . $filename; // Path to the file
+            $filePath = "https://raw.githubusercontent.com/AbiAb1/DocMaP/extra/Admin/Templates/" . $filename; // Path to the file
             if (file_exists($filePath)) {
                 unlink($filePath); // Delete the file
             }
