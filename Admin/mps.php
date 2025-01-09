@@ -254,8 +254,6 @@ $gradeLevelResult = mysqli_query($conn, $gradeLevelQuery);
                             <th>Instructor</th>
                             <th>Total No. Students</th>
                             <th>Total No. Tested</th>
-                            <th>Highest Score</th>
-                            <th>Lowest Score</th>
                             <th>MPS</th>
                             <th class="action-column">Action</th>
                         </tr>
@@ -271,8 +269,6 @@ $gradeLevelResult = mysqli_query($conn, $gradeLevelQuery);
                                 echo '<td>' . htmlspecialchars($row['SubTeacher']) . '</td>';
                                 echo '<td>' . htmlspecialchars($row['TotalNumOfStudents']) . '</td>';
                                 echo '<td>' . htmlspecialchars($row['TotalNumTested']) . '</td>';
-                                echo '<td>' . htmlspecialchars($row['HighestScore']) . '</td>';
-                                echo '<td>' . htmlspecialchars($row['LowestScore']) . '</td>';
 
                                 // Check MPS value and apply class
                                 $mpsClass = htmlspecialchars($row['MPS']) < 75 ? 'text-danger' : 'text-success';
