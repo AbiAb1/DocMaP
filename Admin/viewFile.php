@@ -41,9 +41,7 @@ $mimeType = $mimeTypeMap[$extension] ?? 'application/octet-stream';
 // Set the content type header before any output
 header("Content-Type: $mimeType");
 
-// Now send the content of the file
-echo $fileContent;
-exit;
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -53,6 +51,6 @@ exit;
     <title>View File</title>
 </head>
 <body>
-    <!-- HTML content here if needed, though this might not be required for direct file output -->
+    <pre><?php echo htmlspecialchars($fileContent); ?></pre>
 </body>
 </html>
